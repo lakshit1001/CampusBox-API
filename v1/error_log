@@ -1,0 +1,9 @@
+[03-Feb-2017 07:31:26 Asia/Kolkata] PHP Fatal error:  Call to a member function isMobile() on null in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 564
+[03-Feb-2017 07:32:21 Asia/Kolkata] PHP Fatal error:  Call to a member function isMobile() on null in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 569
+[03-Feb-2017 02:03:46 UTC] PHP Parse error:  syntax error, unexpected '=', expecting ',' or ';' in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 12
+[03-Feb-2017 02:03:56 UTC] PHP Parse error:  syntax error, unexpected '=', expecting ',' or ';' in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 12
+[03-Feb-2017 07:35:14 Asia/Kolkata] PHP Fatal error:  Call to a member function isMobile() on null in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 570
+[03-Feb-2017 07:36:13 Asia/Kolkata] PHP Fatal error:  Call to a member function isMobile() on null in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 591
+[03-Feb-2017 07:36:33 Asia/Kolkata] PHP Fatal error:  Call to a member function isMobile() on null in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 591
+[03-Feb-2017 07:36:34 Asia/Kolkata] PHP Fatal error:  Call to a member function isMobile() on null in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 591
+[03-Feb-2017 07:36:39 Asia/Kolkata] PHP Fatal error:  Call to a member function isMobile() on null in /home/bookfoxi/public_html/campusbox.org/api/v1/index.php on line 591
