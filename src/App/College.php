@@ -49,19 +49,6 @@
         $emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
             $entity->id = Base62::encode(random_bytes(9));
             });
-
-        $emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
-            $entity->timestamp = new \DateTime();
-            });
-    }
-    public function timestamp()
-    {
-        return $this->timestamp->getTimestamp();
-    }
-
-    public function etag()
-    {
-        return md5($this->id . $this->timestamp());
     }
 
     public function clear()

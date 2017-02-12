@@ -69,7 +69,6 @@
             "id" => null,
             "reported_by_id" => null,
             "type" => null,
-            // "timestamp" => null,
             "type_id" => null,
             "reason" => null,
             "reported" => null
