@@ -13,8 +13,8 @@
  *
  */
 
-use App\Event;
-use App\EventTransformer;
+use App\Report;
+use App\ReportTransformer;
 
 use Exception\NotFoundException;
 use Exception\ForbiddenException;
@@ -26,25 +26,22 @@ use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Serializer\DataArraySerializer;
 
-$app->get("/events", function ($request, $response, $arguments) {
+$app->get("/reports", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["event.all", "event.list"])) {
-        throw new ForbiddenException("Token not allowed to list events.", 403);
+    if (true === $this->token->hasScope(["report.all", "report.list"])) {
+        throw new ForbiddenException("Token not allowed to list reports.", 403);
     }else{
        
     }
 
-    /* Use ETag and date from Event with most recent update. */
-    $first = $this->spot->mapper("App\Event")
+    /* Use ETag and date from Report with most recent update. */
+    $first = $this->spot->mapper("App\Report")
         ->all()
-        ->order(["time_created" => "DESC"])
+        ->order(["timestamp" => "DESC"])
         ->first();
 
-
-
-
-    /* Add Last-Modified and ETag headers to response when atleast on event exists. */
+    /* Add Last-Modified and ETag headers to response when atleast on report exists. */
     if ($first) {
         $response = $this->cache->withEtag($response, $first->etag());
         $response = $this->cache->withLastModified($response, $first->timestamp());
@@ -57,14 +54,14 @@ $app->get("/events", function ($request, $response, $arguments) {
         return $response->withStatus(304);
     }
 
-    $events = $this->spot->mapper("App\Event")
+    $reports = $this->spot->mapper("App\Report")
         ->all()
-        ->order(["time_created" => "DESC"]);
+        ->order(["timestamp" => "DESC"]);
 
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Collection($events, new EventTransformer);
+    $resource = new Collection($reports, new ReportTransformer);
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)
@@ -72,29 +69,29 @@ $app->get("/events", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->post("/events", function ($request, $response, $arguments) {
+$app->post("/reports", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["event.all", "event.create"])) {
-        throw new ForbiddenException("Token not allowed to create events.", 403);
+    if (true === $this->token->hasScope(["report.all", "report.create"])) {
+        throw new ForbiddenException("Token not allowed to create reports.", 403);
     }
 
     $body = $request->getParsedBody();
 
-    $event = new Event($body);
-    $this->spot->mapper("App\Event")->save($event);
+    $report = new Report($body);
+    $this->spot->mapper("App\Report")->save($report);
 
     /* Add Last-Modified and ETag headers to response. */
-    $response = $this->cache->withEtag($response, $event->etag());
-    $response = $this->cache->withLastModified($response, $event->timestamp());
+    $response = $this->cache->withEtag($response, $report->etag());
+    $response = $this->cache->withLastModified($response, $report->timestamp());
 
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($event, new EventTransformer);
+    $resource = new Item($report, new ReportTransformer);
     $data = $fractal->createData($resource)->toArray();
     $data["status"] = "ok";
-    $data["message"] = "New event created";
+    $data["message"] = "New report created";
 
     return $response->withStatus(201)
         ->withHeader("Content-Type", "application/json")
@@ -102,23 +99,23 @@ $app->post("/events", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->get("/events/{id}", function ($request, $response, $arguments) {
+$app->get("/reports/{id}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["event.all", "event.read"])) {
-        throw new ForbiddenException("Token not allowed to list events.", 403);
+    if (true === $this->token->hasScope(["report.all", "report.read"])) {
+        throw new ForbiddenException("Token not allowed to list reports.", 403);
     }
 
-    /* Load existing event using provided id */
-    if (false === $event = $this->spot->mapper("App\Event")->first([
+    /* Load existing report using provided id */
+    if (false === $report = $this->spot->mapper("App\Report")->first([
         "id" => $arguments["id"]
     ])) {
-        throw new NotFoundException("Event not found.", 404);
+        throw new NotFoundException("Report not found.", 404);
     };
 
     /* Add Last-Modified and ETag headers to response. */
-    $response = $this->cache->withEtag($response, $event->etag());
-    $response = $this->cache->withLastModified($response, $event->timestamp());
+    $response = $this->cache->withEtag($response, $report->etag());
+    $response = $this->cache->withLastModified($response, $report->timestamp());
 
     /* If-Modified-Since and If-None-Match request header handling. */
     /* Heads up! Apache removes previously set Last-Modified header */
@@ -130,26 +127,26 @@ $app->get("/events/{id}", function ($request, $response, $arguments) {
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($event, new EventTransformer);
+    $resource = new Item($report, new ReportTransformer);
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
+        ->withHeader("Content-Type", "appliaction/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->patch("/events/{id}", function ($request, $response, $arguments) {
+$app->patch("/reports/{id}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["event.all", "event.update"])) {
-        throw new ForbiddenException("Token not allowed to update events.", 403);
+    if (true === $this->token->hasScope(["report.all", "report.update"])) {
+        throw new ForbiddenException("Token not allowed to update reports.", 403);
     }
 
-    /* Load existing event using provided id */
-    if (false === $event = $this->spot->mapper("App\Event")->first([
+    /* Load existing report using provided id */
+    if (false === $report = $this->spot->mapper("App\Report")->first([
         "id" => $arguments["id"]
     ])) {
-        throw new NotFoundException("Event not found.", 404);
+        throw new NotFoundException("Report not found.", 404);
     };
 
     /* PATCH requires If-Unmodified-Since or If-Match request header to be present. */
@@ -158,43 +155,43 @@ $app->patch("/events/{id}", function ($request, $response, $arguments) {
     }
 
     /* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
-    /* someone has modified the event respond with 412 Precondition Failed. */
-    if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
-        throw new PreconditionFailedException("Event has been modified.", 412);
+    /* someone has modified the report respond with 412 Precondition Failed. */
+    if (false === $this->cache->hasCurrentState($request, $report->etag(), $report->timestamp())) {
+        throw new PreconditionFailedException("Report has been modified.", 412);
     }
 
     $body = $request->getParsedBody();
-    $event->data($body);
-    $this->spot->mapper("App\Event")->save($event);
+    $report->data($body);
+    $this->spot->mapper("App\Report")->save($report);
 
     /* Add Last-Modified and ETag headers to response. */
-    $response = $this->cache->withEtag($response, $event->etag());
-    $response = $this->cache->withLastModified($response, $event->timestamp());
+    $response = $this->cache->withEtag($response, $report->etag());
+    $response = $this->cache->withLastModified($response, $report->timestamp());
 
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($event, new EventTransformer);
+    $resource = new Item($report, new ReportTransformer);
     $data = $fractal->createData($resource)->toArray();
     $data["status"] = "ok";
-    $data["message"] = "Event updated";
+    $data["message"] = "Report updated";
 
     return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->put("/events/{id}", function ($request, $response, $arguments) {
+$app->put("/reports/{id}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["event.all", "event.update"])) {
-        throw new ForbiddenException("Token not allowed to update events.", 403);
+    if (true === $this->token->hasScope(["report.all", "report.update"])) {
+        throw new ForbiddenException("Token not allowed to update reports.", 403);
     }
 
-    /* Load existing event using provided id */
-    if (false === $event = $this->spot->mapper("App\Event")->first([
+    /* Load existing report using provided id */
+    if (false === $report = $this->spot->mapper("App\Report")->first([
         "id" => $arguments["id"]
     ])) {
-        throw new NotFoundException("Event not found.", 404);
+        throw new NotFoundException("Report not found.", 404);
     };
 
     /* PUT requires If-Unmodified-Since or If-Match request header to be present. */
@@ -203,53 +200,53 @@ $app->put("/events/{id}", function ($request, $response, $arguments) {
     }
 
     /* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
-    /* someone has modified the event respond with 412 Precondition Failed. */
-    if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
-        throw new PreconditionFailedException("Event has been modified.", 412);
+    /* someone has modified the report respond with 412 Precondition Failed. */
+    if (false === $this->cache->hasCurrentState($request, $report->etag(), $report->timestamp())) {
+        throw new PreconditionFailedException("Report has been modified.", 412);
     }
 
     $body = $request->getParsedBody();
 
     /* PUT request assumes full representation. If any of the properties is */
-    /* missing set them to default values by clearing the event object first. */
-    $event->clear();
-    $event->data($body);
-    $this->spot->mapper("App\Event")->save($event);
+    /* missing set them to default values by clearing the report object first. */
+    $report->clear();
+    $report->data($body);
+    $this->spot->mapper("App\Report")->save($report);
 
     /* Add Last-Modified and ETag headers to response. */
-    $response = $this->cache->withEtag($response, $event->etag());
-    $response = $this->cache->withLastModified($response, $event->timestamp());
+    $response = $this->cache->withEtag($response, $report->etag());
+    $response = $this->cache->withLastModified($response, $report->timestamp());
 
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($event, new EventTransformer);
+    $resource = new Item($report, new ReportTransformer);
     $data = $fractal->createData($resource)->toArray();
     $data["status"] = "ok";
-    $data["message"] = "Event updated";
+    $data["message"] = "Report updated";
 
     return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->delete("/events/{id}", function ($request, $response, $arguments) {
+$app->delete("/reports/{id}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["event.all", "event.delete"])) {
-        throw new ForbiddenException("Token not allowed to delete events.", 403);
+    if (true === $this->token->hasScope(["report.all", "report.delete"])) {
+        throw new ForbiddenException("Token not allowed to delete reports.", 403);
     }
 
-    /* Load existing event using provided id */
-    if (false === $event = $this->spot->mapper("App\Event")->first([
+    /* Load existing report using provided id */
+    if (false === $report = $this->spot->mapper("App\Report")->first([
         "id" => $arguments["id"]
     ])) {
-        throw new NotFoundException("Event not found.", 404);
+        throw new NotFoundException("Report not found.", 404);
     };
 
-    $this->spot->mapper("App\Event")->delete($event);
+    $this->spot->mapper("App\Report")->delete($report);
 
     $data["status"] = "ok";
-    $data["message"] = "Event deleted";
+    $data["message"] = "Report deleted";
 
     return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
