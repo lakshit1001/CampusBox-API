@@ -15,9 +15,11 @@
 
  namespace App;
 
- use Spot\EntityInterface;
- use Spot\MapperInterface;
+use Spot\EntityInterface as Entity;
+use Spot\MapperInterface as Mapper;
  use Spot\EventEmitter;
+ use App\Student;
+
 
  use Tuupola\Base62;
 
@@ -64,5 +66,10 @@
             "id" => null,
             "name" => null
             ]);
+    }
+    public static function relations(Mapper $mapper, Entity $entity)
+    {
+        return [
+            'Students' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\SkillStudent', 'student_id', 'skill_id'),        ];
     }
 }

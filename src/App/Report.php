@@ -15,8 +15,8 @@
 
  namespace App;
 
- use Spot\EntityInterface;
- use Spot\MapperInterface;
+ use Spot\EntityInterface as Entity;
+use Spot\MapperInterface as Mapper;
  use Spot\EventEmitter;
 
  use Tuupola\Base62;

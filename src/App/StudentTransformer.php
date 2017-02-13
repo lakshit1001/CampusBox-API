@@ -42,6 +42,7 @@ class StudentTransformer extends Fractal\TransformerAbstract
             "passout_year" => (integer)$student->passout_year?: null,
             "age" => (integer)$student->age?: null,
             "gender" => (string)$student->gender?: null,
+            "college" => (string)$student->college->name?: null,
 
             "links"        => [
                 "self" => "/students/{$student->id}"

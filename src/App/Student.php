@@ -15,8 +15,8 @@
 
  namespace App;
 
- use Spot\EntityInterface;
- use Spot\MapperInterface;
+ use Spot\EntityInterface as Entity;
+ use Spot\MapperInterface as Mapper;
  use Spot\EventEmitter;
 
  use Tuupola\Base62;
@@ -31,7 +31,7 @@
     public static function fields()
     {
         return [
-       
+
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "college_id" => ["type" => "integer"],
@@ -83,5 +83,30 @@
             "age" => null,
             "gender" => null
             ]);
+    }
+
+    public static function relations(Mapper $mapper, Entity $entity)
+    {
+        return [
+        'Hostel' => $mapper->belongsTo($entity, 'App\Hostel', 'college_id'),
+
+        'Following' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'follower_id', 'following_id'),
+        'Followers' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'following_id', 'follower_id'),
+        
+        'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'college_id'),
+        'CreativeContents' => $mapper->hasMany($entity, 'App\CreativeContent', 'post_id'),
+        'CreativeContentLikes' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentLike', 'post_id'),
+        'CreativeContentBookmarks' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentBookmark', 'post_id'),
+        
+        'Events' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
+        'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
+        'EventBookmarks' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventBookmark', 'post_id'),
+        'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Event', 'post_id'),
+        
+        'Skills' => $mapper->hasMany($entity, 'App\Skills', 'post_id'),
+        
+        'Interets' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
+                    'hostel' => $mapper->hasOne($entity, 'Entity\User\hostel', 'user_id')
+        ];
     }
 }

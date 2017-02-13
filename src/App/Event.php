@@ -15,8 +15,8 @@
 
  namespace App;
 
- use Spot\EntityInterface;
- use Spot\MapperInterface;
+ use Spot\EntityInterface as Entity;
+ use Spot\MapperInterface as Mapper;
  use Spot\EventEmitter;
 
  use Tuupola\Base62;
@@ -31,7 +31,7 @@
     public static function fields()
     {
         return [
-       
+
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "college_id" => ["type" => "integer", "unsigned" => true],
@@ -87,5 +87,16 @@
             "type" => null,
             "price" => null
             ]);
+    }
+
+    public static function relations(Mapper $mapper, Entity $entity)
+    {
+        return [
+        'Images' => $mapper->hasMany($entity, 'Entity\EventImage', 'post_id'),
+        'Owner' => $mapper->belongsTo($entity, 'Entity\Student', 'user_id')
+        'Tags' => $mapper->hasManyThrough($entity, 'Entity\Tag', 'Entity\ContentCategory', 'tag_id', 'post_id'),
+        'Likes' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventLikes', 'tag_id', 'post_id'),
+        'Bookmarked' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventBookmarks', 'tag_id', 'post_id'),
+        ];
     }
 }

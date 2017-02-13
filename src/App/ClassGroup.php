@@ -24,14 +24,14 @@
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class College extends \Spot\Entity
+ class ClassGroup extends \Spot\Entity
  {
-    protected static $table = "college";
+    protected static $table = "class_groups";
 
     public static function fields()
     {
         return [
-
+        
 
         "college_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "name" => ["type" => "string"],
@@ -67,9 +67,8 @@
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-                'City' => $mapper->belongsTo($entity, 'App\City', 'college_id'),
-
-        'Programmes' => $mapper->hasMany($entity, 'App\Programme', 'id')
+        'Branch' => $mapper->belongsTo($entity, 'App\Branch', 'college_id'),
+        'Students' => $mapper->hasMany($entity, 'App\Student', 'id')
         ];
     }
 
