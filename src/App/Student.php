@@ -93,7 +93,7 @@
         'Following' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'follower_id', 'following_id'),
         'Followers' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'following_id', 'follower_id'),
         
-        'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'college_id'),
+        'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'class_group_id'),
         'CreativeContents' => $mapper->hasMany($entity, 'App\CreativeContent', 'post_id'),
         'CreativeContentLikes' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentLike', 'post_id'),
         'CreativeContentBookmarks' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentBookmark', 'post_id'),

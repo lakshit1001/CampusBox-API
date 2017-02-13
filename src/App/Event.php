@@ -33,7 +33,7 @@
         return [
 
 
-        "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "event_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "college_id" => ["type" => "integer", "unsigned" => true],
         "created_by_id" => ["type" => "integer", "required" => true],
         "title" => ["type" => "string", "required" => true],
@@ -53,7 +53,7 @@
     public static function events(EventEmitter $emitter)
     {
         $emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
-            $entity->id = Base62::encode(random_bytes(9));
+            $entity->event_id = Base62::encode(random_bytes(9));
             });
 
         $emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
@@ -73,7 +73,7 @@
     public function clear()
     {
         $this->data([
-            "id" => null,
+            "event_id" => null,
             "college_id" => null,
             "created_by_id" => null,
             "title" => null,
@@ -84,7 +84,7 @@
             "venue" => null,
             "inter" => null,
             "time_created" => null,
-            "type" => null,
+            "type_id" => null,
             "price" => null
             ]);
     }
@@ -92,11 +92,13 @@
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Images' => $mapper->hasMany($entity, 'Entity\EventImage', 'post_id'),
+        'Images' => $mapper->hasMany($entity, 'Entity\EventImage', 'event_id'),
+        'Updates' => $mapper->hasMany($entity, 'Entity\EventUpdates', 'event_id'),
+        'Type' => $mapper->belongsTo($entity, 'Entity\EventType', 'type_id')
         'Owner' => $mapper->belongsTo($entity, 'Entity\Student', 'user_id')
-        'Tags' => $mapper->hasManyThrough($entity, 'Entity\Tag', 'Entity\ContentCategory', 'tag_id', 'post_id'),
-        'Likes' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventLikes', 'tag_id', 'post_id'),
-        'Bookmarked' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventBookmarks', 'tag_id', 'post_id'),
+        'Tags' => $mapper->hasManyThrough($entity, 'Entity\Tag', 'Entity\ContentCategory', 'tag_id', 'event_id'),
+        'Likes' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventLikes', 'student_id', 'event_id'),
+        'Bookmarked' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventBookmarks', 'student_id', 'event_id'),
         ];
     }
 }

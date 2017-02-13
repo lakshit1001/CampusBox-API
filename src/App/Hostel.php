@@ -24,18 +24,21 @@
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class ClassGroup extends \Spot\Entity
+ class Hostel extends \Spot\Entity
  {
-    protected static $table = "class_groups";
+    protected static $table = "college";
 
     public static function fields()
     {
         return [
-        
 
-        "class_group_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "branch_id" => ["type" => "integer" , "unsigned" => true],
+
+        "hostel_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "college_id" => ["type" => "integer" , "unsigned" => true,],
         "name" => ["type" => "string"],
+        "gender" => ["type" => "string"],
+        "lat" => ["type" => "float"],
+        "long" => ["type" => "float"]       
         ];
     }
 
@@ -49,17 +52,18 @@
     public function clear()
     {
         $this->data([
-            "class_group_id"=>null,
-            "branch_id"=>null,
-            "name"=>null
-
-            ]);
+         "hostel_id" => null,
+         "college_id" => null,
+         "name" => null,
+         "gender" => null,
+         "lat" => null,
+         "long" => null
+         ]);
     }
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Branch' => $mapper->belongsTo($entity, 'App\Branch', 'college_id'),
-        'Students' => $mapper->hasMany($entity, 'App\Student', 'id')
+        'College' => $mapper->belongsTo($entity, 'App\College', 'college_id'),
         ];
     }
 

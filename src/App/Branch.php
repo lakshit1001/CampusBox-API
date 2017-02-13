@@ -33,14 +33,9 @@
         return [
 
 
-        "college_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "name" => ["type" => "string"],
-        "lat" => ["type" => "float"],
-        "long" => ["type" => "float"],
-        "address" => ["type" => "string"],
-        "city" => ["type" => "string"],
-        "logo" => ["type" => "string"],
-        "cover_pic" => ["type" => "string"],
+        "branch_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "branch_id" => ["type" => "integer" , "unsigned" => true,],
+        "programme_id" => ["type" => "integer" , "unsigned" => true,]
         ];
     }
 
@@ -54,14 +49,9 @@
     public function clear()
     {
         $this->data([
-            "college_id" => null,
-            "name" => null,
-            "lat" => null,
-            "long" => null,
-            "address" => null,
-            "city" => null,
-            "logo" => null,
-            "cover_pic" => null
+            "branch_id"=>null,
+             "programme_id"=>null,
+             "name"=>null
             ]);
     }
     public static function relations(Mapper $mapper, Entity $entity)
