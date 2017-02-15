@@ -24,7 +24,7 @@ class StudentTransformer extends Fractal\TransformerAbstract
     public function transform(Student $student)
     {
         return [
-            "id" => (integer)$student->id?: 0 ,
+            "id" => (integer)$student->student_id?: 0 ,
             "college_id" => (integer)$student->college_id?: null,
             "name" => (string)$student->name?: null,
             "username" => (string)$student->username?: null,
@@ -42,9 +42,18 @@ class StudentTransformer extends Fractal\TransformerAbstract
             "passout_year" => (integer)$student->passout_year?: null,
             "age" => (integer)$student->age?: null,
             "gender" => (string)$student->gender?: null,
-            "college" => (string)$student->college->name?: null,
+            "college" => (string)$student->College['name']?: null,
+            "skills" => $student->Skills[0],
+            "skill_name" => (string)$student->SkillList[$student->Skills[0]->id]?: null,
 
             "links"        => [
+                "facebook" => (string)$student->Socialid['facebook']?: null,
+                "instagram" => (string)$student->Socialid['instagram']?: null,
+                "github" => (string)$student->Socialid['github']?: null,
+                "behance" => (string)$student->Socialid['behance']?: null,
+                "soundcloud" => (string)$student->Socialid['soundcloud']?: null,
+                "linkedin" => (string)$student->Socialid['linkedin']?: null,
+                "other" => (string)$student->Socialid['other']?: null,
                 "self" => "/students/{$student->id}"
             ]
         ];

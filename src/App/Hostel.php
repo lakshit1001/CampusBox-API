@@ -26,7 +26,7 @@
  
  class Hostel extends \Spot\Entity
  {
-    protected static $table = "college";
+    protected static $table = "hostel";
 
     public static function fields()
     {

@@ -94,11 +94,11 @@
         return [
         'Images' => $mapper->hasMany($entity, 'Entity\EventImage', 'event_id'),
         'Updates' => $mapper->hasMany($entity, 'Entity\EventUpdates', 'event_id'),
-        'Type' => $mapper->belongsTo($entity, 'Entity\EventType', 'type_id')
-        'Owner' => $mapper->belongsTo($entity, 'Entity\Student', 'user_id')
+        'Type' => $mapper->belongsTo($entity, 'Entity\EventType', 'type_id'),
+        'Owner' => $mapper->belongsTo($entity, 'Entity\Student', 'user_id'),
         'Tags' => $mapper->hasManyThrough($entity, 'Entity\Tag', 'Entity\ContentCategory', 'tag_id', 'event_id'),
         'Likes' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventLikes', 'student_id', 'event_id'),
-        'Bookmarked' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventBookmarks', 'student_id', 'event_id'),
+        'Bookmarked' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventBookmarks', 'student_id', 'event_id')
         ];
     }
 }

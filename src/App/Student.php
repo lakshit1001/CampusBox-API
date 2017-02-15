@@ -33,7 +33,7 @@
         return [
 
 
-        "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "student_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "college_id" => ["type" => "integer"],
         "name" => ["type" => "string"],
         "username" => ["type" => "string"],
@@ -64,7 +64,7 @@
     public function clear()
     {
         $this->data([
-            "id" => 0,
+            "student_id" => 0,
             "college_id" => null,
             "name" => null,
             "username" => null,
@@ -88,25 +88,26 @@
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Hostel' => $mapper->belongsTo($entity, 'App\Hostel', 'college_id'),
+        'College' => $mapper->belongsTo($entity, 'App\College', 'college_id'),
 
-        'Following' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'follower_id', 'following_id'),
-        'Followers' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'following_id', 'follower_id'),
+        // 'Following' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'follower_id', 'following_id'),
+        // 'Followers' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'following_id', 'follower_id'),
         
-        'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'class_group_id'),
-        'CreativeContents' => $mapper->hasMany($entity, 'App\CreativeContent', 'post_id'),
-        'CreativeContentLikes' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentLike', 'post_id'),
-        'CreativeContentBookmarks' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentBookmark', 'post_id'),
+        // 'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'class_group_id'),
+        // 'CreativeContents' => $mapper->hasMany($entity, 'App\CreativeContent', 'post_id'),
+        // 'CreativeContentLikes' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentLike', 'post_id'),
+        // 'CreativeContentBookmarks' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentBookmark', 'post_id'),
         
-        'Events' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
-        'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
-        'EventBookmarks' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventBookmark', 'post_id'),
-        'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Event', 'post_id'),
+        // 'Events' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
+        // 'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
+        // 'EventBookmarks' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventBookmark', 'post_id'),
+        // 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'student_id'),
+        'SkillList' => $mapper->hasOne($entity, 'App\SkillList', 'skill_id'),
+        'Skills' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
+        'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'student_id')
         
-        'Skills' => $mapper->hasMany($entity, 'App\Skills', 'post_id'),
-        
-        'Interets' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
-                    'hostel' => $mapper->hasOne($entity, 'Entity\User\hostel', 'user_id')
+        // 'Interets' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
+        // 'hostel' => $mapper->hasOne($entity, 'App\College', 'user_id')
         ];
     }
 }
