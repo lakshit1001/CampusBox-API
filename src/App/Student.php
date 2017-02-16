@@ -102,8 +102,8 @@
         // 'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
         // 'EventBookmarks' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventBookmark', 'post_id'),
         // 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'student_id'),
-        'SkillList' => $mapper->hasOne($entity, 'App\SkillList', 'skill_id'),
-        'Skills' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
+        
+        'Skill' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
         'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'student_id')
         
         // 'Interets' => $mapper->hasMany($entity, 'App\Event', 'post_id'),

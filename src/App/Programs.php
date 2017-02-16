@@ -24,23 +24,18 @@
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class College extends \Spot\Entity
+ class Programs extends \Spot\Entity
  {
-    protected static $table = "college";
+    protected static $table = "programmes";
 
     public static function fields()
     {
         return [
 
 
-        "college_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "name" => ["type" => "string"],
-        "lat" => ["type" => "float"],
-        "long" => ["type" => "float"],
-        "address" => ["type" => "string"],
-        "city" => ["type" => "string"],
-        "logo" => ["type" => "string"],
-        "cover_pic" => ["type" => "string"],
+        "programme_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "college_id" => ["type" => "integer"],
+        "name" => ["type" => "string"]
         ];
     }
 
@@ -54,23 +49,13 @@
     public function clear()
     {
         $this->data([
-            "college_id" => null,
-            "name" => null,
-            "lat" => null,
-            "long" => null,
-            "address" => null,
-            "city" => null,
-            "logo" => null,
-            "cover_pic" => null
             ]);
     }
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-                // 'City' => $mapper->belongsTo($entity, 'App\City', 'college_id'),
-// 
-        'CollegeAdmin' => $mapper->hasMany($entity, 'App\CollegeAdmin', 'college_id'),
-        'Programs' => $mapper->hasMany($entity, 'App\Programs', 'college_id')
+        'Programs' => $mapper->belongsTo($entity, 'App\College', 'college_id')
+        'Branch' => $mapper->hasMany($entity, 'App\Branch', 'college_id')
         ];
     }
 

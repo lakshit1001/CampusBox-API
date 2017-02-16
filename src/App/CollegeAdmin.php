@@ -26,9 +26,9 @@ use Spot\MapperInterface as Mapper;
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class Skill extends \Spot\Entity
+ class CollegeAdmin extends \Spot\Entity
  {
-    protected static $table = "student_skills";
+    protected static $table = "collegeadmins";
 
     public static function fields()
     {
@@ -37,8 +37,8 @@ use Spot\MapperInterface as Mapper;
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "student_id" => ["type" => "integer"],
-        "skill_name" => ["type" => "string"],
-        "proficiency" => ["type" => "integer"]
+        "college_id" => ["type" => "string"],
+        "rollnumber" => ["type" => "string"]
         ];
     }
 
@@ -57,7 +57,7 @@ use Spot\MapperInterface as Mapper;
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-            'Skill' => $mapper->belongsTo($entity, 'App\Student', 'student_id')
+            'CollegeAdmin' => $mapper->belongsTo($entity, 'App\College', 'college_id')
             ];
     }
 }

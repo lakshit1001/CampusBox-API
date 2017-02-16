@@ -43,10 +43,9 @@ class StudentTransformer extends Fractal\TransformerAbstract
             "age" => (integer)$student->age?: null,
             "gender" => (string)$student->gender?: null,
             "college" => (string)$student->College['name']?: null,
-            "skills" => $student->Skills[0],
-            "skill_name" => (string)$student->SkillList[$student->Skills[0]->id]?: null,
+            "skills" => $student->Skill[0],
 
-            "links"        => [
+            "links"=> [
                 "facebook" => (string)$student->Socialid['facebook']?: null,
                 "instagram" => (string)$student->Socialid['instagram']?: null,
                 "github" => (string)$student->Socialid['github']?: null,

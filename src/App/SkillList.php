@@ -54,8 +54,6 @@ use Spot\MapperInterface as Mapper;
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-            'SkillList' => $mapper->belongsTo($entity, 'App\Student', 'skill_id')
-
             ];
     }
 }
