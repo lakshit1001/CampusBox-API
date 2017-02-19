@@ -2,18 +2,18 @@
 
 ## Valid Routes
 
--- [token](#token)
--- [events](#events)
--- [reports](#reports)
+- [token](#token)
+- [events](#events)
+- [reports](#reports)
 
 ## Usage
 
 Various methods that are supported
--- get - lists all the items.
--- get/id - lists particular.
--- patch/{{id}} - edit partially.
--- put/{{id}} - edit completely(all the fields to be supplied or defaults are taken).
--- delete/{{id}} - delets the item.
+- get - lists all the items.
+- get/id - lists particular.
+- patch/{{id}} - edit partially.
+- put/{{id}} - edit completely(all the fields to be supplied or defaults are taken).
+- delete/{{id}} - delets the item.
 
 Now you can access the api at [https://192.168.50.52/todos](https://192.168.50.52/todos)
 
