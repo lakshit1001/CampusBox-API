@@ -37,7 +37,8 @@ class EventTransformer extends Fractal\TransformerAbstract
             "time_created" =>$event->time_created?: 0 ,
             "type" => (string)$event->type?: null ,
             "price" => (integer)$event->price?: 0 ,
-
+            "created_by" => (string)$event->Owner['name']?: null,
+            "participants" => $event->Participants[0],
 
             "links"        => [
                 "self" => "/events/{$event->id}"

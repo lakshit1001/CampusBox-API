@@ -54,7 +54,7 @@
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Programs' => $mapper->belongsTo($entity, 'App\College', 'college_id')
+        'Programs' => $mapper->belongsTo($entity, 'App\College', 'college_id'),
         'Branch' => $mapper->hasMany($entity, 'App\Branch', 'college_id')
         ];
     }
