@@ -47,6 +47,11 @@ $app->post("/login", function ($request, $response, $arguments) {
     $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
         return in_array($needle, $valid_scopes);
     });
+    if(count($student) == 0){
+        return $response->withStatus(201)
+            ->withHeader("Content-Type", "application/json")
+            ->write(json_encode("error", JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    }
     $now = new DateTime();
     $future = new DateTime("now +30 days");
     $server = $request->getServerParams();
@@ -65,5 +70,55 @@ $app->post("/login", function ($request, $response, $arguments) {
 
     return $response->withStatus(201)
         ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+
+$app->post("/signup", function ($request, $response, $arguments) {
+    $body = $request->getParsedBody();
+
+    $student = new Student($body);
+    $this->spot->mapper("App\Student")->save($student);
+    $requested_scopes = $request->getParsedBody();
+    $valid_scopes = [
+        "todo.create",
+        "todo.read",
+        "todo.update",
+        "todo.delete",
+        "todo.list",
+        "todo.all"
+    ];
+    $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
+        return in_array($needle, $valid_scopes);
+    });
+
+
+    /* Serialize the response data. */
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    $resource = new Item($student, new StudentTransformer);
+    $data = $fractal->createData($resource)->toArray();
+    $data["status"] = "ok";
+    $data["message"] = "New student created";
+
+    $now = new DateTime();
+    $future = new DateTime("now +30 days");
+    $server = $request->getServerParams();
+    $jti = Base62::encode(random_bytes(16));
+    $payload = [
+        "iat" => $now->getTimeStamp(),
+        "exp" => $future->getTimeStamp(),
+        "jti" => $jti,
+        "student_id" => $data["data"]["id"],
+        "scope" => $scopes
+    ];
+    $token = JWT::encode($payload, $secret, "HS256");
+    $data["status"] = "ok";
+    $data["token"] = $token;
+    $secret = getenv("JWT_SECRET");
+
+    return $response->withStatus(201)
+        ->withHeader("Content-Type", "application/json")
+        ->withHeader("Location", $data["data"]["links"]["self"])
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
