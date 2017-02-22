@@ -41,7 +41,7 @@
         "email" => ["type" => "string"],
         "phone" => ["type" => "integer"],
         "photo" => ["type" => "string"],
-        "hostelid" => ["type" => "integer"],
+        "hostel_id" => ["type" => "integer"],
         "room_number" => ["type" => "string"],
         "home_city" => ["type" => "string"],
         "grad_id" => ["type" => "integer"],

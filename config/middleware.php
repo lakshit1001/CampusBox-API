@@ -29,7 +29,7 @@ $container["HttpBasicAuthentication"] = function ($container) {
         "path" => "/token",
         "relaxed" => ["192.168.50.52"],
         "users" => [
-        "test" => "test"
+        "test" => "tes"
         ]
         ]);
 };
@@ -42,7 +42,7 @@ $container["JwtAuthentication"] = function ($container) {
     return new JwtAuthentication([
         "secure" => false,
         "path" => "/",
-        "passthrough" => ["/token", "/info"],
+        "passthrough" => ["/token", "/info", "/login"],
         "secret" => getenv("JWT_SECRET"),
         "logger" => $container["logger"],
         "relaxed" => ["192.168.50.52"],

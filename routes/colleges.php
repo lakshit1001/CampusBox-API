@@ -48,7 +48,8 @@ $app->get("/colleges", function ($request, $response, $arguments) {
     }
 
     $colleges = $this->spot->mapper("App\College")
-        ->all()->with('students');
+        ->all()//->with('students')
+        ;
 
     /* Serialize the response data. */
     $fractal = new Manager();

@@ -11,10 +11,30 @@
  *   https://github.com/tuupola/slim-api-skeleton
  *
  */
+use App\Student;
+use App\StudentTransformer;
+
+use Exception\NotFoundException;
+use Exception\ForbiddenException;
+use Exception\PreconditionFailedException;
+use Exception\PreconditionRequiredException;
+
+use League\Fractal\Manager;
+use League\Fractal\Resource\Item;
+use League\Fractal\Resource\Collection;
+use League\Fractal\Serializer\DataArraySerializer;
+
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
 use Tuupola\Base62;
-$app->post("/token", function ($request, $response, $arguments) {
+$app->post("/login", function ($request, $response, $arguments) {
+    $body = $request->getParsedBody();
+
+    $student = new Student($body);
+    $student = $this->spot
+                     ->mapper("App\Student")
+                     ->where(['username' => $body["username"], 'password' => $body["password"]]);
+    
     $requested_scopes = $request->getParsedBody();
     $valid_scopes = [
         "todo.create",
@@ -35,22 +55,15 @@ $app->post("/token", function ($request, $response, $arguments) {
         "iat" => $now->getTimeStamp(),
         "exp" => $future->getTimeStamp(),
         "jti" => $jti,
-        "sub" => $server["PHP_AUTH_USER"],
+        "student_id" => $student[0]->student_id,
         "scope" => $scopes
     ];
     $secret = getenv("JWT_SECRET");
     $token = JWT::encode($payload, $secret, "HS256");
     $data["status"] = "ok";
     $data["token"] = $token;
+
     return $response->withStatus(201)
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-/* This is just for debugging, not usefull in real life. */
-$app->get("/dump", function ($request, $response, $arguments) {
-    print_r($this->token);
-});
-/* This is just for debugging, not usefull in real life. */
-$app->get("/info", function ($request, $response, $arguments) {
-    phpinfo();
 });

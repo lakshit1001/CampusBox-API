@@ -29,15 +29,17 @@ use League\Fractal\Serializer\DataArraySerializer;
 $app->get("/students", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["student.all", "student.list"])) {
-        throw new ForbiddenException("Token not allowed to list students.", 403);
+    if (false === $this->token->hasScope(["student.all", "student.list"])) {
+        return $response->withStatus(200)
+            ->withHeader("Content-Type", "application/json")
+            ->write(json_encode($this->token->decoded->student_id, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     }else{
        
     }
 
     /* Use ETag and date from Student with most recent update. */
     $first = $this->spot->mapper("App\Student")
-        ->all()->with('college')
+        ->all()//->with('college')
         ->first();
 
     /* If-Modified-Since and If-None-Match request header handling. */
