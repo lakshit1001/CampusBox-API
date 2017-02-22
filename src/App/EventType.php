@@ -24,18 +24,17 @@
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class Participants extends \Spot\Entity
+ class EventType extends \Spot\Entity
  {
-    protected static $table = "participants";
+    protected static $table = "event_types";
 
     public static function fields()
     {
         return [
 
 
-        "participant_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "event_id" => ["type" => "integer", "unsigned" => true],
-        "student_id" => ["type" => "integer", "unsigned" => true]
+        "event_type_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "name" => ["type" => "string"]
         ];
     }
 
@@ -68,7 +67,7 @@
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Participants' => $mapper->belongsTo($entity, 'App\Event', 'event_id')
+            'Type' => $mapper->hasMany($entity, 'App\Event', 'event_type_id')
         ];
     }
 }

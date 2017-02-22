@@ -44,7 +44,7 @@
         "venue" => ["type" => "string", "required" => true],
         "inter" => ["type" => "integer", "required" => true, "default" => "0"],
         "time_created" => ["type" => "datetime", "value" => new \DateTime()],
-        "type" => ["type" => "string"],
+        "event_type_id" => ["type" => "string"],
         "price" => ["type" => "integer"]
 
         ];
@@ -92,14 +92,14 @@
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        // 'Images' => $mapper->hasMany($entity, 'Entity\EventImage', 'event_id'),
+        // 'Images' => $mapper->hasMany($entity, 'App\EventImage', 'event_id'),
         'Updates' => $mapper->hasMany($entity, 'App\EventUpdates', 'event_id'),
-        // 'Type' => $mapper->belongsTo($entity, 'Entity\EventType', 'type_id'),
+        'Type' => $mapper->belongsTo($entity, 'App\EventType', 'event_type_id'),
         'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_id'),
-        'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'event_id', 'student_id')
-        // 'Tags' => $mapper->hasManyThrough($entity, 'Entity\Tag', 'Entity\ContentCategory', 'tag_id', 'event_id'),
-        // 'Likes' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventLikes', 'student_id', 'event_id'),
-        // 'Bookmarked' => $mapper->hasManyThrough($entity, 'Entity\Student', 'Entity\EventBookmarks', 'student_id', 'event_id')
+        'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'student_id', 'event_id'),
+        // 'Tags' => $mapper->hasManyThrough($entity, 'App\Tag', 'App\ContentCategory', 'tag_id', 'event_id'),
+        // 'Likes' => $mapper->hasManyThrough($entity, 'App\Student', 'App\EventLikes', 'student_id', 'event_id'),
+        'Bookmarked' => $mapper->hasManyThrough($entity, 'App\Student', 'App\EventBookmarks', 'student_id', 'event_id')
         ];
     }
 }

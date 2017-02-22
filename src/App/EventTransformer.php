@@ -24,7 +24,7 @@ class EventTransformer extends Fractal\TransformerAbstract
     public function transform(Event $event)
     {
         return [
-            "id" => (integer)$event->id?: 0 ,
+            "event_id" => (integer)$event->event_id?: 0 ,
             "college_id" => (integer)$event->college_id?: 0 ,
             "created_by_id" => (integer)$event->created_by_id?: 0 ,
             "title" => (string)$event->title?: null ,
@@ -35,9 +35,10 @@ class EventTransformer extends Fractal\TransformerAbstract
             "venue" => (string)$event->venue?: null ,
             "inter" => (integer)$event->inter?: 0 ,
             "time_created" =>$event->time_created?: 0 ,
-            "type" => (string)$event->type?: null ,
+            "type" => $event->Type['name'],
             "price" => (integer)$event->price?: 0 ,
             "created_by" => (string)$event->Owner['name']?: null,
+            "bookmarks" => $event->Bookmarked[0],
             "participants" => $event->Participants[0],
 
             "links"        => [
