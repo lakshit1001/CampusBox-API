@@ -4,6 +4,10 @@ use App\Event;
 use League\Fractal;
 
 class EventTransformer extends Fractal\TransformerAbstract {
+	protected $availableIncludes = [
+		'bookmarks',
+	];
+
 	public function transform(Event $event) {
 		return [
 			"event_id" => (integer) $event->event_id ?: 0,
@@ -20,12 +24,17 @@ class EventTransformer extends Fractal\TransformerAbstract {
 			"type" => $event->Type['name'],
 			"price" => (integer) $event->price ?: 0,
 			"created_by" => (string) $event->Owner['name'] ?: null,
-			"bookmarks" => $event->Bookmarked[0],
+			// "bookmarks" => $event->Bookmarked,
 			"participants" => $event->Participants,
 			"Owner" => $event->Owner->name ?: null,
 			"links" => [
 				"self" => "/events/{$event->id}",
 			],
 		];
+	}
+	public function includeBookmarks(Event $event) {
+		$bookmark = $event->event_id;
+
+		return $this->item($bookmarks, new EventBookmarksTransformer);
 	}
 }
