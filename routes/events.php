@@ -29,11 +29,11 @@ use League\Fractal\Serializer\DataArraySerializer;
 $app->get("/events", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["event.all", "event.list"])) {
-        throw new ForbiddenException("Token not allowed to list events.", 403);
-    }else{
+   // if (true === $this->token->hasScope(["event.all", "event.list"])) {
+   //     throw new ForbiddenException("Token not allowed to list events.", 403);
+   // }else{
        
-    }
+   // }
 
     /* Use ETag and date from Event with most recent update. */
     $first = $this->spot->mapper("App\Event")

@@ -24,9 +24,10 @@ $app->post("/token", function ($request, $response, $arguments) {
         "todo.list",
         "todo.all"
     ];
-    $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
-        return in_array($needle, $valid_scopes);
-    });
+   $scopes= [];
+   // $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
+   //     return in_array($needle, $valid_scopes);
+   // });
     $now = new DateTime();
     $future = new DateTime("now +30 days");
     $server = $request->getServerParams();
@@ -35,8 +36,8 @@ $app->post("/token", function ($request, $response, $arguments) {
         "iat" => $now->getTimeStamp(),
         "exp" => $future->getTimeStamp(),
         "jti" => $jti,
-        "sub" => $server["PHP_AUTH_USER"],
-        "scope" => $scopes
+   //     "sub" => $server["PHP_AUTH_USER"],
+   //     "scope" => $scopes
     ];
     $secret = getenv("JWT_SECRET");
     $token = JWT::encode($payload, $secret, "HS256");
