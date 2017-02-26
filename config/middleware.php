@@ -26,10 +26,10 @@ $container["HttpBasicAuthentication"] = function ($container) {
     return new HttpBasicAuthentication([
     "secure" => false,
 
-        "path" => "/token",
-        "relaxed" => ["192.168.50.52"],
+        "path" => "/any",
+        "relaxed" => ["localhost:3000"],
         "users" => [
-        "test" => "tes"
+        "test" => "test"
         ]
         ]);
 };

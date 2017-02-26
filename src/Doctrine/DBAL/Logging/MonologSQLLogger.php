@@ -34,10 +34,10 @@ class MonologSQLLogger implements SQLLogger
 
         $this->sql = preg_replace_callback("/\?/", function ($matches) use (&$params, &$types) {
             $param = array_shift($params);
-            if (null === $param) {
+            if (!(is_array($param) or ($param instanceof Traversable))) {
                 return "NULL";
             } else {
-                return "'" . implode(" : ",$param) . "'";
+                return "'" . "'";
             }
         }, $sql);
     }
