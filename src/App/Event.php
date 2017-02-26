@@ -95,10 +95,10 @@
         // 'Images' => $mapper->hasMany($entity, 'App\EventImage', 'event_id'),
         //'Updates' => $mapper->hasMany($entity, 'App\EventUpdates', 'event_id'),
       //  'Type' => $mapper->belongsTo($entity, 'App\EventType', 'event_type_id'),
-       // 'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_id'),
+        'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_id'),
         //'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'student_id', 'event_id'),
         // 'Tags' => $mapper->hasManyThrough($entity, 'App\Tag', 'App\ContentCategory', 'tag_id', 'event_id'),
-        // 'Likes' => $mapper->hasManyThrough($entity, 'App\Student', 'App\EventLikes', 'student_id', 'event_id'),
+        'Likes' => $mapper->hasManyThrough($entity, 'App\Student', 'App\EventLikes', 'student_id', 'event_id'),
         //'Bookmarked' => $mapper->hasManyThrough($entity, 'App\Student', 'App\EventBookmarks', 'student_id', 'event_id')
         ];
     }
