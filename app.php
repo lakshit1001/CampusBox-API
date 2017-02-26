@@ -43,6 +43,7 @@ require __DIR__ . "/routes/skills.php";
 require __DIR__ . "/routes/students.php";
 require __DIR__ . "/routes/login.php";
 require __DIR__ . "/routes/signup.php";
+require __DIR__ . "/routes/eventdetails.php";
 
 // require __DIR__ . "/routes/teachers.php";
 
