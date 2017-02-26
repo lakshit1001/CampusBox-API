@@ -24,7 +24,6 @@ class EventTransformer extends Fractal\TransformerAbstract {
 			"type" => $event->Type['name'],
 			"price" => (integer) $event->price ?: 0,
 			"created_by" => (string) $event->Owner['name'] ?: null,
-			// "bookmarks" => $event->Bookmarked,
 			"participants" => $event->Participants,
 			"Owner" => $event->Owner->name ?: null,
 			"links" => [
@@ -33,8 +32,8 @@ class EventTransformer extends Fractal\TransformerAbstract {
 		];
 	}
 	public function includeBookmarks(Event $event) {
-		$bookmark = $event->event_id;
+		$bookmarks = $event->Bookmarked;
 
-		return $this->item($bookmarks, new EventBookmarksTransformer);
+		return $this->collection($bookmarks, new EventBookmarksTransformer);
 	}
 }
