@@ -20,18 +20,18 @@ $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
 $app = new \Slim\App([
-    "settings" => [
-        "displayErrorDetails" => true
-    ],
-        'debug' => true
+	"settings" => [
+		"displayErrorDetails" => true,
+	],
+	'debug' => true,
 ]);
- 
+
 require __DIR__ . "/config/dependencies.php";
 require __DIR__ . "/config/handlers.php";
 require __DIR__ . "/config/middleware.php";
 
 $app->get("/", function ($request, $response, $arguments) {
-    print "Here be dragons";
+	print "Here be dragons";
 });
 
 require __DIR__ . "/routes/token.php";
@@ -42,8 +42,8 @@ require __DIR__ . "/routes/colleges.php";
 require __DIR__ . "/routes/skills.php";
 require __DIR__ . "/routes/students.php";
 require __DIR__ . "/routes/login.php";
+require __DIR__ . "/routes/signup.php";
 
 // require __DIR__ . "/routes/teachers.php";
-
 
 $app->run();
