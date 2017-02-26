@@ -4,6 +4,10 @@ use App\Event;
 use League\Fractal;
 
 class EventTransformer extends Fractal\TransformerAbstract {
+	protected $availableIncludes = [
+		'bookmarks',
+	];
+
 	public function transform(Event $event) {
 		return [
 			"event_id" => (integer) $event->event_id ?: 0,
@@ -27,5 +31,10 @@ class EventTransformer extends Fractal\TransformerAbstract {
 				"self" => "/events/{$event->id}",
 			],
 		];
+	}
+	public function includeBookmarks(Event $event) {
+		$bookmarks = $event->Bookmarked;
+
+		return $this->collection($bookmarks, new EventBookmarksTransformer);
 	}
 }
