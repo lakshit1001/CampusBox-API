@@ -30,7 +30,8 @@
         "micheh/psr7-cache": "^0.5.0",
         "gofabian/negotiation-middleware": "^0.1.2",
         "tuupola/base62": "^0.7.0",
-        "akrabat/rka-ip-address-middleware": "^0.5.0"
+        "akrabat/rka-ip-address-middleware": "^0.5.0",
+        "facebook/graph-sdk": "^5.4"
     },
     "autoload": {
         "psr-4": {
