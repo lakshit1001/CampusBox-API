@@ -27,6 +27,8 @@ use League\Fractal\Serializer\DataArraySerializer;
 use Ramsey\Uuid\Uuid;
 use Firebase\JWT\JWT;
 use Tuupola\Base62;
+use Facebook\Facebook;  
+
 $app->post("/login", function ($request, $response, $arguments) {
     $body = $request->getParsedBody();
 
@@ -35,18 +37,6 @@ $app->post("/login", function ($request, $response, $arguments) {
                      ->mapper("App\Student")
                      ->where(['username' => $body["username"], 'password' => $body["password"]]);
     
-    $requested_scopes = $request->getParsedBody();
-    $valid_scopes = [
-        "todo.create",
-        "todo.read",
-        "todo.update",
-        "todo.delete",
-        "todo.list",
-        "todo.all"
-    ];
-    $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
-        return in_array($needle, $valid_scopes);
-    });
     if(count($student) == 0){
         return $response->withStatus(201)
             ->withHeader("Content-Type", "application/json")
@@ -60,8 +50,7 @@ $app->post("/login", function ($request, $response, $arguments) {
         "iat" => $now->getTimeStamp(),
         "exp" => $future->getTimeStamp(),
         "jti" => $jti,
-        "student_id" => $student[0]->student_id,
-        "scope" => $scopes
+        "student_id" => $student[0]->student_id
     ];
     $secret = getenv("JWT_SECRET");
     $token = JWT::encode($payload, $secret, "HS256");
@@ -79,19 +68,6 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
     $student = new Student($body);
     $this->spot->mapper("App\Student")->save($student);
-    $requested_scopes = $request->getParsedBody();
-    $valid_scopes = [
-        "todo.create",
-        "todo.read",
-        "todo.update",
-        "todo.delete",
-        "todo.list",
-        "todo.all"
-    ];
-    $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
-        return in_array($needle, $valid_scopes);
-    });
-
 
     /* Serialize the response data. */
     $fractal = new Manager();
@@ -109,8 +85,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
         "iat" => $now->getTimeStamp(),
         "exp" => $future->getTimeStamp(),
         "jti" => $jti,
-        "student_id" => $data["data"]["id"],
-        "scope" => $scopes
+        "student_id" => $data["data"]["id"]
     ];
     $token = JWT::encode($payload, $secret, "HS256");
     $data["status"] = "ok";
@@ -122,3 +97,51 @@ $app->post("/signup", function ($request, $response, $arguments) {
         ->withHeader("Location", $data["data"]["links"]["self"])
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+
+
+$app->post("/facebook", function ($request, $response, $arguments) {
+    $body = $request->getParsedBody();
+    $fb = new \Facebook\Facebook([
+  'app_id' => '1250377088376164',
+  'app_secret' => '9ea27671762a7c1b1899f5b10c45f950',
+  'default_graph_version' => 'v2.8',
+]);
+    try {
+  // Get the \Facebook\GraphNodes\GraphUser object for the current user.
+  // If you provided a 'default_access_token', the '{access-token}' is optional.
+  $x = $fb->get('/me?fields=email', $body['token']);
+} catch(\Facebook\Exceptions\FacebookResponseException $e) {
+  // When Graph returns an error
+  echo 'Graph returned an error: ' . $e->getMessage();
+  exit;
+} catch(\Facebook\Exceptions\FacebookSDKException $e) {
+  // When validation fails or other local issues
+  echo 'Facebook SDK returned an error: ' . $e->getMessage();
+  exit;
+}
+    $me = $x->getGraphUser();
+    $student = new Student();
+    $student = $this->spot
+                     ->mapper("App\Student")
+                     ->where(['email' => $me['email']]);
+                     
+    $now = new DateTime();
+    $future = new DateTime("now +30 days");
+    $server = $request->getServerParams();
+    $jti = Base62::encode(random_bytes(16));
+    $payload = [
+        "iat" => $now->getTimeStamp(),
+        "exp" => $future->getTimeStamp(),
+        "jti" => $jti,
+        "student_id" => $student[0]->student_id
+    ];
+    $secret = getenv("JWT_SECRET");
+    $token = JWT::encode($payload, $secret, "HS256");
+    $data["status"] = "ok";
+    $data["token"] = $token;
+
+    return $response->withStatus(201)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
