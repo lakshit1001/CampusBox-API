@@ -24,7 +24,7 @@ class StudentTransformer extends Fractal\TransformerAbstract
     public function transform(Student $student)
     {
         return [
-            "id" => (integer)$student->student_id?: 0 ,
+            "student_id" => (integer)$student->student_id?: 0 ,
             "college_id" => (integer)$student->college_id?: null,
             "name" => (string)$student->name?: null,
             "username" => (string)$student->username?: null,

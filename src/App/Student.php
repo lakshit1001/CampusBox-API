@@ -31,8 +31,6 @@
     public static function fields()
     {
         return [
-
-
         "student_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "college_id" => ["type" => "integer"],
         "name" => ["type" => "string"],
@@ -57,7 +55,7 @@
     public static function students(EventEmitter $emitter)
     {
         $emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
-            $entity->id = Base62::encode(random_bytes(9));
+            $entity->student_id = Base62::encode(random_bytes(9));
             });
     }
 
@@ -98,13 +96,13 @@
         // 'CreativeContentLikes' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentLike', 'post_id'),
         // 'CreativeContentBookmarks' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentBookmark', 'post_id'),
         
-        'Events' => $mapper->hasMany($entity, 'App\Event', 'student_id'),
+       // 'Events' => $mapper->hasMany($entity, 'App\Event', 'student_id'),
         // 'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
-        'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'student_id'),
+        //'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'student_id'),
         // 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'student_id'),
-        'Participants' => $mapper->hasMany($entity, 'App\Event', 'student_id'),
-        'Skill' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
-        'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'student_id')
+        //'Participants' => $mapper->hasMany($entity, 'App\Event', 'student_id'),
+        //'Skill' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
+        //'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'student_id')
         
         // 'Interets' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
         // 'hostel' => $mapper->hasOne($entity, 'App\College', 'user_id')
