@@ -48,11 +48,9 @@ class EventTransformer extends Fractal\TransformerAbstract {
                 "image" => (string) $event->ContactPerson1['image'] ?: null
             ],
             [
-                (integer) $event->ContactPerson1 ?: 0,
                 "name" => (string) $event->ContactPerson1['name'] ?: null,
                 "link" =>  (integer) $event->ContactPerson1['student_id'] ?: 0,
                 "image" => (string) $event->ContactPerson1['image'] ?: null
-                (integer) $event->contactperson2 ?: 0,
             ],
             ],
         "created"=> [
