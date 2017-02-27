@@ -45,7 +45,7 @@ $container["JwtAuthentication"] = function ($container) {
         "passthrough" => ["/token", "/info", "/login", "/signup", "/facebook"],
         "secret" => getenv("JWT_SECRET"),
         "logger" => $container["logger"],
-        "relaxed" => ["192.168.50.52"],
+        "relaxed" => ["192.168.50.52","localhost"],
         "error" => function ($request, $response, $arguments) {
             $data["status"] = "error";
             $data["message"] = $arguments["message"];
@@ -86,7 +86,7 @@ $container["Negotiation"] = function ($container) {
 
 $app->add("HttpBasicAuthentication");
 $app->add("JwtAuthentication");
-$app->add("Cors");
+//$app->add("Cors");
 $app->add("Negotiation");
 
 $container["cache"] = function ($container) {

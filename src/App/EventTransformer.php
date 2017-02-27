@@ -21,18 +21,28 @@ class EventTransformer extends Fractal\TransformerAbstract {
 			"id" => (integer) $event->event_id ?: 0,
 			"title" => (string) $event->title ?: null,
 			"subtitle" => (string) $event->subtitle ?: null,
-			"details" => [
-				"venue" => (string) $event->venue ?: null,
-				"type" => $event->Type['name'] ?: null,
-				"team" => (integer) $event->price ?: 0,
-				"price" => (integer) $event->price ?: 0,
-				"description" => (string) $event->description ?: null,
-				"rules" => (string) $event->description ?: null,
-			],
-			"Actions" => [
+            "details" => [
+                "venue" => (string) $event->venue ?: null,
+                "type" => $event->Type['name'] ?: null,
+                "team" => (integer) $event->price ?: 0,
+                "price" => (integer) $event->price ?: 0,
+                "description" => (string) $event->description ?: null,
+                "rules" => (string) $event->description ?: null,
+            ],
+            "timings" => [
+                "date" => [
+                    "start" => (string) $event->date_start ?: null,
+                    "end" => (string) $event->date_end ?: null,
+		          	],
+                "time" => [
+                    "start" => (string) $event->date_start ?: null,
+                    "end" => (string) $event->date_end ?: null,
+                 ],
+            ],
+            "Actions" => [
 				"Bookmarked" => [
 					"status" => (bool) $this->params['value'] ?: false,
-					"total" =>  count($$event->Bookmarks) ?: 0,
+					"total" =>  count($event->Bookmarks) ?: 0,
                     "bookmarks" => count($bookmarks),
 				],
 				"Participants" => [

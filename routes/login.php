@@ -57,7 +57,7 @@ $app->post("/facebook", function ($request, $response, $arguments) {
 		'default_graph_version' => 'v2.8',
 	]);
 	try {
-		$x = $fb->get('/me?fields=email,name,id', $body['token']);
+		$x = $fb->get('/me?fields=email,name,id', $body['access_token']);
 	} catch (\Facebook\Exceptions\FacebookResponseExpception $e) {
 		echo 'Graph returned an error: ' . $e->getMessage();
 		exit;
