@@ -4,11 +4,23 @@ use App\Event;
 use League\Fractal;
 
 class EventTransformer extends Fractal\TransformerAbstract {
-	protected $availableIncludes = [
-		'bookmarks',
-	];
+
+	private $params = [];
+
+	function __construct($params = []) {
+		$this->params = $params;
+		$this->params['value'] = false;
+	}
 
 	public function transform(Event $event) {
+		$total_bookmarks = $event->Bookmarked;
+		$this->params['total'] = count($total_bookmarks);
+		$bookmarks = $event->Bookmarked->where(['student_id' => $this->params['student_id']]);
+		if (count($bookmarks) > 0) {
+			$this->params['value'] = true;
+		} else {
+			$this->params['value'] = false;
+		}
 		return [
 			"event_id" => (integer) $event->event_id ?: 0,
 			"college_id" => (integer) $event->college_id ?: 0,
@@ -29,11 +41,9 @@ class EventTransformer extends Fractal\TransformerAbstract {
 			"links" => [
 				"self" => "/events/{$event->id}",
 			],
+			"current_student_id" => $this->params['student_id'],
+			"total_bookmarks" => $this->params['total'],
+			"bookmarked" => $this->params['value'],
 		];
-	}
-	public function includeBookmarks(Event $event) {
-		$bookmarks = $event->Bookmarked;
-
-		return $this->collection($bookmarks, new EventBookmarksTransformer);
 	}
 }
