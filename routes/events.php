@@ -62,6 +62,9 @@ $app->get("/events", function ($request, $response, $arguments) {
 	/* Serialize the response data. */
 	$fractal = new Manager();
 	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
 	$resource = new Collection($events, new EventTransformer(['student_id' => $test]));
 	$data = $fractal->createData($resource)->toArray();
 
