@@ -57,7 +57,8 @@ class EventBookmarks extends \Spot\Entity {
 
 	public static function relations(Mapper $mapper, Entity $entity) {
 		return [
-			'Bookmarked' => $mapper->belongsTo($entity, 'App\Event', 'event_id'),
+			'Event' => $mapper->belongsTo($entity, 'App\Event', 'event_id'),
+			'Student' => $mapper->belongsTo($entity, 'App\Event', 'event_id')
 		];
 	}
 }

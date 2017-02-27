@@ -33,7 +33,8 @@ $app->get("/events", function ($request, $response, $arguments) {
 
 	// }
 
-	$test = $this->token->decoded->student_id;
+	//$test = $this->token->decoded->student_id;
+	$test = false;
 
 	/* Use ETag and date from Event with most recent update. */
 	$first = $this->spot->mapper("App\Event")
@@ -111,7 +112,7 @@ $app->get("/events/{id}", function ($request, $response, $arguments) {
 
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"events_id" => $arguments["id"],
+		"event_id" => $arguments["id"],
 	])) {
 		throw new NotFoundException("Event not found.", 404);
 	};

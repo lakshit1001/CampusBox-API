@@ -24,27 +24,37 @@ class StudentTransformer extends Fractal\TransformerAbstract
     public function transform(Student $student)
     {
         return [
-            "student_id" => (integer)$student->student_id?: 0 ,
-            "college_id" => (integer)$student->college_id?: null,
+            "id" => (integer)$student->student_id?: 0 ,
             "name" => (string)$student->name?: null,
-            "username" => (string)$student->username?: null,
-            "roll_number" => (integer)$student->roll_number?: null,
-            "email" => (string)$student->email?: null,
-            "phone" => (integer)$student->phone?: null,
             "photo" => (string)$student->photo?: null,
-            "hostelid" => (integer)$student->hostelid?: null,
-            "room_number" => (string)$student->room_number?: null,
-            "home_city" => (string)$student->home_city?: null,
-            "grad_id" => (integer)$student->grad_id?: null,
-            "branch_id" => (integer)$student->branch_id?: null,
-            "year" => (string)$student->year?: null,
-            "class_id" => (integer)$student->class_id?: null,
-            "passout_year" => (integer)$student->passout_year?: null,
-            "age" => (integer)$student->age?: null,
-            "gender" => (string)$student->gender?: null,
-            "college" => (string)$student->College['name']?: null,
-            "skills" => $student->Skill[0],
-
+            "college" => (integer)$student->college_id?: null,
+            
+            "college" => [
+                "roll_number" => (integer)$student->roll_number?: null,
+                "hostelid" => (integer)$student->hostelid?: null,
+                "room_number" => (string)$student->room_number?: null,
+            ],
+            "contacts" => [
+                "email" => (string)$student->email?: null,  
+                "phone" => (integer)$student->phone?: null,
+            ],
+            "about" => [
+                "age" => (integer)$student->age?: null,
+                "gender" => (string)$student->gender?: null,
+                "home_city" => (string)$student->home_city?: null,
+            ],
+            
+            "studies" => [
+                "grad_id" => (integer)$student->grad_id?: null,
+                "branch_id" => (integer)$student->branch_id?: null,
+                "year" => (string)$student->year?: null,
+                "class_id" => (integer)$student->class_id?: null,
+                "passout_year" => (integer)$student->passout_year?: null,
+                "college" => (string)$student->College['name']?: null,
+            ],
+            "skills" => [
+                $student->Skill[0],
+                ],
             "links"=> [
                 "facebook" => (string)$student->Socialid['facebook']?: null,
                 "instagram" => (string)$student->Socialid['instagram']?: null,
