@@ -20,7 +20,12 @@ use League\Fractal;
 
 class StudentTransformer extends Fractal\TransformerAbstract
 {
-
+  protected $availableIncludes = [
+        'author'
+    ];
+    protected $defaultIncludes = [
+          'Events'
+      ];
     public function transform(Student $student)
     {
         return [
@@ -55,6 +60,7 @@ class StudentTransformer extends Fractal\TransformerAbstract
             "skills" => [
                 $student->Skill[0],
                 ],
+            
             "links"=> [
                 "facebook" => (string)$student->Socialid['facebook']?: null,
                 "instagram" => (string)$student->Socialid['instagram']?: null,
@@ -66,5 +72,10 @@ class StudentTransformer extends Fractal\TransformerAbstract
                 "self" => "/students/{$student->id}"
             ]
         ];
+    }
+    public function includeEvents(Student $student) {
+        $events = $student->Events;
+
+        return $this->collection($events, new EventTransformer);
     }
 }

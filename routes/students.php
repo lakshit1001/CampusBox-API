@@ -39,7 +39,8 @@ $app->get("/students", function ($request, $response, $arguments) {
 
     /* Use ETag and date from Student with most recent update. */
     $first = $this->spot->mapper("App\Student")
-        ->all()//->with('college')
+        ->all()
+        ->with('Events')
         ->first();
 
     /* If-Modified-Since and If-None-Match request header handling. */
