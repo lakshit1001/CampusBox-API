@@ -30,21 +30,21 @@ class EventBookmarks extends \Spot\Entity {
 			"event_bookmark_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"event_id" => ["type" => "integer", "unsigned" => true],
 			"student_id" => ["type" => "integer", "unsigned" => true],
-			"timed" => ["type" => "datetime"],
+			"timer" => ["type" => "datetime"],
 		];
 	}
 
 	public static function events(EventEmitter $emitter) {
 		$emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
-			$entity->timed = new \DateTime();
+			$entity->timer = new \DateTime();
 		});
 
 		$emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
-			$entity->timed = new \DateTime();
+			$entity->timer = new \DateTime();
 		});
 	}
 	public function timestamp() {
-		return $this->timed->getTimestamp();
+		return $this->timer->getTimestamp();
 	}
 
 	public function etag() {

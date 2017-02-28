@@ -34,7 +34,7 @@ $app->get("/events", function ($request, $response, $arguments) {
 	// }
 
 	//$test = $this->token->decoded->student_id;
-	$test = 2;
+	$test = 4;
 
 	/* Use ETag and date from Event with most recent update. */
 	$first = $this->spot->mapper("App\Event")

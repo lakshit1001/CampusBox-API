@@ -14,7 +14,7 @@ class EventTransformer extends Fractal\TransformerAbstract {
 
 	public function transform(Event $event) {
 
-		$bookmarks = $event->Bookmarked->select()->where(['student_id' => '1']);
+		$bookmarks = $event->Bookmarked->select()->where(['student_id' => '4']);
 		$this->params['value'] = (count($bookmarks) > 0 ? true : false); // returns true
 		
         return [
