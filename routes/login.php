@@ -88,6 +88,7 @@ $app->post("/facebook", function ($request, $response, $arguments) {
 		"iat" => $now->getTimeStamp(),
 		"exp" => $future->getTimeStamp(),
 		"jti" => $jti,
+		"sub" => $student[0]->student_id,
 		"student_id" => $student[0]->student_id,
 	];
 	$secret = getenv("JWT_SECRET");

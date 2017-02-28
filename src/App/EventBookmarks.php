@@ -15,9 +15,10 @@
 
 namespace App;
 
-use Spot\EntityInterface as Entity;
+use Spot\Entity ;
+use Spot\EntityInterface ;
 use Spot\EventEmitter;
-use Spot\MapperInterface as Mapper;
+use Spot\MapperInterface;
 use Tuupola\Base62;
 
 class EventBookmarks extends \Spot\Entity {
@@ -35,19 +36,19 @@ class EventBookmarks extends \Spot\Entity {
 
 	public static function events(EventEmitter $emitter) {
 		$emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
-			$entity->event_id = Base62::encode(random_bytes(9));
+			$entity->timed = new \DateTime();
 		});
 
 		$emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
-			$entity->time_created = new \DateTime();
+			$entity->timed = new \DateTime();
 		});
 	}
 	public function timestamp() {
-		return $this->time_created->getTimestamp();
+		return $this->timed->getTimestamp();
 	}
 
 	public function etag() {
-		return md5($this->id . $this->timestamp());
+		return md5($this->event_bookmark_id . $this->timestamp());
 	}
 
 	public function clear() {
@@ -55,10 +56,10 @@ class EventBookmarks extends \Spot\Entity {
 		]);
 	}
 
-	public static function relations(Mapper $mapper, Entity $entity) {
+	public static function relations(MapperInterface $mapper, EntityInterface $entity) {
 		return [
 			'Event' => $mapper->belongsTo($entity, 'App\Event', 'event_id'),
-			'Student' => $mapper->belongsTo($entity, 'App\Event', 'event_id')
+			'Student' => $mapper->belongsTo($entity, 'App\Event', 'student_id')
 		];
 	}
 }

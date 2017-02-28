@@ -38,6 +38,7 @@ require __DIR__ . "/routes/token.php";
 require __DIR__ . "/routes/todos.php";
 require __DIR__ . "/routes/events.php";
 require __DIR__ . "/routes/reports.php";
+require __DIR__ . "/routes/bookmarks.php";
 require __DIR__ . "/routes/colleges.php";
 require __DIR__ . "/routes/skills.php";
 require __DIR__ . "/routes/students.php";
