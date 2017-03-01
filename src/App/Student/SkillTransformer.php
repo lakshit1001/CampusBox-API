@@ -24,10 +24,10 @@ class SkillTransformer extends Fractal\TransformerAbstract
     public function transform(Skill $skill)
     {
         return [
-            "id" => (integer)$skill->id?: 0 ,
+            "id" => (integer)$skill->skill_id?: 0 ,
             "name" => (string)$skill->name?: null ,
             "links"        => [
-                "self" => "/reports/{$skill->id}"
+                "self" => "/reports/{$skill->skill_id}"
             ]
         ];
     }

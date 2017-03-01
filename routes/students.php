@@ -67,9 +67,9 @@ $app->get("/students", function ($request, $response, $arguments) {
 $app->post("/students", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["student.all", "student.create"])) {
-        throw new ForbiddenException("Token not allowed to create students.", 403);
-    }
+    //if (true === $this->token->hasScope(["student.all", "student.create"])) {
+    //    throw new ForbiddenException("Token not allowed to create students.", 403);
+    //}
 
     $body = $request->getParsedBody();
 
@@ -90,12 +90,12 @@ $app->post("/students", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->get("/students/{student_id}", function ($request, $response, $arguments) {
+$app->get("/student/{student_id}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["student.all", "student.read"])) {
-        throw new ForbiddenException("Token not allowed to list students.", 403);
-    }
+    //if (true === $this->token->hasScope(["student.all", "student.read"])) {
+    //    throw new ForbiddenException("Token not allowed to list students.", 403);
+    //}
 
     /* Load existing student using provided id */
     if (false === $student = $this->spot->mapper("App\Student")->first([

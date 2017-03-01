@@ -21,10 +21,12 @@ use League\Fractal;
 class StudentTransformer extends Fractal\TransformerAbstract
 {
   protected $availableIncludes = [
-        'author'
+        'Events',
+          'Skills'
     ];
     protected $defaultIncludes = [
-          'Events'
+          'Events',
+          'Skills'
       ];
     public function transform(Student $student)
     {
@@ -32,10 +34,10 @@ class StudentTransformer extends Fractal\TransformerAbstract
             "id" => (integer)$student->student_id?: 0 ,
             "name" => (string)$student->name?: null,
             "photo" => (string)$student->photo?: null,
-            "college" => (integer)$student->college_id?: null,
             
             "college" => [
                 "roll_number" => (integer)$student->roll_number?: null,
+                "name" => (string)$student->College['name']?: null,
                 "hostelid" => (integer)$student->hostelid?: null,
                 "room_number" => (string)$student->room_number?: null,
             ],
@@ -57,10 +59,7 @@ class StudentTransformer extends Fractal\TransformerAbstract
                 "passout_year" => (integer)$student->passout_year?: null,
                 "college" => (string)$student->College['name']?: null,
             ],
-            "skills" => [
-                $student->Skill[0],
-                ],
-            
+           
             "links"=> [
                 "facebook" => (string)$student->Socialid['facebook']?: null,
                 "instagram" => (string)$student->Socialid['instagram']?: null,
@@ -77,5 +76,10 @@ class StudentTransformer extends Fractal\TransformerAbstract
         $events = $student->Events;
 
         return $this->collection($events, new EventTransformer);
+    }
+ public function includeSkills(Student $student) {
+        $skills = $student->Skills;
+
+        return $this->collection($skills, new SkillTransformer);
     }
 }

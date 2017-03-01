@@ -77,7 +77,7 @@ class Student extends \Spot\Entity {
 
 	public static function relations(Mapper $mapper, Entity $entity) {
 		return [
-			//'College' => $mapper->belongsTo($entity, 'App\College', 'college_id'),
+			'College' => $mapper->belongsTo($entity, 'App\College', 'college_id'),
 
 			// 'Following' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'follower_id', 'following_id'),
 			// 'Followers' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'following_id', 'follower_id'),
@@ -92,7 +92,7 @@ class Student extends \Spot\Entity {
 			//'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'student_id'),
 			// 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'student_id'),
 			//'Participants' => $mapper->hasMany($entity, 'App\Event', 'student_id'),
-			//'Skill' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
+			'Skills' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
 			//'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'student_id')
 
 			// 'Interets' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
