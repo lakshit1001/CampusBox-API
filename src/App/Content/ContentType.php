@@ -24,43 +24,50 @@
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class ClassGroup extends \Spot\Entity
+ class ContentType extends \Spot\Entity
  {
-    protected static $table = "event_images";
+    protected static $table = "content_types";
 
     public static function fields()
     {
         return [
-        
 
-        "event_image_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "event_id" => ["type" => "integer" , "unsigned" => true],
-        "usr" => ["type" => "string"],
+
+        "content_type_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "name" => ["type" => "string"]
         ];
     }
 
-    public static function colleges(EventEmitter $emitter)
+    public static function contents(EventEmitter $emitter)
     {
         $emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
-            $entity->college_id = Base62::encode(random_bytes(9));
+            $entity->content_id = Base62::encode(random_bytes(9));
             });
+
+        $emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
+            $entity->time_created = new \DateTime();
+            });
+    }
+    public function timestamp()
+    {
+        return $this->time_created->getTimestamp();
+    }
+
+    public function etag()
+    {
+        return md5($this->id . $this->timestamp());
     }
 
     public function clear()
     {
         $this->data([
-            "class_group_id"=>null,
-            "branch_id"=>null,
-            "name"=>null
-
             ]);
     }
+
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Branch' => $mapper->belongsTo($entity, 'App\Branch', 'college_id'),
-        'Students' => $mapper->hasMany($entity, 'App\Student', 'id')
+            'Type' => $mapper->hasMany($entity, 'App\Content', 'content_type_id')
         ];
     }
-
 }

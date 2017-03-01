@@ -24,7 +24,7 @@ use Spot\MapperInterface as Mapper;
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class Report extends \Spot\Entity
+ class EventReport extends \Spot\Entity
  {
     protected static $table = "report";
 
@@ -33,13 +33,11 @@ use Spot\MapperInterface as Mapper;
         return [
        
 
-        "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "reported_by_id" => ["type" => "integer", "unsigned" => true],
+        "event_report_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "student_id" => ["type" => "integer", "unsigned" => true],
         "type" => ["type" => "string"],
-        "timestamp" => ["type" => "datetime", "value" => new \DateTime()],
-        "type_id" => ["type" => "integer", "unsigned" => true],
         "reason" => ["type" => "string"],
-        "reported" => ["type" => "integer"],
+        "timer" => ["type" => "datetime", "value" => new \DateTime()],
         ];
     }
 

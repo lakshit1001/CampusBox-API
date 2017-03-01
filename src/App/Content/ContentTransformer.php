@@ -14,15 +14,17 @@ class ContentTransformer extends Fractal\TransformerAbstract {
 
     public function transform(Content $content) {
 
-        $bookmarks = $content->Bookmarked->select()->where(['student_id' => '1']);
-        $this->params['value'] = (count($bookmarks) > 0 ? true : false); // returns true
+        $appreciates = $content->Appreciated->select()->where(['student_id' => '1']);
+        $this->params['appreciateValue'] = (count($appreciates) > 0 ? true : false); // returns true
+       $bookmarks = $content->Bookmarked->select()->where(['student_id' => '1']);
+        $this->params['bookmarkValue'] = (count($bookmarks) > 0 ? true : false); // returns true
         
         return [
             "id" => (integer) $content->content_id ?: 0,
             "title" => (string) $content->title ?: null,
             "content" => [
                 "type" => $content->time_created ?: 0,
-                "description" => (string) $content->Owner['name'] ?: null,
+                "description" => (string) $content->description ?: null,
                 "embed" => (string) $content->Owner['name'] ?: null,
                 "images" => [
                         "alt" => (string) $content->Tag['name'] ?: null,
@@ -35,15 +37,15 @@ class ContentTransformer extends Fractal\TransformerAbstract {
                     "link" => (integer) $content->Owner['student_id'] ?: 0,
                     "image" => (string) $content->Owner['image'] ?: null,
                     ],
-                "at" => $content->time_created ?: 0,
+                "at" => $content->timer ?: 0,
                  ],
             "Actions" => [
                 "Appriciate" => [
-                    "status" => (bool) $content->created_by_id ?: false,
-                    "total" => (integer) $content->created_by_id ?: 0,
-                    ]
+                    "status" => (bool) $this->params['appreciateValue'] ?: false,
+                    "total" => (integer) count($content->Appreciates) ?: 0,
+                    ],
                 "Bookmarked" => [
-                    "status" => (bool) $this->params['value'] ?: false,
+                    "status" => (bool) $this->params['bookmarkValue'] ?: false,
                     "total" =>  count($content->Bookmarks) ?: 0,
                     ],
                 ],

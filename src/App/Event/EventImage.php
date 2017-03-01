@@ -24,51 +24,49 @@
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class Participants extends \Spot\Entity
+ class ClassGroup extends \Spot\Entity
  {
-    protected static $table = "participants";
+    protected static $table = "event_images";
 
     public static function fields()
     {
         return [
+        
 
+        "event_image_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "event_id" => ["type" => "integer" , "unsigned" => true],
+        "usl" => ["type" => "string"],
+                "timer" => ["type" => "datetime", "value" => new \DateTime()],
 
-        "participant_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "event_id" => ["type" => "integer", "unsigned" => true],
-        "student_id" => ["type" => "integer", "unsigned" => true]
         ];
     }
 
-    public static function events(EventEmitter $emitter)
+    public static function colleges(EventEmitter $emitter)
     {
         $emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
-            $entity->event_id = Base62::encode(random_bytes(9));
+            $entity->college_id = Base62::encode(random_bytes(9));
             });
-
+        
         $emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
-            $entity->time_created = new \DateTime();
+            $entity->timestamp = new \DateTime();
             });
-    }
-    public function timestamp()
-    {
-        return $this->time_created->getTimestamp();
-    }
-
-    public function etag()
-    {
-        return md5($this->id . $this->timestamp());
     }
 
     public function clear()
     {
         $this->data([
+            "class_group_id"=>null,
+            "branch_id"=>null,
+            "name"=>null
+
             ]);
     }
-
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Participants' => $mapper->belongsTo($entity, 'App\Event', 'event_id')
+        'Branch' => $mapper->belongsTo($entity, 'App\Branch', 'college_id'),
+        'Students' => $mapper->hasMany($entity, 'App\Student', 'id')
         ];
     }
+
 }

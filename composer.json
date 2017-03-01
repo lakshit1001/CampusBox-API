@@ -35,7 +35,7 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/App/",
+            "App\\": ["src/App/","src/App/Event", "src/App/Content","src/App/Student","src/App/College","src/App/Autocomplete"],
             "Utils\\": "src/Utils/",
             "Doctrine\\DBAL\\Logging\\": "src/Doctrine/DBAL/Logging/",
             "Exception\\": "src/Exception/",
