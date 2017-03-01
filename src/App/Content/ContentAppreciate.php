@@ -50,7 +50,7 @@ class ContentAppreciate extends \Spot\Entity {
 	public function etag() {
 		return md5($this->content_id . $this->timestamp());
 	}
-
+ 
 	public function clear() {
 		$this->data([
 		]);
