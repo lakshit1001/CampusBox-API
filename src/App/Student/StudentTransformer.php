@@ -22,18 +22,22 @@ class StudentTransformer extends Fractal\TransformerAbstract
 {
   protected $availableIncludes = [
         'Events',
-          'Skills'
+          'Skills',
+          'SocialAccounts',
+          'Followed'
     ];
     protected $defaultIncludes = [
           'Events',
-          'Skills'
+          'Skills',
+           'SocialAccounts',
+           'Followed'
       ];
     public function transform(Student $student)
     {
         return [
             "id" => (integer)$student->student_id?: 0 ,
             "name" => (string)$student->name?: null,
-            "photo" => (string)$student->photo?: null,
+            "photo" => (string)$student->image?: null,
             
             "college" => [
                 "roll_number" => (integer)$student->roll_number?: null,
@@ -60,16 +64,6 @@ class StudentTransformer extends Fractal\TransformerAbstract
                 "college" => (string)$student->College['name']?: null,
             ],
            
-            "links"=> [
-                "facebook" => (string)$student->Socialid['facebook']?: null,
-                "instagram" => (string)$student->Socialid['instagram']?: null,
-                "github" => (string)$student->Socialid['github']?: null,
-                "behance" => (string)$student->Socialid['behance']?: null,
-                "soundcloud" => (string)$student->Socialid['soundcloud']?: null,
-                "linkedin" => (string)$student->Socialid['linkedin']?: null,
-                "other" => (string)$student->Socialid['other']?: null,
-                "self" => "/students/{$student->id}"
-            ]
         ];
     }
     public function includeEvents(Student $student) {
@@ -81,5 +75,15 @@ class StudentTransformer extends Fractal\TransformerAbstract
         $skills = $student->Skills;
 
         return $this->collection($skills, new SkillTransformer);
+    }
+public function includeSocialAccounts(Student $student) {
+        $socials = $student->SocialAccounts;
+
+        return $this->collection($socials, new SocialTransformer);
+    }
+public function includeFollowed(Student $student) {
+        $socials = $student->Followed;
+
+        return $this->collection($socials, new StudentMiniTransformer);
     }
 }

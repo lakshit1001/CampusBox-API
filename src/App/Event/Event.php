@@ -34,6 +34,9 @@ class Event extends \Spot\Entity {
 			"time_created" => ["type" => "datetime", "value" => new \DateTime()],
 			"event_type_id" => ["type" => "string"],
 			"price" => ["type" => "integer"],
+			"titlescore" => ["type" => "integer"],
+			"descriptionscore" => ["type" => "integer"],
+			"score" => ["type" => "integer"],
 		];
 	}
 	public static function events(EventEmitter $emitter) {

@@ -28,17 +28,15 @@ use Spot\MapperInterface as Mapper;
  
  class Skill extends \Spot\Entity
  {
-    protected static $table = "student_skills";
+    protected static $table = "skills";
 
     public static function fields()
     {
         return [
        
 
-        "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "student_id" => ["type" => "integer"],
-        "skill_name" => ["type" => "string"],
-        "proficiency" => ["type" => "integer"]
+        "skill_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
+        "name" => ["type" => "string"]
         ];
     }
 
@@ -48,7 +46,6 @@ use Spot\MapperInterface as Mapper;
             $entity->id = Base62::encode(random_bytes(9));
             });
     }
-
     public function clear()
     {
         $this->data([
@@ -57,7 +54,6 @@ use Spot\MapperInterface as Mapper;
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-            'Skill' => $mapper->belongsTo($entity, 'App\Student', 'student_id')
             ];
     }
 }

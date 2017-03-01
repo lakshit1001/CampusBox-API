@@ -15,37 +15,34 @@
 
  namespace App;
 
- use Spot\EntityInterface as Entity;
- use Spot\MapperInterface as Mapper;
+use Spot\EntityInterface as Entity;
+use Spot\MapperInterface as Mapper;
  use Spot\EventEmitter;
+ use App\Student;
+
 
  use Tuupola\Base62;
 
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class Socialid extends \Spot\Entity
+ class StudentFollow extends \Spot\Entity
  {
-    protected static $table = "social_ids";
+    protected static $table = "followers";
 
     public static function fields()
     {
         return [
-
+       
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "student_id" => ["type" => "integer"],
-        "facebook" => ["type" => "string"],
-        "instagram" => ["type" => "string"],
-        "github" => ["type" => "string"],
-        "behance" => ["type" => "string"],
-        "soundcloud" => ["type" => "string"],
-        "linkedin" => ["type" => "string"],
-        "other" => ["type" => "string"]
+        "followed_id" => ["type" => "integer"],
+        "follower_id" => ["type" => "integer"],
+        "timer" => ["type" => "datetime"]
         ];
     }
 
-    public static function students(EventEmitter $emitter)
+    public static function followed(EventEmitter $emitter)
     {
         $emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
             $entity->id = Base62::encode(random_bytes(9));
@@ -55,22 +52,11 @@
     public function clear()
     {
         $this->data([
-            "id" => 0,
-            "student_id" => 0,
-            "facebook" => null,
-            "instagram" => null,
-            "github" => null,
-            "behance" => null,
-            "soundcloud" => null,
-            "linkedin" => null,
-            "other" => null,
             ]);
     }
-
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Socialid' => $mapper->belongsTo($entity, 'App\Student', 'student_id'),
-        ];
+            ];
     }
 }

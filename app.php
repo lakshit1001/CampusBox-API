@@ -35,6 +35,7 @@ $app->get("/", function ($request, $response, $arguments) {
 });
 
 require __DIR__ . "/routes/token.php";
+require __DIR__ . "/routes/search.php";
 require __DIR__ . "/routes/events.php";
 require __DIR__ . "/routes/contents.php";
 require __DIR__ . "/routes/reports.php";

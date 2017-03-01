@@ -14,7 +14,9 @@
  */
 
 use App\Student;
+use App\EventTransformer;
 use App\StudentTransformer;
+use App\ContentTransformer;
 
 use Exception\NotFoundException;
 use Exception\ForbiddenException;
@@ -25,70 +27,6 @@ use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Serializer\DataArraySerializer;
-
-$app->get("/students", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    if (false === $this->token->hasScope(["student.all", "student.list"])) {
-        return $response->withStatus(200)
-            ->withHeader("Content-Type", "application/json")
-            ->write(json_encode($this->token->decoded->student_id, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    }else{
-       
-    }
-
-    /* Use ETag and date from Student with most recent update. */
-    $first = $this->spot->mapper("App\Student")
-        ->all()
-        ->with('Events')
-        ->first();
-
-    /* If-Modified-Since and If-None-Match request header handling. */
-    /* Heads up! Apache removes previously set Last-Modified header */
-    /* from 304 Not Modified responses. */
-    if ($this->cache->isNotModified($request, $response)) {
-        return $response->withStatus(304);
-    }
-
-    $students = $this->spot->mapper("App\Student")
-        ->all();
-
-    /* Serialize the response data. */
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Collection($students, new StudentTransformer);
-    $data = $fractal->createData($resource)->toArray();
-
-    return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
-$app->post("/students", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    //if (true === $this->token->hasScope(["student.all", "student.create"])) {
-    //    throw new ForbiddenException("Token not allowed to create students.", 403);
-    //}
-
-    $body = $request->getParsedBody();
-
-    $student = new Student($body);
-    $this->spot->mapper("App\Student")->save($student);
-
-    /* Serialize the response data. */
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($student, new StudentTransformer);
-    $data = $fractal->createData($resource)->toArray();
-    $data["status"] = "ok";
-    $data["message"] = "New student created";
-
-    return $response->withStatus(201)
-        ->withHeader("Content-Type", "application/json")
-        ->withHeader("Location", $data["data"]["links"]["self"])
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
 
 $app->get("/student/{student_id}", function ($request, $response, $arguments) {
 
@@ -121,6 +59,146 @@ $app->get("/student/{student_id}", function ($request, $response, $arguments) {
         ->withHeader("Content-Type", "appliaction/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+
+$app->get("/studentEvents/{student_id}", function ($request, $response, $arguments) {
+
+    /* Check if token has needed scope. */
+    // if (true === $this->token->hasScope(["event.all", "event.list"])) {
+    //     throw new ForbiddenException("Token not allowed to list events.", 403);
+    // }else{
+
+    // }
+
+    //$test = $this->token->decoded->student_id;
+
+    /* Use ETag and date from Event with most recent update. */
+    $first = $this->spot->mapper("App\Event")
+        ->all()
+        ->where(["created_by_id" => $arguments["student_id"]])
+        ->order(["time_created" => "DESC"])
+        ->first();
+
+    /* Add Last-Modified and ETag headers to response when atleast on event exists. */
+    if ($first) {
+        $response = $this->cache->withEtag($response, $first->etag());
+        $response = $this->cache->withLastModified($response, $first->timestamp());
+    }
+
+    /* If-Modified-Since and If-None-Match request header handling. */
+    /* Heads up! Apache removes previously set Last-Modified header */
+    /* from 304 Not Modified responses. */
+    if ($this->cache->isNotModified($request, $response)) {
+        return $response->withStatus(304);
+    }
+    $test ="4";
+    $events = $this->spot->mapper("App\Event")
+        ->all()
+        ->order(["time_created" => "DESC"]);
+
+    /* Serialize the response data. */
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    if (isset($_GET['include'])) {
+        $fractal->parseIncludes($_GET['include']);
+    }
+    $resource = new Collection($events, new EventTransformer(['student_id' => $test]));
+    $data = $fractal->createData($resource)->toArray();
+
+    return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+
+$app->get("/studentContents/{student_id}", function ($request, $response, $arguments) {
+
+    /* Check if token has needed scope. */
+    // if (true === $this->token->hasScope(["content.all", "content.list"])) {
+    //     throw new ForbiddenException("Token not allowed to list contents.", 403);
+    // }else{
+
+    // }
+
+    //$test = $this->token->decoded->student_id;
+
+    /* Use ETag and date from Content with most recent update. */
+    $first = $this->spot->mapper("App\Content")
+        ->all()
+        ->order(["timer" => "DESC"])
+        ->first();
+
+    /* Add Last-Modified and ETag headers to response when atleast on content exists. */
+    if ($first) {
+        $response = $this->cache->withEtag($response, $first->etag());
+        $response = $this->cache->withLastModified($response, $first->timestamp());
+    }
+
+    /* If-Modified-Since and If-None-Match request header handling. */
+    /* Heads up! Apache removes previously set Last-Modified header */
+    /* from 304 Not Modified responses. */
+    if ($this->cache->isNotModified($request, $response)) {
+        return $response->withStatus(304);
+    }
+
+    $contents = $this->spot->mapper("App\Content")
+        ->all()
+        ->where(["created_by_id" => $arguments["student_id"]])
+        ->order(["timer" => "DESC"]);
+
+    /* Serialize the response data. */
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    if (isset($_GET['include'])) {
+        $fractal->parseIncludes($_GET['include']);
+    }
+    $resource = new Collection($contents, new ContentTransformer(['student_id' => $test]));
+    $data = $fractal->createData($resource)->toArray();
+
+    return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->get("/student/{student_id}/{type}", function ($request, $response, $arguments) {
+
+    /* Check if token has needed scope. */
+    //if (true === $this->token->hasScope(["student.all", "student.read"])) {
+    //    throw new ForbiddenException("Token not allowed to list students.", 403);
+    //}
+
+    /* Load existing student using provided id */
+    if (false === $student = $this->spot->mapper("App\Student")->first([
+        "student_id" => $arguments["student_id"]
+    ])) {
+        throw new NotFoundException("Student not found.", 404);
+    };
+
+    /* If-Modified-Since and If-None-Match request header handling. */
+    /* Heads up! Apache removes previously set Last-Modified header */
+    /* from 304 Not Modified responses. */
+    if ($this->cache->isNotModified($request, $response)) {
+        return $response->withStatus(304);
+    }
+
+    /* Serialize the response data. */
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    if($arguments["student_id"]==""){
+        
+    $resource = new Item($student, new StudentTransformer);
+    }elseif($arguments["student_id"]==""){
+
+    $resource = new Item($student, new StudentTransformer);
+    }
+    
+    $data = $fractal->createData($resource)->toArray();
+
+    return $response->withStatus(200)
+        ->withHeader("Content-Type", "appliaction/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+
 
 $app->patch("/students/{id}", function ($request, $response, $arguments) {
 
