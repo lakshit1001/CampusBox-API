@@ -37,7 +37,6 @@ use Spot\MapperInterface as Mapper;
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "student_id" => ["type" => "integer"],
-        "skill_id" => ["type" => "integer"],
         "skill_name" => ["type" => "string"],
         "proficiency" => ["type" => "integer"]
         ];
