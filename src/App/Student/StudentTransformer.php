@@ -24,19 +24,24 @@ class StudentTransformer extends Fractal\TransformerAbstract
         'Events',
           'Skills',
           'SocialAccounts',
-          'Followed'
+          'Followed',
+          'BookmarkedContents',
+          'BookmarkedEvents'
     ];
     protected $defaultIncludes = [
           'Events',
           'Skills',
            'SocialAccounts',
-           'Followed'
+           'Followed',
+          'BookmarkedContents',
+          'AttendingEvents'
       ];
     public function transform(Student $student)
     {
         return [
             "id" => (integer)$student->student_id?: 0 ,
             "name" => (string)$student->name?: null,
+            "subtitle" => (string)$student->about?: null,
             "photo" => (string)$student->image?: null,
             
             "college" => [
@@ -68,6 +73,16 @@ class StudentTransformer extends Fractal\TransformerAbstract
     }
     public function includeEvents(Student $student) {
         $events = $student->Events;
+
+        return $this->collection($events, new EventTransformer);
+    }
+ public function includeBookmarkedContents(Student $student) {
+        $contents = $student->BookmarkedContents;
+
+        return $this->collection($contents, new ContentMiniTransformer);
+    }
+ public function includeAttendingEvents(Student $student) {
+        $events = $student->AttendingEvents;
 
         return $this->collection($events, new EventTransformer);
     }

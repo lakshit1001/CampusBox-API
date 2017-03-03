@@ -13,6 +13,9 @@
  */
  use App\EventBookmarks;
  use App\EventRsvp;
+  use Exception\ForbiddenException;
+ use Exception\NotFoundException;
+
  use Ramsey\Uuid\Uuid;
  use Firebase\JWT\JWT;
  use Tuupola\Base62;

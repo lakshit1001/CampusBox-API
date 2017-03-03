@@ -33,7 +33,7 @@ class Student extends \Spot\Entity {
 			"roll_number" => ["type" => "integer"],
 			"email" => ["type" => "string"],
 			"phone" => ["type" => "integer"],
-			"photo" => ["type" => "string"],
+			"about" => ["type" => "string"],
 			"hostel_id" => ["type" => "integer"],
 			"room_number" => ["type" => "string"],
 			"home_city" => ["type" => "string"],
@@ -63,7 +63,7 @@ class Student extends \Spot\Entity {
 			"roll_number" => null,
 			"email" => null,
 			"phone" => null,
-			"photo" => null,
+			"about" => null,
 			"hostelid" => null,
 			"room_number" => null,
 			"home_city" => null,
@@ -86,8 +86,6 @@ class Student extends \Spot\Entity {
 
 			// 'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'class_group_id'),
 			// 'CreativeContents' => $mapper->hasMany($entity, 'App\CreativeContent', 'post_id'),
-			// 'CreativeContentLikes' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentLike', 'post_id'),
-			// 'CreativeContentBookmarks' => $mapper->hasManyThrough($entity, 'App\CreativeContent', 'App\CreativeContentBookmark', 'post_id'),
 
 			 'Events' => $mapper->hasMany($entity, 'App\Event', 'created_by_id'),
 			 'SocialAccounts' => $mapper->hasMany($entity, 'App\SocialAccount', 'student_id'),
@@ -96,6 +94,8 @@ class Student extends \Spot\Entity {
 			// 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'student_id'),
 			//'Participants' => $mapper->hasMany($entity, 'App\Event', 'student_id'),
 //			'Skills' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
+		 'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'student_id'),
+		 'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'student_id'),
 		 'Skills' => $mapper->hasManyThrough($entity, 'App\Skill', 'App\StudentSkill', 'skill_id', 'student_id'),
 		 'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'followed_id', 'follower_id'),
 

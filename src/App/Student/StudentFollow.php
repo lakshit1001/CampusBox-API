@@ -57,6 +57,8 @@ use Spot\MapperInterface as Mapper;
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
+            'Followed' => $mapper->HasOne($entity, 'App\Student', 'followed_id'),
+            'Follower' => $mapper->HasOne($entity, 'App\Student', 'follower_id')
             ];
     }
 }

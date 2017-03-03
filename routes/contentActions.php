@@ -14,6 +14,9 @@
 
  use App\ContentBookmarks;
  use App\ContentAppreciate;
+  use Exception\ForbiddenException;
+ use Exception\NotFoundException;
+
  use Ramsey\Uuid\Uuid;
  use Firebase\JWT\JWT;
  use Tuupola\Base62;
