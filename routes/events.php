@@ -19,7 +19,9 @@ use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
 use Exception\PreconditionRequiredException;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Manager;
+use League\Fractal\Pagination\Cursor;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\DataArraySerializer;
@@ -32,6 +34,9 @@ $app->get("/events", function ($request, $response, $arguments) {
 	// }else{
 
 	// }
+    $currentCursor = 3;
+    $previousCursor = 2;
+    $limit = 1;
 
 	//$test = $this->token->decoded->student_id;
 	$test = 4;
@@ -55,9 +60,20 @@ $app->get("/events", function ($request, $response, $arguments) {
 		return $response->withStatus(304);
 	}
 
-	$events = $this->spot->mapper("App\Event")
-		->all()
-		->order(["time_created" => "DESC"]);
+    if($currentCursor){
+
+        $events = $this->spot->mapper("App\Event")
+            ->where(['event_id >' => $currentCursor])
+            ->limit($limit)
+            ->order(["time_created" => "DESC"]);
+    } else {
+        $events = $this->spot->mapper("App\Event")
+            ->limit($limit)
+            ->get();
+    }
+
+    // $newCursor = $events->last()->id;
+    // $cursor = new Cursor($currentCursor, $previousCursor, $newCursor, $events->count());
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
