@@ -28,7 +28,7 @@ class Student extends \Spot\Entity {
 			"student_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"college_id" => ["type" => "integer"],
 			"name" => ["type" => "string"],
-			"image" => ["type" => "string"],
+			// "image" => ["type" => "string"],
 			"username" => ["type" => "string"],
 			"roll_number" => ["type" => "integer"],
 			"email" => ["type" => "string"],
@@ -88,7 +88,7 @@ class Student extends \Spot\Entity {
 			// 'CreativeContents' => $mapper->hasMany($entity, 'App\CreativeContent', 'post_id'),
 
 			 'Events' => $mapper->hasMany($entity, 'App\Event', 'created_by_id'),
-			 'SocialAccounts' => $mapper->hasMany($entity, 'App\SocialAccount', 'student_id'),
+			 // 'SocialAccounts' => $mapper->hasMany($entity, 'App\SocialAccount', 'student_id'),
 			// 'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
 			//'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'student_id'),
 			// 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'student_id'),
