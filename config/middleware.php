@@ -42,7 +42,7 @@ $container["JwtAuthentication"] = function ($container) {
     return new JwtAuthentication([
         "secure" => false,
         "path" => "/",
-        "passthrough" => ["/token", "/info", "/login", "/signup", "/facebook"],
+        "passthrough" => ["/token", "/info", "/login", "/signup", "/facebook","/colleges"],
         "secret" => getenv("JWT_SECRET"),
         "logger" => $container["logger"],
         "relaxed" => ["192.168.50.52","localhost"],

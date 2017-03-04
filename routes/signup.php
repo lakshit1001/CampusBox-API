@@ -31,7 +31,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			'default_graph_version' => 'v2.8',
 		]);
 		try {
-			$x = $fb->get('/me?fields=email,name,id', $body['token']);
+			$x = $fb->get('/me?fields=email,name,id,gender,about,website,birthday,picture', $body['token']);
 		} catch (\Facebook\Exceptions\FacebookResponseExpception $e) {
 			echo 'Graph returned an error: ' . $e->getMessage();
 			exit;
@@ -40,8 +40,15 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			exit;
 		}
 		$me = $x->getGraphUser();
+		echo $me;
 		$god['name'] = $me['name'];
+		$god['gender'] = $me['gender'];
+		$god['birthday'] = $me['birthday'];
+		$god['about'] = $me['about'];
+		$god['college_id'] = $body['college_id'];
+		$god['image'] = $me['picture']['url'];
 		$god['email'] = $me['email'];
+		$god['roll_number'] = $body['roll']	;
 		$student = new Student($god);
 		$this->spot->mapper("App\Student")->save($student);
 
@@ -52,8 +59,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$registered_student = $fractal->createData($resource)->toArray();
 		for ($i=0; $i < count($body['skills']); $i++) { 
 			$skills['student_id'] = $registered_student['data']['id'];
-			$skills['skill_name'] = $body['skills'][$i]['skill_name'];
-			$skills['proficiency'] = $body['skills'][$i]['proficiency'];
+			$skills['skill_name'] = $body['skills'][$i]['name'];
+			$skills['proficiency'] = '10';
 			$skill = new StudentSkill($skills);
 			$this->spot->mapper("App\StudentSkill")->save($skill);
 		}

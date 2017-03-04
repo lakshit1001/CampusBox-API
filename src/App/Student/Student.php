@@ -28,7 +28,7 @@ class Student extends \Spot\Entity {
 			"student_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"college_id" => ["type" => "integer"],
 			"name" => ["type" => "string"],
-			// "image" => ["type" => "string"],
+			 "image" => ["type" => "string"],
 			"username" => ["type" => "string"],
 			"roll_number" => ["type" => "integer"],
 			"email" => ["type" => "string"],
@@ -42,7 +42,7 @@ class Student extends \Spot\Entity {
 			"year" => ["type" => "string"],
 			"class_id" => ["type" => "integer"],
 			"passout_year" => ["type" => "integer"],
-			"age" => ["type" => "integer"],
+			"birthday" => ["type" => "datetime"],
 			"gender" => ["type" => "string"],
 		];
 	}
@@ -72,7 +72,7 @@ class Student extends \Spot\Entity {
 			"year" => null,
 			"class_id" => null,
 			"passout_year" => null,
-			"age" => null,
+			"birthday" => null,
 			"gender" => null,
 		]);
 	}

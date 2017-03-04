@@ -28,12 +28,7 @@ use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/colleges", function ($request, $response, $arguments) {
 
-    /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["college.all", "college.list"])) {
-        throw new ForbiddenException("Token not allowed to list colleges.", 403);
-    }else{
-       
-    }
+   
 
     /* Use ETag and date from College with most recent update. */
     $first = $this->spot->mapper("App\College")

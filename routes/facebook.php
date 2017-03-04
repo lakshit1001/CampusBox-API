@@ -23,6 +23,7 @@ $app->post("/facebook", function ($request, $response, $arguments) {
 		'app_secret' => '9ea27671762a7c1b1899f5b10c45f950',
 		'default_graph_version' => 'v2.8',
 	]);
+	echo  $body['access_token'];
 	try {
 		$x = $fb->get('/me?fields=email,name,id', $body['access_token']);
 	} catch (\Facebook\Exceptions\FacebookResponseExpception $e) {
