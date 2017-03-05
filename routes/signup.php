@@ -11,7 +11,7 @@ use League\Fractal\Serializer\DataArraySerializer;
 use Tuupola\Base62;
 use Facebook\Facebook;
 
-$app->options("/signup", function ($request, $response, $arguments) {
+$app->post("/signup", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 	if($body['type'] == 'facebook'){
 		$fb = new \Facebook\Facebook([
@@ -32,7 +32,7 @@ $app->options("/signup", function ($request, $response, $arguments) {
 		$god['name'] = $me['name'];
 		$god['gender'] = $me['gender'];
 		$god['birthday'] = isset($me['birthday']) ?$me['birthday']: null;
-		$god['about'] = isset($me['about']) ?$me['about']: null;
+		$god['about'] = isset($me['about']) ?$me['about']: "Apparently, this user prefers to keep an air of mystery about them";
 		$god['college_id'] = $body['college_id'];
 		$god['image'] = $me['picture']['url'];
 		$god['email'] = $me['email'];
@@ -87,4 +87,83 @@ $app->options("/signup", function ($request, $response, $arguments) {
 			->withHeader("Content-Type", "application/json")
 			->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 	}
+	else if ($body['type']=="google"){
+		$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
+		$me = json_decode($json);
+		echo $me->name;
+		$student1 = $this->spot
+		->mapper("App\Student")
+		->where(['email' => $me->email]);
+		if (count($student1) != 0) {
+			$data["registered"] = true;
+			$data["name"] = $me->name;
+			$data["email"] = $me->email;
+
+			return $response->withStatus(201)
+			->withHeader("Content-Type", "application/json")
+			->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		}
+		else{
+
+
+		$god['name'] = $me->name;
+		$god['gender'] = $me->gender;
+		$god['birthday'] = isset($me['birthday']) ?$me['birthday']: null;
+		$god['about'] = "Apparently, this user prefers to keep an air of mystery about them";
+		$god['college_id'] = $body['college_id'];
+		$god['image'] = $me->picture;
+		$god['email'] = $me->email;
+		$god['roll_number'] = $body['roll']	;
+		$student = new Student($god);
+		//$this->spot->mapper("App\Student")->save($student);
+
+		// /* Serialize the response data. */
+		$fractal = new Manager();
+		$fractal->setSerializer(new DataArraySerializer);
+		$resource = new Item($student, new StudentTransformer);
+		$registered_student = $fractal->createData($resource)->toArray();
+		if(count($body['skills']) > 5){
+			$error['message'] = 'Skills Limit exceed 5';
+			return $response->withStatus(201)
+				->withHeader("Content-Type", "application/json")
+				->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		}
+		for ($i=0; $i < count($body['skills']); $i++) { 
+			$skills['student_id'] = $registered_student['data']['id'];
+			$skills['skill_name'] = $body['skills'][$i]['name'];
+			$skill = new StudentSkill($skills);
+			$this->spot->mapper("App\StudentSkill")->save($skill);
+		}
+		if(count($body['intrests']) > 20){
+			$error['message'] = '20 intrests, Seriously?';
+			return $response->withStatus(201)
+				->withHeader("Content-Type", "application/json")
+				->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		}
+		for ($i=0; $i < count($body['intrests']); $i++) {
+			$intrests['student_id'] = $registered_student['data']['id'];
+			$intrests['interest_id'] = $body['intrests'][$i];
+			$intrest = new StudentInterest($intrests);
+			$this->spot->mapper("App\StudentInterest")->save($intrest);
+		}
+		$now = new DateTime();
+		$future = new DateTime("now +30 days");
+		$server = $request->getServerParams();
+		$jti = Base62::encode(random_bytes(16));
+		$payload = [
+			"iat" => $now->getTimeStamp(),
+			"exp" => $future->getTimeStamp(),
+			"jti" => $jti,
+			"student_id" => $registered_student["data"]["id"],
+		];
+		$secret = getenv("JWT_SECRET");
+		$token = JWT::encode($payload, $secret, "HS256");
+		$data["status"] = 'Registered Successfully';
+		$data["token"] = $token;
+		return $response->withStatus(201)
+			->withHeader("Content-Type", "application/json")
+			->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
+	}
+}
 });

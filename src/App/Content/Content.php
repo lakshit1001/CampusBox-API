@@ -7,7 +7,7 @@ use Spot\MapperInterface as Mapper;
 use Tuupola\Base62;
 
 class Content extends \Spot\Entity {
-	protected static $table = "content";
+	protected static $table = "contents";
 	public static function fields() {
 		return [
 			"content_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
