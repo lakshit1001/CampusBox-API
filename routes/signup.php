@@ -22,7 +22,7 @@ use League\Fractal\Serializer\DataArraySerializer;
 use Tuupola\Base62;
 use Facebook\Facebook;
 
-$app->post("/signup", function ($request, $response, $arguments) {
+$app->options("/signup", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 	if($body['type'] == 'facebook'){
 		$fb = new \Facebook\Facebook([

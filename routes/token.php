@@ -28,6 +28,7 @@ $app->post("/token", function ($request, $response, $arguments) {
    // $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
    //     return in_array($needle, $valid_scopes);
    // });
+   echo file_get_contents("https://www.googleapis.com/oauth2/v1/userinfo?access_token="."ya29.Gl0FBJYhjVFYE7lAxWqhz8FJa3Dxmeyv6nK91Ys40fycFQKpOVAux71A441y28ToeRazHyLXUnhkEfLzX6k7z5RBnlbecV5a2T1OfjfzEZSAOheuyxzF0sDUuqEqftE");
     $now = new DateTime();
     $future = new DateTime("now +30 days");
     $server = $request->getServerParams();
