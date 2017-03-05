@@ -19,6 +19,7 @@
 > post /signup
 
 recieve the following object if user exists then send error 
+
 *type : facebook/google
 *token : "token vlaue"
 *interests : array 
