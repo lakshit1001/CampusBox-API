@@ -95,7 +95,10 @@ example object returned
 
 check rsvp already exists then delete
 ```json
-example object returned
+{
+  "status": "ok",
+  "message": "Rsvp Removed"
+}
 ```
 
 ### Like an event
@@ -117,18 +120,85 @@ example object returned
 
 add new event 
 ```json
-example object returned
+{
+  "data": [
+    {
+      "id": 1000,
+      "title": "AICHE Industrial Visit",
+      "subtitle": null,
+      "details": {
+        "venue": null,
+        "type": null,
+        "team": 0,
+        "price": 0,
+        "description": "AIChE Student Chapter is conducting an industrial visit to SATIA PAPER MILLS, MUKTSAR",
+        "rules": "AIChE Student Chapter is conducting an industrial visit to SATIA PAPER MILLS, MUKTSAR"
+      },
+      "timings": {
+        "date": {
+          "start": null,
+          "end": null
+        },
+        "time": {
+          "start": null,
+          "end": null
+        }
+      },
+      "Actions": {
+        "Bookmarked": {
+          "status": true,
+          "total": 2,
+          "bookmarks": 2
+        },
+        "Participants": {
+          "status": true,
+          "total": 4
+        }
+      },
+      "contact": [
+        {
+          "name": null,
+          "link": 0,
+          "image": null
+        },
+        {
+          "name": null,
+          "link": 0,
+          "image": null
+        }
+      ],
+      "created": {
+        "by": {
+          "name": null,
+          "link": 0,
+          "image": null
+        },
+        "at": {
+          "date": "2016-10-15 16:06:22.000000",
+          "timezone_type": 3,
+          "timezone": "UTC"
+        }
+      },
+      "tags": {
+        "0": {
+          "name": null,
+          "link": 0
+        },
+        "total": 4
+      },
+      "links": {
+        "self": "/events/"
+      }
+    }]
+}
 ```
 ### delete  event
 > delete /event/{id}
 
 delete  event check if it belongs to the student
 ```json
-example object returned
+Same as above
 ```
-
-
-
 
 <a name="contents"></a>
 ## contents
@@ -141,8 +211,57 @@ send contents which student is interested in sort by latest added and followed b
 
 
 ```json
-example object returned
-```
+{
+  "data": [
+    {
+      "id": 13,
+      "title": "How Cafes Are The New Workplaces!",
+      "content": {
+        "type": 0,
+        "description": "###Human beings have an amazing ability ",
+        "embed": "Lakshit Anand",
+        "images": {
+          "alt": null,
+          "link": 0
+        }
+      },
+      "created": {
+        "by": {
+          "name": "Lakshit Anand",
+          "link": 1,
+          "image": "https://avatars3.githubusercontent.com/u/6951276?v=3&s=400"
+        },
+        "at": "20161004T19:18:07"
+      },
+      "Actions": {
+        "Appriciate": {
+          "status": true,
+          "total": 1
+        },
+        "Bookmarked": {
+          "status": true,
+          "total": 1
+        }
+      },
+      "details": {
+        "software": {
+          "name": null,
+          "link": 0
+        },
+        "euquipment": {
+          "name": null,
+          "link": 0
+        }
+      },
+      "tags": {
+        "name": null,
+        "link": 0
+      },
+      "total": 1,
+      "links": {
+        "self": "/contents/"
+      }
+    },```
 
 ### get one content
 > get /content/{id}
@@ -150,7 +269,7 @@ example object returned
 send data for one content
 
 ```json
-example object returned
+same as above
 ```
 
 ### bookmark an content
@@ -220,8 +339,74 @@ send
      - bookmarked content
 
 ```json
-example object returned
-```
+{
+  "data": {
+    "id": 1,
+    "name": "Lakshit Anand",
+    "subtitle": "Web Developer, wants to create meaningful projects to positively impact the world. :sweat_smile: ",
+    "photo": "https://avatars3.githubusercontent.com/u/6951276?v=3&s=400",
+    "college": {
+      "roll_number": 101506031,
+      "name": "Thapar University",
+      "hostelid": null,
+      "room_number": "B305"
+    },
+    "contacts": {
+      "email": "lakshit1001@ymail.com",
+      "phone": 594664
+    },
+    "about": {
+      "age": null,
+      "gender": "Male",
+      "home_city": "Delhi"
+    },
+    "studies": {
+      "grad_id": null,
+      "branch_id": null,
+      "year": "2018",
+      "class_id": null,
+      "passout_year": 2017,
+      "college": "Thapar University"
+    },
+    "Events": {
+      "data": [
+      ]
+    },
+    "Skills": {
+      "data": [
+        {
+          "id": 0,
+          "name": "AngularJS",
+          "links": {
+            "self": "/reports/"
+          }
+        },
+        {
+          "id": 0,
+          "name": "Espanol",
+          "links": {
+            "self": "/reports/"
+          }
+        }
+      ]
+    },
+    "SocialAccounts": {
+      "data": []
+    },
+    "Followed": {
+      "data": [
+      ]
+    },
+    "BookmarkedContents": {
+      "data": [
+      ]
+    },
+    "AttendingEvents": {
+      "data": [
+      ]
+    }
+  }
+}```
 
 ### follow an student
 > post /followstudent/{id}
