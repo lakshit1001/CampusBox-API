@@ -20,6 +20,7 @@
 
 recieve the following object if user exists then send error 
 
+
 -type : facebook/google
 -token : "token vlaue"
 -interests : array 
@@ -28,6 +29,7 @@ recieve the following object if user exists then send error
     -each with : name (check if more than 5 then error)
 -college : "college_id"
 -roll : "roll_number" 
+
 
 ```json
 example object returned
