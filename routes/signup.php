@@ -1,20 +1,9 @@
 <?php
-/*
- * This file is part of the Slim API skeleton package
- *
- * Copyright (c) 2016-2017 Mika Tuupola
- *
- * Licensed under the MIT license:
- *   http://www.opensource.org/licenses/mit-license.php
- *
- * Project home:
- *   https://github.com/tuupola/slim-api-skeleton
- *
- */
+ 
 use App\Student;
 use App\StudentTransformer;
 use App\StudentSkill;
-// use App\SkillTransformer;
+use App\StudentInterest;
 use Firebase\JWT\JWT;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
@@ -40,11 +29,10 @@ $app->options("/signup", function ($request, $response, $arguments) {
 			exit;
 		}
 		$me = $x->getGraphUser();
-		echo $me;
 		$god['name'] = $me['name'];
 		$god['gender'] = $me['gender'];
-		$god['birthday'] = $me['birthday'];
-		$god['about'] = $me['about'];
+		$god['birthday'] = isset($me['birthday']) ?$me['birthday']: null;
+		$god['about'] = isset($me['about']) ?$me['about']: null;
 		$god['college_id'] = $body['college_id'];
 		$god['image'] = $me['picture']['url'];
 		$god['email'] = $me['email'];
@@ -57,12 +45,29 @@ $app->options("/signup", function ($request, $response, $arguments) {
 		$fractal->setSerializer(new DataArraySerializer);
 		$resource = new Item($student, new StudentTransformer);
 		$registered_student = $fractal->createData($resource)->toArray();
+		if(count($body['skills']) > 5){
+			$error['message'] = 'Skills Limit exceed 5';
+			return $response->withStatus(201)
+				->withHeader("Content-Type", "application/json")
+				->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		}
 		for ($i=0; $i < count($body['skills']); $i++) { 
 			$skills['student_id'] = $registered_student['data']['id'];
 			$skills['skill_name'] = $body['skills'][$i]['name'];
-			$skills['proficiency'] = '10';
 			$skill = new StudentSkill($skills);
 			$this->spot->mapper("App\StudentSkill")->save($skill);
+		}
+		if(count($body['intrests']) > 20){
+			$error['message'] = '20 intrests, Seriously?';
+			return $response->withStatus(201)
+				->withHeader("Content-Type", "application/json")
+				->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		}
+		for ($i=0; $i < count($body['intrests']); $i++) {
+			$intrests['student_id'] = $registered_student['data']['id'];
+			$intrests['interest_id'] = $body['intrests'][$i];
+			$intrest = new StudentInterest($intrests);
+			$this->spot->mapper("App\StudentInterest")->save($intrest);
 		}
 		$now = new DateTime();
 		$future = new DateTime("now +30 days");
@@ -74,12 +79,12 @@ $app->options("/signup", function ($request, $response, $arguments) {
 			"jti" => $jti,
 			"student_id" => $registered_student["data"]["id"],
 		];
+		$secret = getenv("JWT_SECRET");
 		$token = JWT::encode($payload, $secret, "HS256");
 		$data["status"] = 'Registered Successfully';
 		$data["token"] = $token;
-	return $response->withStatus(201)
-		->withHeader("Content-Type", "application/json")
-		->withHeader("Location", $data["data"]["links"]["self"])
-		->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		return $response->withStatus(201)
+			->withHeader("Content-Type", "application/json")
+			->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 	}
 });

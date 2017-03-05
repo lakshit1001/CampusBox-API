@@ -15,9 +15,9 @@ use Spot\MapperInterface as Mapper;
  use Ramsey\Uuid\Uuid;
  use Psr\Log\LogLevel;
  
- class StudentFollow extends \Spot\Entity
+ class StudentInterest extends \Spot\Entity
  {
-    protected static $table = "followers";
+    protected static $table = "studentinterests";
 
     public static function fields()
     {
@@ -25,13 +25,12 @@ use Spot\MapperInterface as Mapper;
        
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "followed_id" => ["type" => "integer"],
-        "follower_id" => ["type" => "integer"],
-        "timer" => ["type" => "datetime"]
+        "student_id" => ["type" => "integer"],
+        "interest_id" => ["type" => "integer"],
         ];
     }
 
-    public static function followed(EventEmitter $emitter)
+    public static function skills(EventEmitter $emitter)
     {
         $emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
             $entity->id = Base62::encode(random_bytes(9));
@@ -46,8 +45,7 @@ use Spot\MapperInterface as Mapper;
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-            'Followed' => $mapper->HasOne($entity, 'App\Student', 'followed_id'),
-            'Follower' => $mapper->HasOne($entity, 'App\Student', 'follower_id')
+            'Interests' => $mapper->belongsTo($entity, 'App\Student', 'student_id')
             ];
     }
 }

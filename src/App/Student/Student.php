@@ -1,17 +1,6 @@
 <?php
 
-/*
- * This file is part of the Slim API skeleton package
- *
- * Copyright (c) 2016-2017 Mika Tuupola
- *
- * Licensed under the MIT license:
- *   http://www.opensource.org/licenses/mit-license.php
- *
- * Project home:
- *   https://github.com/tuupola/slim-api-skeleton
- *
- */
+ 
 
 namespace App;
 
@@ -28,7 +17,7 @@ class Student extends \Spot\Entity {
 			"student_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"college_id" => ["type" => "integer"],
 			"name" => ["type" => "string"],
-			 "image" => ["type" => "string"],
+			"image" => ["type" => "string"],
 			"username" => ["type" => "string"],
 			"roll_number" => ["type" => "integer"],
 			"email" => ["type" => "string"],
@@ -101,7 +90,7 @@ class Student extends \Spot\Entity {
 
 			//'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'student_id')
 
-			// 'Interets' => $mapper->hasMany($entity, 'App\Event', 'post_id'),
+			'Interets' => $mapper->hasMany($entity, 'App\StudentInterest', 'student_id'),
 			// 'hostel' => $mapper->hasOne($entity, 'App\College', 'user_id')
 		];
 	}
