@@ -71,55 +71,6 @@ only events which are yet to happen
 
 
 ```json
-example object returned
-```
-
-### get one event
-> get /event/{id}
-
-send data for one event
-
-```json
-example object returned
-```
-
-### RSVP an event
-> post /RsvpEvent/{id}
-
-check rsvp already exists otherwise add one 
-```json
-example object returned
-```
-### remove RSVP from an event
-> delete /RsvpEvent/{id}
-
-check rsvp already exists then delete
-```json
-{
-  "status": "ok",
-  "message": "Rsvp Removed"
-}
-```
-
-### Like an event
-> post /LikeEvent/{id}
-
-check Like already exists otherwise add one 
-```json
-example object returned
-```
-### remove Like from an event
-> delete /likeEvent/{id}
-
-check like already exists then delete
-```json
-example object returned
-```
-### add new event
-> post /event
-
-add new event 
-```json
 {
   "data": [
     {
@@ -190,7 +141,55 @@ add new event
         "self": "/events/"
       }
     }]
+}```
+
+### get one event
+> get /event/{id}
+
+send data for one event
+
+```json
+same as above
+```
+
+### RSVP an event
+> post /RsvpEvent/{id}
+
+check rsvp already exists otherwise add one 
+```json
+example object returned
+```
+### remove RSVP from an event
+> delete /RsvpEvent/{id}
+
+check rsvp already exists then delete
+```json
+{
+  "status": "ok",
+  "message": "Rsvp Removed"
 }
+```
+
+### Like an event
+> post /LikeEvent/{id}
+
+check Like already exists otherwise add one 
+```json
+example object returned
+```
+### remove Like from an event
+> delete /likeEvent/{id}
+
+check like already exists then delete
+```json
+example object returned
+```
+### add new event
+> post /event
+
+add new event 
+```json
+will send confirmation
 ```
 ### delete  event
 > delete /event/{id}
@@ -272,14 +271,14 @@ send data for one content
 same as above
 ```
 
-### bookmark an content
+### bookmark a content
 > post /bookmarkcontent/{id}
 
 check bookmark already exists otherwise add one 
 ```json
 example object returned
 ```
-### remove bookmark from an content
+### remove bookmark from a content
 > delete /bookmarkcontent/{id}
 
 check bookmark already exists then delete
@@ -287,14 +286,14 @@ check bookmark already exists then delete
 example object returned
 ```
 
-### Like an content
+### Like a content
 > post /Likecontent/{id}
 
 check Like already exists otherwise add one 
 ```json
 example object returned
 ```
-### remove Like from an content
+### remove Like from a content
 > delete /likeContent/{id}
 
 check rsvp already exists then delete
@@ -406,7 +405,8 @@ send
       ]
     }
   }
-}```
+}
+```
 
 ### follow an student
 > post /followstudent/{id}
