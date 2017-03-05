@@ -97,7 +97,8 @@ recieve the following object if user does not exist then send error
     "status": "ok",
     "registered": true,
     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0ODg2OTQ2ODcsImV4cCI6MTQ5MTI4NjY4NywianRpIjoiNlNueGd2bTJ1MkVTc0VjQnFJWTd3RCIsInN1YiI6MSwic3R1ZGVudF9pZCI6MX0.EvSdgu84_LLJ6y4eqyVjGTzKNvx6GEBdd7cmxtlJsIE"
-}```
+}
+```
 
 <a name="home"></a>
 ## Home Pgae
