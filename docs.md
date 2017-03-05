@@ -19,14 +19,15 @@
 > post /signup
 
 recieve the following object if user exists then send error 
-*type : facebook/google
-*token : "token vlaue"
-*interests : array 
-    *each with : interest_ids
-*skills : array 
-    *each with : name (check if more than 5 then error)
-*college : "college_id"
-*roll : "roll_number" 
+
+-type : facebook/google
+-token : "token vlaue"
+-interests : array 
+    -each with : interest_ids
+-skills : array 
+    -each with : name (check if more than 5 then error)
+-college : "college_id"
+-roll : "roll_number" 
 
 ```json
 example object returned
@@ -38,8 +39,8 @@ example object returned
 
 recieve the following object if user does not exist then send error 
 
-*type : facebook/google
-*token : "token vlaue"
+-type : facebook/google
+-token : "token vlaue"
 
 ```json
 example object returned
@@ -204,12 +205,12 @@ example object returned
 send data for one student
 send 
     student details ,
-    * skillls,
-    *events created,
-    * content created ,
-    *students following ,
-    * events rsvped,
-    *bookmarked content
+    - skillls,
+    -events created,
+    - content created ,
+    -students following ,
+    - events rsvped,
+    -bookmarked content
 
 ```json
 example object returned
@@ -241,10 +242,10 @@ example object returned
 
 send data for one search
 send 
-    *name
-    *image
-    *type = event/student/content
-    *link
+    -name
+    -image
+    -type = event/student/content
+    -link
 
 ```json
 example object returned
@@ -288,8 +289,8 @@ example object returned
 > get /Colleges
 
 send 
-    *College_id
-    *College name
+    -College_id
+    -College name
 
 ```json
 example object returned
@@ -298,8 +299,8 @@ example object returned
 > get /Colleges/{query}
 
 send 
-    *College_id
-    *College name
+    -College_id
+    -College name
 
 ```json
 example object returned
@@ -309,8 +310,8 @@ example object returned
 > get /eventTypes
 
 send 
-    *Type_id
-    *type_name
+    -Type_id
+    -type_name
 
 ```json
 example object returned
@@ -320,7 +321,7 @@ example object returned
 > get /event tags
 
 send 
-    *Tag
+    -Tag
 ```json
 example object returned
 ```
@@ -328,7 +329,7 @@ example object returned
 > get /eventtags/{query}
 
 send 
-    *Tag
+    -Tag
 ```json
 example object returned
 ```
