@@ -36,10 +36,9 @@ $app->get("/events", function ($request, $response, $arguments) {
 	// }
     $currentCursor = 3;
     $previousCursor = 2;
-    $limit = 1;
+    $limit = 20;
 
-	//$test = $this->token->decoded->student_id;
-	$test = 4;
+	$test = $this->token->decoded->student_id;
 
 	/* Use ETag and date from Event with most recent update. */
 	$first = $this->spot->mapper("App\Event")
