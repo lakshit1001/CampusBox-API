@@ -279,7 +279,8 @@ send contents which student is interested in sort by latest added and followed b
       "links": {
         "self": "/contents/"
       }
-    },```
+    },
+```
 
 ### get one content
 > get /content/{id}
