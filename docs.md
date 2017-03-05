@@ -1,7 +1,8 @@
 # CampusBox Api
 
-<a name="login"></a>
+<a name="top"></a>
 ## Route Files
+  [top](#top)
 
  -  [login](#login)
  -  [home](#home)
@@ -13,7 +14,7 @@
 
 <a name="login"></a>
 ## Login/Signup
-
+ [top](#top)
 ### Sign up a user
 
 > post /signup
@@ -50,6 +51,7 @@ example object returned
 
 <a name="home"></a>
 ## Home Pgae
+  [top](#top)
 
 ### home page for a user
 
@@ -58,6 +60,7 @@ example object returned
 
 <a name="events"></a>
 ## Events
+  [top](#top)
 
 ### get all events
 > get /events
@@ -129,6 +132,7 @@ example object returned
 
 <a name="contents"></a>
 ## contents
+  [top](#top)
 
 ### get all contents
 > get /contents
@@ -198,6 +202,7 @@ example object returned
 
 <a name="students"></a>
 ## students
+  [top](#top)
 
 
 
@@ -236,6 +241,7 @@ example object returned
 
 <a name="search"></a>
 ## search
+  [top](#top)
 
 
 
@@ -266,6 +272,7 @@ example object returned
 
 <a name="autocomplete"></a>
 ## autocomplete/data (not protected by JWT)
+  [top](#top)
 
 
 
