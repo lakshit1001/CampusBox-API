@@ -40,6 +40,25 @@
 
 recieve the following object if user exists then send error 
 
+ ####Request
+
+```json
+{
+  "roll":232432423432,
+  "token":"EAARxNhowHWQBAJZCA3",
+  "type":"facebook",
+  "skills":[
+      {"name":"Broccoli"},
+      {"name":"Cabbage"}
+    ],
+  "intrests":[
+      {"title":"Instrumental"},
+      {"title":"Music Mixing"},
+      {"title":"Photography"}
+    ],
+  "college_id":1
+}
+```
 
  - type : facebook/google
  - token : "token vlaue"
@@ -50,9 +69,12 @@ recieve the following object if user exists then send error
  - college : "college_id"
  - roll : "roll_number" 
 
-
+ ####Response
 ```json
-example object returned
+{
+    "status": "Registered Successfully",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0ODg2OTQ0NDEsImV4cCI6MTQ5MTI4NjQ0MSwianRpIjoiNm02bDY5bTNNRktoRHdpT2M2bGlteSIsInN0dWRlbnRfaWQiOjE2fQ.JYC0Mm4EEGpYrjRrh9htFIQSil2yzoKs2wN2WaPsQ80"
+}
 ```
 
 ### login user
@@ -60,13 +82,22 @@ example object returned
 
 
 recieve the following object if user does not exist then send error 
-
+```
+{
+  "access_token":"EAARxNhowHWQBAKGLdW9LjSN88nNkr6ZC7nE4iyPXcNLgOZALqlWeqmtfZA4PoX4gZClnFZCxAXD0qA6ZB5QSql7K4fp3MEeMgd8bGKizWbcMGrAdatrQZCAST5fuOawqDAuBglxwfZA9O0K41OhTRIhiZBbNrxTyf5PUZD",
+  "expires_in":"5132834"
+}
+```
  - type : facebook/google
  - token : "token vlaue"
 
+ ####Response
 ```json
-example object returned
-```
+{
+    "status": "ok",
+    "registered": true,
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0ODg2OTQ2ODcsImV4cCI6MTQ5MTI4NjY4NywianRpIjoiNlNueGd2bTJ1MkVTc0VjQnFJWTd3RCIsInN1YiI6MSwic3R1ZGVudF9pZCI6MX0.EvSdgu84_LLJ6y4eqyVjGTzKNvx6GEBdd7cmxtlJsIE"
+}```
 
 <a name="home"></a>
 ## Home Pgae
