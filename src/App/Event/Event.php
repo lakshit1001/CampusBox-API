@@ -28,35 +28,8 @@ class Event extends \Spot\Entity {
 			"score" => ["type" => "integer"],
 		];
 	}
-	public static function events(EventEmitter $emitter) {
-		$emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
-			$entity->event_id = Base62::encode(random_bytes(9));
-		});
-		$emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
-			$entity->time_created = new \DateTime();
-		});
-	}
-	public function timestamp() {
-		return $this->time_created->getTimestamp();
-	}
-	public function etag() {
-		return md5($this->id . $this->timestamp());
-	}
 	public function clear() {
 		$this->data([
-			"event_id" => null,
-			"college_id" => null,
-			"created_by_id" => null,
-			"title" => null,
-			"subtitle" => null,
-			"description" => null,
-			"contactperson1" => null,
-			"contactperson2" => null,
-			"venue" => null,
-			"inter" => null,
-			"time_created" => null,
-			"type_id" => null,
-			"price" => null,
 		]);
 	}
 	public static function relations(Mapper $mapper, Entity $entity) {
