@@ -42,21 +42,12 @@ class Event extends \Spot\Entity {
 	public function etag() {
 		return md5($this->id . $this->timestamp());
 	}
+
+
+
+	
 	public function clear() {
 		$this->data([
-			"event_id" => null,
-			"college_id" => null,
-			"created_by_id" => null,
-			"title" => null,
-			"subtitle" => null,
-			"description" => null,
-			"contactperson1" => null,
-			"contactperson2" => null,
-			"venue" => null,
-			"inter" => null,
-			"time_created" => null,
-			"type_id" => null,
-			"price" => null,
 		]);
 	}
 	public static function relations(Mapper $mapper, Entity $entity) {

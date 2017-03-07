@@ -17,17 +17,10 @@ use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/events", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	// if (true === $this->token->hasScope(["event.all", "event.list"])) {
-	//     throw new ForbiddenException("Token not allowed to list events.", 403);
-	// }else{
-
-	// }
     $currentCursor = 3;
     $previousCursor = 2;
     $limit = 20;
-$test='4';
-	//$test = $this->token->decoded->student_id;
+	$test = $this->token->decoded->student_id;
 
 	/* Use ETag and date from Event with most recent update. */
 	$first = $this->spot->mapper("App\Event")
@@ -83,28 +76,29 @@ $app->post("/events", function ($request, $response, $arguments) {
 	//if (true === $this->token->hasScope(["event.all", "event.create"])) {
 //		throw new ForbiddenException("Token not allowed to create events.", 403);
 //	}
-
 	$body = $request->getParsedBody();
 
 	$event = new Event($body);
 	$this->spot->mapper("App\Event")->save($event);
 
-	/* Add Last-Modified and ETag headers to response. */
-	$response = $this->cache->withEtag($response, $event->etag());
-	$response = $this->cache->withLastModified($response, $event->timestamp());
+	// /* Add Last-Modified and ETag headers to response. */
+	// $response = $this->cache->withEtag($response, $event->etag());
+	// $response = $this->cache->withLastModified($response, $event->timestamp());
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
 	$fractal->setSerializer(new DataArraySerializer);
-	$resource = new Item($event, new EventTransformer);
+	$resource = new Item($event, new EventTransformer(['type' => 'post']));
 	$data = $fractal->createData($resource)->toArray();
+	$event = new Event($data);
+	$this->spot->mapper("App\Event")->save($event);
 	$data["status"] = "ok";
 	$data["message"] = "New event created";
 
 	return $response->withStatus(201)
 		->withHeader("Content-Type", "application/json")
-		->withHeader("Location", $data["data"]["links"]["self"])
-		->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		// ->withHeader("Location", $data["data"]["links"]["self"])
+		->write(json_encode($event, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
 $app->get("/events/{id}", function ($request, $response, $arguments) {
