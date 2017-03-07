@@ -14,7 +14,7 @@ $app->post("/login", function ($request, $response, $arguments) {
 			'default_graph_version' => 'v2.8',
 			]);
 		try {
-			$x = $fb->get('/me?fields=email,name,id', $body['token']);
+			$x = $fb->get('/me?fields=email,name,id', $body['access_token']);
 			} catch (\Facebook\Exceptions\FacebookResponseExpception $e) {
 				echo 'Graph returned an error: ' . $e->getMessage();
 				exit;
@@ -66,7 +66,7 @@ $app->post("/login", function ($request, $response, $arguments) {
 			}
 			else if ($body['type']=="google"){
 
-				$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
+				$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['access_token']);
 				$me = json_decode($json);
 				$student = $this->spot
 				->mapper("App\Student")

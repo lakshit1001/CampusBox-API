@@ -29,10 +29,10 @@ class Event extends \Spot\Entity {
 		];
 	}
 	public static function events(EventEmitter $emitter) {
-		$emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
+		$emitter->on("beforeInsert", function (Entity $entity, MapperInterface $mapper) {
 			$entity->event_id = Base62::encode(random_bytes(9));
 		});
-		$emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
+		$emitter->on("beforeUpdate", function (Entity $entity, MapperInterface $mapper) {
 			$entity->time_created = new \DateTime();
 		});
 	}
