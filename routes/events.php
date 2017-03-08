@@ -29,10 +29,10 @@ $app->get("/events", function ($request, $response, $arguments) {
 		->first();
 
 	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
-	if ($first) {
-		$response = $this->cache->withEtag($response, $first->etag());
-		$response = $this->cache->withLastModified($response, $first->timestamp());
-	}
+	// if ($first) {
+	// 	$response = $this->cache->withEtag($response, $first->etag());
+	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
+	// }
 
 	/* If-Modified-Since and If-None-Match request header handling. */
 	/* Heads up! Apache removes previously set Last-Modified header */
@@ -62,9 +62,8 @@ $app->get("/events", function ($request, $response, $arguments) {
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($events, new EventTransformer(['username' => $test]));
+	$resource = new Collection($events, new EventTransformer(['username' => $test, 'type' => 'get']));
 	$data = $fractal->createData($resource)->toArray();
-
 	return $response->withStatus(200)
 		->withHeader("Content-Type", "application/json")
 		->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
@@ -72,10 +71,6 @@ $app->get("/events", function ($request, $response, $arguments) {
 
 $app->post("/events", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	//if (true === $this->token->hasScope(["event.all", "event.create"])) {
-//		throw new ForbiddenException("Token not allowed to create events.", 403);
-//	}
 	$body = $request->getParsedBody();
 
 	$event = new Event($body);

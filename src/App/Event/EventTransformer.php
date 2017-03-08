@@ -13,8 +13,9 @@ class EventTransformer extends Fractal\TransformerAbstract {
 	}
 
 	public function transform(Event $event) {
-        if(isset($this->params['type']) && $this->params['type'] != 'post'){
-            $bookmarks = $event->Bookmarked->select()->where(['username' => $this->params['username']]);
+
+        if($this->params['type'] != 'get'){
+            $bookmarks = $event->Bookmarked->select()->where(['username' => $this->params['value']]);
             $this->params['value'] = (count($bookmarks) > 0 ? true : false); // returns true
         } else {
             $bookmarks = null;

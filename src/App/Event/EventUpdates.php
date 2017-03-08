@@ -28,7 +28,7 @@
         "message" => ["type" => "string"],
         "color" => ["type" => "string" ],
         "society_id" => ["type" => "integer"],
-        "student_id" => ["type" => "integer"],
+        "username" => ["type" => "string"],
 
         ];
     }

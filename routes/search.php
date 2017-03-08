@@ -69,9 +69,9 @@
     if (isset($_GET['include'])) {
         $fractal->parseIncludes($_GET['include']);
     }
-    $resource1 = new Collection($events, new EventTransformer(['student_id' => '1' ]));
-    $resource2 = new Collection($students, new StudentMiniTransformer(['student_id' => '1' ]));
-    $resource3 = new Collection($content, new ContentMiniTransformer(['student_id' => '1' ]));
+    $resource1 = new Collection($events, new EventTransformer(['username' => '1' ]));
+    $resource2 = new Collection($students, new StudentMiniTransformer(['username' => '1' ]));
+    $resource3 = new Collection($content, new ContentMiniTransformer(['username' => '1' ]));
     
     $arrs = array();
     $arrs[1] = $fractal->createData($resource1)->toArray();
@@ -87,5 +87,5 @@ foreach($arrs as $arr) {
 }
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($list, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    ->write(json_encode($arrs[2], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });

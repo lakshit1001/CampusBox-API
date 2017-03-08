@@ -72,18 +72,19 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$fractal->setSerializer(new DataArraySerializer);
 		$resource = new Item($student, new StudentTransformer);
 		$registered_student = $fractal->createData($resource)->toArray();
-	//	if(count($body['skills']) > 5){
-	//		$error['message'] = 'Skills Limit exceed 5';
-	//		return $response->withStatus(201)
-	//			->withHeader("Content-Type", "application/json")
-	//			->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-	//	}
-	//	for ($i=0; $i < count($body['skills']); $i++) { 
-	//		$skills['username'] = $registered_student['data']['id'];
-	//		$skills['skill_name'] = $body['skills'][$i]['name'];
-	//		$skill = new StudentSkill($skills);
-	//		$this->spot->mapper("App\StudentSkill")->save($skill);
-	//	}
+
+		if(count($body['skills']) > 5){
+			$error['message'] = 'Skills Limit exceed 5';
+			return $response->withStatus(201)
+				->withHeader("Content-Type", "application/json")
+				->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		}
+		for ($i=0; $i < count($body['skills']); $i++) { 
+			$skills['student_id'] = $registered_student['data']['id'];
+			$skills['skill_name'] = $body['skills'][$i]['name'];
+			$skill = new StudentSkill($skills);
+			$this->spot->mapper("App\StudentSkill")->save($skill);
+		}
 		if(count($body['intrests']) > 20){
 			$error['message'] = '20 intrests, Seriously?';
 			return $response->withStatus(201)

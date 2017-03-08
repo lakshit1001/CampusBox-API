@@ -27,7 +27,6 @@ use Spot\MapperInterface as Mapper;
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "username" => ["type" => "string"],
         "interest_id" => ["type" => "integer"],
-        "title" => ["type" => "string"],
         ];
     }
 

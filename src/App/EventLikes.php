@@ -17,7 +17,7 @@ class EventLikes extends \Spot\Entity {
 
 			"likes_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"event_id" => ["type" => "integer", "unsigned" => true],
-			"student_id" => ["type" => "integer", "unsigned" => true],
+			"username" => ["type" => "string", "required" => true],
 			"timed" => ["type" => "datetime"],
 		];
 	}

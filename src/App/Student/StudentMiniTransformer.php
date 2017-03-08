@@ -10,11 +10,11 @@ use League\Fractal;
 class StudentMiniTransformer extends Fractal\TransformerAbstract
 {
   protected $availableIncludes = [
-          'SocialAccounts',
+          // 'SocialAccounts',
           'Skills'
     ];
     protected $defaultIncludes = [
-           'SocialAccounts',
+           // 'SocialAccounts',
           'Skills'
       ];
     public function transform(Student $student)
@@ -36,9 +36,9 @@ class StudentMiniTransformer extends Fractal\TransformerAbstract
 
         return $this->collection($skills, new SkillTransformer);
     }
-public function includeSocialAccounts(Student $student) {
-        $socials = $student->SocialAccounts;
+// public function includeSocialAccounts(Student $student) {
+//         $socials = $student->SocialAccounts;
 
-        return $this->collection($socials, new SocialTransformer);
-    }
+//         return $this->collection($socials, new SocialTransformer);
+//     }
 }
