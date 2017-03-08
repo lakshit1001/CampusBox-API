@@ -83,10 +83,10 @@ class Student extends \Spot\Entity {
 			// 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'student_id'),
 			//'Participants' => $mapper->hasMany($entity, 'App\Event', 'student_id'),
 //			'Skills' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
-		 'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'student_id'),
-		 'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'student_id'),
-		 'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'student_id'),
-		 'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'followed_id', 'follower_id'),
+			'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'student_id'),
+			'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'student_id'),
+			'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'student_id'),
+		 	'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'following_id', 'follower_id'),
 
 			//'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'student_id')
 

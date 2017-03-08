@@ -29,10 +29,10 @@ $app->get("/events", function ($request, $response, $arguments) {
 		->first();
 
 	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
-	if ($first) {
-		$response = $this->cache->withEtag($response, $first->etag());
-		$response = $this->cache->withLastModified($response, $first->timestamp());
-	}
+	// if ($first) {
+	// 	$response = $this->cache->withEtag($response, $first->etag());
+	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
+	// }
 
 	/* If-Modified-Since and If-None-Match request header handling. */
 	/* Heads up! Apache removes previously set Last-Modified header */
@@ -62,7 +62,7 @@ $app->get("/events", function ($request, $response, $arguments) {
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($events, new EventTransformer(['student_id' => $test]));
+	$resource = new Collection($events, new EventTransformer(['student_id' => $test, 'type' => 'get']));
 	$data = $fractal->createData($resource)->toArray();
 
 	return $response->withStatus(200)

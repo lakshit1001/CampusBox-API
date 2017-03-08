@@ -48,7 +48,7 @@ class ContentBookmarks extends \Spot\Entity {
 	public static function relations(MapperInterface $mapper, EntityInterface $entity) {
 		return [
 			'Content' => $mapper->belongsTo($entity, 'App\Content', 'content_id'),
-			'Student' => $mapper->belongsTo($entity, 'App\Content', 'student_id')
+			'BookmarkedContents' => $mapper->belongsTo($entity, 'App\Content', 'student_id')
 		];
 	}
 }
