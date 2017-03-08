@@ -28,19 +28,14 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			echo 'Facebook SDK returned an error: ' . $e->getMessage();
 			exit;
 		}
-		$me = $x->getGraphUser();
+		$facebookData = $x->getGraphUser();
 		$student = new Student();
 				$student = $this->spot
 				->mapper("App\Student")
-				->where(['email' => $me['email']]);
+				->where(['email' => $facebookData['email']]);
 
 				if (count($student) > 0) {
 					$data["registered"] = true;
-					$data["name"] = $me['name'];
-					$data["email"] = $me['email'];
-
-
-
 					$now = new DateTime();
 					$future = new DateTime("now +30 days");
 					$server = $request->getServerParams();
@@ -50,7 +45,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 						"iat" => $now->getTimeStamp(),
 						"exp" => $future->getTimeStamp(),
 						"jti" => $jti,
-						"student_id" => $student[0]->student_id,
+						"username" => $student[0]->username,
 					];
 					$secret = getenv("JWT_SECRET");
 					$token = JWT::encode($payload, $secret, "HS256");
@@ -61,13 +56,13 @@ $app->post("/signup", function ($request, $response, $arguments) {
 						->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 				}
-		$god['name'] = $me['name'];
-		$god['gender'] = $me['gender'];
-		$god['birthday'] = isset($me['birthday']) ?$me['birthday']: null;
-		$god['about'] = isset($me['about']) ?$me['about']: "Apparently, this user prefers to keep an air of mystery about them";
+		$god['name'] = $facebookData['name']?$facebookData['name']:"";
+		$god['gender'] = $facebookData['gender']?$facebookData['gender']:"";
+		$god['birthday'] = isset($facebookData['birthday']) ?$facebookData['birthday']: null;
+		$god['about'] = isset($facebookData['about']) ?$facebookData['about']: "Apparently, this user prefers to keep an air of mystery about them";
 		$god['college_id'] = $body['college_id'];
-		$god['image'] = $me['picture']['url'];
-		$god['email'] = $me['email'];
+		$god['image'] = $facebookData['picture']['url']?$facebookData['picture']['url']:"";
+		$god['email'] = $facebookData['email']?:"noemail@campusbox.org";
 		$god['roll_number'] = $body['roll']	;
 		$student = new Student($god);
 		$this->spot->mapper("App\Student")->save($student);
@@ -84,7 +79,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 	//			->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 	//	}
 	//	for ($i=0; $i < count($body['skills']); $i++) { 
-	//		$skills['student_id'] = $registered_student['data']['id'];
+	//		$skills['username'] = $registered_student['data']['id'];
 	//		$skills['skill_name'] = $body['skills'][$i]['name'];
 	//		$skill = new StudentSkill($skills);
 	//		$this->spot->mapper("App\StudentSkill")->save($skill);
@@ -96,7 +91,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		}
 		for ($i=0; $i < count($body['intrests']); $i++) {
-			$intrests['student_id'] = $registered_student['data']['id'];
+			$intrests['username'] = $registered_student['data']['id'];
 			$intrests['interest_id'] = $body['intrests'][$i]['id'];
 			$intrests['title'] = $body['intrests'][$i]['title'];
 			$intrest = new StudentInterest($intrests);
@@ -110,7 +105,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			"iat" => $now->getTimeStamp(),
 			"exp" => $future->getTimeStamp(),
 			"jti" => $jti,
-			"student_id" => $registered_student["data"]["id"],
+			"username" => $registered_student["data"]["id"],
 		];
 		$secret = getenv("JWT_SECRET");
 		$token = JWT::encode($payload, $secret, "HS256");
@@ -122,15 +117,15 @@ $app->post("/signup", function ($request, $response, $arguments) {
 	}
 	else if ($body['type']=="google"){
 		$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
-		$me = json_decode($json);
-		echo $me->name;
+		$googleData = json_decode($json);
+		echo $googleData->name;
 		$student1 = $this->spot
 		->mapper("App\Student")
-		->where(['email' => $me->email]);
+		->where(['email' => $googleData->email]);
 		if (count($student1) != 0) {
 			$data["registered"] = true;
-			$data["name"] = $me->name;
-			$data["email"] = $me->email;
+			$data["name"] = $googleData->name;
+			$data["email"] = $googleData->email;
 
 			return $response->withStatus(201)
 			->withHeader("Content-Type", "application/json")
@@ -139,13 +134,13 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		else{
 
 
-		$god['name'] = $me->name;
-		$god['gender'] = $me->gender;
-		$god['birthday'] = isset($me['birthday']) ?$me['birthday']: null;
+		$god['name'] = $googleData->name;
+		$god['gender'] = $googleData->gender;
+		$god['birthday'] = isset($googleData['birthday']) ?$googleData['birthday']: null;
 		$god['about'] = "Apparently, this user prefers to keep an air of mystery about them";
 		$god['college_id'] = $body['college_id'];
-		$god['image'] = $me->picture;
-		$god['email'] = $me->email;
+		$god['image'] = $googleData->picture;
+		$god['email'] = $googleData->email;
 		$god['roll_number'] = $body['roll']	;
 		$student = new Student($god);
 		//$this->spot->mapper("App\Student")->save($student);
@@ -162,7 +157,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		}
 		for ($i=0; $i < count($body['skills']); $i++) { 
-			$skills['student_id'] = $registered_student['data']['id'];
+			$skills['username'] = $registered_student['data']['id'];
 			$skills['skill_name'] = $body['skills'][$i]['name'];
 			$skill = new StudentSkill($skills);
 			$this->spot->mapper("App\StudentSkill")->save($skill);
@@ -174,7 +169,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		}
 		for ($i=0; $i < count($body['intrests']); $i++) {
-			$intrests['student_id'] = $registered_student['data']['id'];
+			$intrests['username'] = $registered_student['data']['id'];
 			$intrests['interest_id'] = $body['intrests'][$i];
 			$intrest = new StudentInterest($intrests);
 			$this->spot->mapper("App\StudentInterest")->save($intrest);
@@ -187,7 +182,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			"iat" => $now->getTimeStamp(),
 			"exp" => $future->getTimeStamp(),
 			"jti" => $jti,
-			"student_id" => $registered_student["data"]["id"],
+			"username" => $registered_student["data"]["id"],
 		];
 		$secret = getenv("JWT_SECRET");
 		$token = JWT::encode($payload, $secret, "HS256");

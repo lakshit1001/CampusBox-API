@@ -25,7 +25,7 @@ use Spot\MapperInterface as Mapper;
        
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "student_id" => ["type" => "integer"],
+        "username" => ["type" => "integer"],
         "college_id" => ["type" => "string"],
         "rollnumber" => ["type" => "string"]
         ];

@@ -76,21 +76,21 @@ class Student extends \Spot\Entity {
 			// 'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'class_group_id'),
 			// 'CreativeContents' => $mapper->hasMany($entity, 'App\CreativeContent', 'post_id'),
 
-			 'Events' => $mapper->hasMany($entity, 'App\Event', 'created_by_id'),
-			  'SocialAccounts' => $mapper->hasMany($entity, 'App\SocialAccount', 'student_id'),
+			 'Events' => $mapper->hasMany($entity, 'App\Event', 'created_by_username'),
+			  'SocialAccounts' => $mapper->hasMany($entity, 'App\SocialAccount', 'username'),
 			// 'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
-			//'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'student_id'),
-			// 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'student_id'),
-			//'Participants' => $mapper->hasMany($entity, 'App\Event', 'student_id'),
-//			'Skills' => $mapper->hasMany($entity, 'App\Skill', 'student_id'),
-		 'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'student_id'),
-		 'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'student_id'),
-		 'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'student_id'),
+			//'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'username'),
+			// 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'username'),
+			//'Participants' => $mapper->hasMany($entity, 'App\Event', 'username'),
+//			'Skills' => $mapper->hasMany($entity, 'App\Skill', 'username'),
+		 'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'username'),
+		 'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'username'),
+		 'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'username'),
 		 'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'followed_id', 'follower_id'),
 
-			//'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'student_id')
+			//'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'username')
 
-			'Interets' => $mapper->hasMany($entity, 'App\StudentInterest', 'student_id'),
+			'Interets' => $mapper->hasMany($entity, 'App\StudentInterest', 'username'),
 			// 'hostel' => $mapper->hasOne($entity, 'App\College', 'user_id')
 		];
 	}

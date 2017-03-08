@@ -11,7 +11,7 @@ class Content extends \Spot\Entity {
 	public static function fields() {
 		return [
 			"content_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
-			"created_by_id" => ["type" => "integer", "required" => true],
+			"created_by_username" => ["type" => "string", "required" => true],
 			"title" => ["type" => "string", "required" => true],
 			"description" => ["type" => "string", "required" => true],
 			"timer" => ["type" => "text", "value" => new \DateTime()],
@@ -34,7 +34,7 @@ class Content extends \Spot\Entity {
 	public function clear() {
 		$this->data([
 			"content_id" => null,
-			"created_by_id" => null,
+			"created_by_username" => null,
 			"title" => null,
 			"description" => null,
 			"timer" => null,
@@ -46,11 +46,11 @@ class Content extends \Spot\Entity {
 			// 'Images' => $mapper->hasMany($entity, 'App\ContentImage', 'content_id'),
 			//'Updates' => $mapper->hasMany($entity, 'App\ContentUpdates', 'content_id'),
 			//  'Type' => $mapper->belongsTo($entity, 'App\ContentType', 'content_type_id'),
-			'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_id'),
-			//'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'student_id', 'content_id'),
+			'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_username'),
+			//'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'username', 'content_id'),
 			// 'Tags' => $mapper->hasManyThrough($entity, 'App\Tag', 'App\ContentCategory', 'tag_id', 'content_id'),
-			// 'Likes' => $mapper->hasManyThrough($entity, 'App\Student', 'App\ContentLikes', 'student_id', 'content_id'),
-			// 'Bookmarked' => $mapper->hasManyThrough($entity, 'App\Student', 'App\ContentBookmarks', 'student_id', 'content_id'),
+			// 'Likes' => $mapper->hasManyThrough($entity, 'App\Student', 'App\ContentLikes', 'username', 'content_id'),
+			// 'Bookmarked' => $mapper->hasManyThrough($entity, 'App\Student', 'App\ContentBookmarks', 'username', 'content_id'),
 			//'StudentsBookmarked' => $mapper->hasMany($entity, 'App\ContentBookmarks', 'content_id'),
 			'Appreciates' => $mapper->hasMany($entity, 'App\ContentAppreciate', 'content_id'),
 			'Appreciated' => $mapper->hasMany($entity, 'App\ContentAppreciate', 'content_id'),

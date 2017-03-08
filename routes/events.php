@@ -62,7 +62,7 @@ $app->get("/events", function ($request, $response, $arguments) {
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($events, new EventTransformer(['student_id' => $test]));
+	$resource = new Collection($events, new EventTransformer(['username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
 
 	return $response->withStatus(200)
@@ -101,12 +101,13 @@ $app->post("/events", function ($request, $response, $arguments) {
 		->write(json_encode($event, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->get("/events/{id}", function ($request, $response, $arguments) {
+$app->get("/event/{id}", function ($request, $response, $arguments) {
+	$test = $this->token->decoded->username;
 
 	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["event.all", "event.read"])) {
-		throw new ForbiddenException("Token not allowed to list events.", 403);
-	}
+//	if (true === $this->token->hasScope(["event.all", "event.read"])) {
+//		throw new ForbiddenException("Token not allowed to list events.", 403);
+//	}
 
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
@@ -129,7 +130,7 @@ $app->get("/events/{id}", function ($request, $response, $arguments) {
 	/* Serialize the response data. */
 	$fractal = new Manager();
 	$fractal->setSerializer(new DataArraySerializer);
-	$resource = new Item($event, new EventTransformer);
+	$resource = new Item($event, new EventTransformer(['username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
 
 	return $response->withStatus(200)

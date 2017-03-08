@@ -23,7 +23,7 @@ use Spot\MapperInterface as Mapper;
        
 
         "event_report_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "student_id" => ["type" => "integer", "unsigned" => true],
+        "username" => ["type" => "string"],
         "type" => ["type" => "string"],
         "reason" => ["type" => "string"],
         "timer" => ["type" => "datetime", "value" => new \DateTime()],

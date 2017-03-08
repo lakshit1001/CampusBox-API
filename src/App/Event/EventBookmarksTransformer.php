@@ -13,7 +13,7 @@ class EventBookmarksTransformer extends Fractal\TransformerAbstract {
 		return [
 			// "event_bookmark_id" => (integer) $eventbookmarks->event_bookmark_id ?: 0,
 			"event_id" => (integer) $eventbookmarks->event_id ?: 0,
-			"student_id" => (integer) $eventbookmarks->student_id ?: 0,
+			"username" => (integer) $eventbookmarks->username ?: 0,
 		];
 	}
 }

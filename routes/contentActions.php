@@ -12,21 +12,21 @@
 
  $app->post("/bookmarkContent/{content_id}", function ($request, $response, $arguments) {
    /* Check if token has needed scope. */
-   //if ($this->token->decoded->student_id) {
+   //if ($this->token->decoded->username) {
     //throw new ForbiddenException("Token not allowed", 403);
     //s}
 $body = [
-"student_id" => $this->token->decoded->student_id,
+"username" => $this->token->decoded->username,
 "content_id" => $arguments["content_id"]
 ];
 $bookmark = new ContentBookmarks($body);
 if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
     "content_id" => $arguments["content_id"],
-    "student_id" =>  $this->token->decoded->student_id
+    "username" =>  $this->token->decoded->username
     ])) {
     $this->spot->mapper("App\ContentBookmarks")->save($bookmark);
     }else{
-        throw new NotFoundException("000 liked it", 404);
+        throw new NotFoundException("Already liked", 404);
     }
     /* Add Last-Modified and ETag headers to response. */
     $response = $this->cache->withEtag($response, $bookmark->etag());
@@ -40,13 +40,13 @@ if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
  
  $app->delete("/bookmarkContent/{content_id}", function ($request, $response, $arguments) {
     /* Check if token has needed scope. */
-    //if ($this->token->decoded->student_id) {
+    //if ($this->token->decoded->username) {
     //    throw new ForbiddenException("Token not allowed", 403);
     //}
     /* Load existing bookmark using provided content_id */
     if (false === $bookmark = $this->spot->mapper("App\ContentBookmarks")->first([
         "content_id" => $arguments["content_id"],
-        "student_id" =>  $this->token->decoded->student_id
+        "username" =>  $this->token->decoded->username
         ])) {
         throw new NotFoundException("Had never bookmarked it.", 404);
     }
@@ -60,17 +60,17 @@ if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
 
  $app->post("/appreciateContent/{content_id}", function ($request, $response, $arguments) {
      /* Check if token has needed scope. */
-     //if ($this->token->decoded->student_id) {
+     //if ($this->token->decoded->username) {
      //   throw new ForbiddenException("Token not allowed", 403);
     //}
     $body = [
-    "student_id" => $this->token->decoded->student_id,
+    "username" => $this->token->decoded->username,
     "content_id" => $arguments["content_id"]
     ];
     $appreciate = new ContentAppreciate($body);
     if (false === $check = $this->spot->mapper("App\ContentAppreciate")->first([
         "content_id" => $arguments["content_id"],
-        "student_id" =>  $this->token->decoded->student_id
+        "username" =>  $this->token->decoded->username
         ])) {
   $this->spot->mapper("App\ContentAppreciate")->save($appreciate);
   }else  {
@@ -88,13 +88,13 @@ if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
 
  $app->delete("/appreciateContent/{content_id}", function ($request, $response, $arguments) {
      /* Check if token has needed scope. */
-     //if ($this->token->decoded->student_id) {
+     //if ($this->token->decoded->username) {
      //   throw new ForbiddenException("Token not allowed", 403);
     //}
     /* Load existing appreciate using provided content_id */
     if (false === $appreciate = $this->spot->mapper("App\ContentAppreciate")->first([
         "content_id" => $arguments["content_id"],
-        "student_id" =>  $this->token->decoded->student_id
+        "username" =>  $this->token->decoded->username
         ])) {
         throw new NotFoundException("Had never appreciateed it.", 404);
     };

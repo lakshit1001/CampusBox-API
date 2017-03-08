@@ -14,9 +14,9 @@ class ContentTransformer extends Fractal\TransformerAbstract {
 
     public function transform(Content $content) {
 
-        $appreciates = $content->Appreciated->select()->where(['student_id' => '1']);
+        $appreciates = $content->Appreciated->select()->where(['username' => '1']);
         $this->params['appreciateValue'] = (count($appreciates) > 0 ? true : false); // returns true
-       $bookmarks = $content->Bookmarked->select()->where(['student_id' => '1']);
+       $bookmarks = $content->Bookmarked->select()->where(['username' => '1']);
         $this->params['bookmarkValue'] = (count($bookmarks) > 0 ? true : false); // returns true
         
         return [
@@ -34,7 +34,8 @@ class ContentTransformer extends Fractal\TransformerAbstract {
             "created" => [
                 "by" => [
                     "name" => (string) $content->Owner['name'] ?: null,
-                    "link" => (integer) $content->Owner['student_id'] ?: 0,
+                    "username" => (integer) $content->Owner['username'] ?: 0,
+                    "link" => (integer) $content->Owner['username'] ?: 0,
                     "image" => (string) $content->Owner['image'] ?: null,
                     ],
                 "at" => $content->timer ?: 0,
@@ -64,7 +65,7 @@ class ContentTransformer extends Fractal\TransformerAbstract {
                     "name" => (string) $content->Tag['name'] ?: null,
                     "link" => (integer) $content->Tag['tag_id'] ?: 0,
                 ],
-                "total" => (integer) $content->created_by_id ?: 0,
+                "total" => (integer) $content->created_by_username ?: 0,
             "links" => [
                 "self" => "/contents/{$content->id}",
             ],

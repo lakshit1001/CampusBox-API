@@ -17,7 +17,7 @@ use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Serializer\DataArraySerializer;
 
-$app->get("/student/{student_id}", function ($request, $response, $arguments) {
+$app->get("/student/{username}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
     //if (true === $this->token->hasScope(["student.all", "student.read"])) {
@@ -26,7 +26,7 @@ $app->get("/student/{student_id}", function ($request, $response, $arguments) {
 
     /* Load existing student using provided id */
     if (false === $student = $this->spot->mapper("App\Student")->first([
-        "student_id" => $arguments["student_id"]
+        "username" => $arguments["username"]
     ])) {
         throw new NotFoundException("Student not found.", 404);
     };
@@ -49,7 +49,7 @@ $app->get("/student/{student_id}", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->get("/studentEvents/{student_id}", function ($request, $response, $arguments) {
+$app->get("/studentEvents/{username}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
     // if (true === $this->token->hasScope(["event.all", "event.list"])) {
@@ -58,12 +58,12 @@ $app->get("/studentEvents/{student_id}", function ($request, $response, $argumen
 
     // }
 
-    //$test = $this->token->decoded->student_id;
+    //$test = $this->token->decoded->username;
 
     /* Use ETag and date from Event with most recent update. */
     $first = $this->spot->mapper("App\Event")
         ->all()
-        ->where(["created_by_id" => $arguments["student_id"]])
+        ->where(["created_by_username" => $arguments["username"]])
         ->order(["time_created" => "DESC"])
         ->first();
 
@@ -90,7 +90,7 @@ $app->get("/studentEvents/{student_id}", function ($request, $response, $argumen
     if (isset($_GET['include'])) {
         $fractal->parseIncludes($_GET['include']);
     }
-    $resource = new Collection($events, new EventTransformer(['student_id' => $test]));
+    $resource = new Collection($events, new EventTransformer(['username' => $test]));
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)
@@ -99,7 +99,7 @@ $app->get("/studentEvents/{student_id}", function ($request, $response, $argumen
 });
 
 
-$app->get("/studentContents/{student_id}", function ($request, $response, $arguments) {
+$app->get("/studentContents/{username}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
     // if (true === $this->token->hasScope(["content.all", "content.list"])) {
@@ -108,7 +108,7 @@ $app->get("/studentContents/{student_id}", function ($request, $response, $argum
 
     // }
 
-    //$test = $this->token->decoded->student_id;
+    //$test = $this->token->decoded->username;
 
     /* Use ETag and date from Content with most recent update. */
     $first = $this->spot->mapper("App\Content")
@@ -131,7 +131,7 @@ $app->get("/studentContents/{student_id}", function ($request, $response, $argum
 
     $contents = $this->spot->mapper("App\Content")
         ->all()
-        ->where(["created_by_id" => $arguments["student_id"]])
+        ->where(["created_by_username" => $arguments["username"]])
         ->order(["timer" => "DESC"]);
 
     /* Serialize the response data. */
@@ -140,7 +140,7 @@ $app->get("/studentContents/{student_id}", function ($request, $response, $argum
     if (isset($_GET['include'])) {
         $fractal->parseIncludes($_GET['include']);
     }
-    $resource = new Collection($contents, new ContentTransformer(['student_id' => $test]));
+    $resource = new Collection($contents, new ContentTransformer(['username' => $test]));
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)
@@ -148,7 +148,7 @@ $app->get("/studentContents/{student_id}", function ($request, $response, $argum
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->get("/student/{student_id}/{type}", function ($request, $response, $arguments) {
+$app->get("/student/{username}/{type}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
     //if (true === $this->token->hasScope(["student.all", "student.read"])) {
@@ -157,7 +157,7 @@ $app->get("/student/{student_id}/{type}", function ($request, $response, $argume
 
     /* Load existing student using provided id */
     if (false === $student = $this->spot->mapper("App\Student")->first([
-        "student_id" => $arguments["student_id"]
+        "username" => $arguments["username"]
     ])) {
         throw new NotFoundException("Student not found.", 404);
     };
@@ -172,10 +172,10 @@ $app->get("/student/{student_id}/{type}", function ($request, $response, $argume
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    if($arguments["student_id"]==""){
+    if($arguments["username"]==""){
         
     $resource = new Item($student, new StudentTransformer);
-    }elseif($arguments["student_id"]==""){
+    }elseif($arguments["username"]==""){
 
     $resource = new Item($student, new StudentTransformer);
     }

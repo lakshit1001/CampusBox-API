@@ -25,7 +25,7 @@ use Spot\MapperInterface as Mapper;
        
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "student_id" => ["type" => "integer"],
+        "username" => ["type" => "string"],
         "skill_name" => ["type" => "string"]
         ];
     }
@@ -45,7 +45,7 @@ use Spot\MapperInterface as Mapper;
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-            'Skill' => $mapper->belongsTo($entity, 'App\Student', 'student_id')
+            'Skill' => $mapper->belongsTo($entity, 'App\Student', 'username')
             ];
     }
 }

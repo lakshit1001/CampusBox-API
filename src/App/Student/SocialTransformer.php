@@ -13,7 +13,7 @@ class SocialTransformer extends Fractal\TransformerAbstract
     public function transform(SocialAccount $social)
     {
         return [
-            "id" => (integer)$social->student_id?: 0 ,
+            "id" => (integer)$social->username?: 0 ,
             "type" => (string)$social->type?: null ,
             "icon" => (string)$social->icon?: null ,
             "link" => (string)$social->link?: null ,

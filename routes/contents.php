@@ -22,8 +22,7 @@ $app->get("/contents", function ($request, $response, $arguments) {
 
 	// }
 
-	//$test = $this->token->decoded->student_id;
-	$test = 2;
+	$test = $this->token->decoded->username;
 
 	/* Use ETag and date from Content with most recent update. */
 	$first = $this->spot->mapper("App\Content")
@@ -54,7 +53,7 @@ $app->get("/contents", function ($request, $response, $arguments) {
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($contents, new ContentTransformer(['student_id' => $test]));
+	$resource = new Collection($contents, new ContentTransformer(['username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
 
 	return $response->withStatus(200)
@@ -92,12 +91,12 @@ $app->post("/contents", function ($request, $response, $arguments) {
 		->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->get("/contents/{id}", function ($request, $response, $arguments) {
+$app->get("/content/{id}", function ($request, $response, $arguments) {
 
 	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["content.all", "content.read"])) {
-		throw new ForbiddenException("Token not allowed to list contents.", 403);
-	}
+	//if (true === $this->token->hasScope(["content.all", "content.read"])) {
+	//	throw new ForbiddenException("Token not allowed to list contents.", 403);
+	//}
 
 	/* Load existing content using provided id */
 	if (false === $content = $this->spot->mapper("App\Content")->first([

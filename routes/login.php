@@ -26,12 +26,12 @@ $app->post("/login", function ($request, $response, $arguments) {
 				$student = new Student();
 				$student = $this->spot
 				->mapper("App\Student")
-				->where(['email' => $me['email']]);
+				->where(['email' => ($me['email']?:"noemail@campusbox.org")]);
 
 				if (count($student) == 0) {
 					$data["registered"] = false;
 					$data["name"] = $me['name'];
-					$data["email"] = $me['email'];
+					$data["email"] = $me['email']?:"noemail@campusbox.org";
 
 					return $response->withStatus(201)
 					->withHeader("Content-Type", "application/json")

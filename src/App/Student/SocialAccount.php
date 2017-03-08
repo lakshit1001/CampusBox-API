@@ -23,7 +23,7 @@
 
 
         "social_account_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "student_id" => ["type" => "integer"],
+        "username" => ["type" => "string"],
         "type" => ["type" => "integer"],
         "token" => ["type" => "string"],
         "link" => ["type" => "string"],
@@ -47,7 +47,7 @@
     {
         $this->data([
             "social_account_id" => 0,
-                   "student_id" => 0,
+                   "username" => 0,
                    "type" => 0,
                    "token" => null,
                    "link" => null,
@@ -63,7 +63,7 @@
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Socialid' => $mapper->belongsTo($entity, 'App\Student', 'student_id'),
+        'Socialid' => $mapper->belongsTo($entity, 'App\Student', 'username'),
         ];
     }
 }

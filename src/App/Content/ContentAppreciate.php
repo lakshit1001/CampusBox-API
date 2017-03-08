@@ -18,7 +18,7 @@ class ContentAppreciate extends \Spot\Entity {
 
 			"content_appreciate_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"content_id" => ["type" => "integer", "unsigned" => true],
-			"student_id" => ["type" => "integer", "unsigned" => true],
+			"username" => ["type" => "string"],
 			"timer" => ["type" => "datetime"],
 		];
 	}
@@ -33,7 +33,8 @@ class ContentAppreciate extends \Spot\Entity {
 		});
 	}
 	public function timestamp() {
-		return $this->timer->getTimestamp();
+		$abc =  new \DateTime();
+		return $abc->getTimestamp();
 	}
 
 	public function etag() {
@@ -48,7 +49,7 @@ class ContentAppreciate extends \Spot\Entity {
 	public static function relations(MapperInterface $mapper, EntityInterface $entity) {
 		return [
 			'Content' => $mapper->belongsTo($entity, 'App\Content', 'content_id'),
-			'Student' => $mapper->belongsTo($entity, 'App\Content', 'student_id')
+			'Student' => $mapper->belongsTo($entity, 'App\Content', 'username')
 		];
 	}
 }

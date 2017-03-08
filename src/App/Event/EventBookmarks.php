@@ -18,7 +18,7 @@ class EventBookmarks extends \Spot\Entity {
 
 			"event_bookmark_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"event_id" => ["type" => "integer", "unsigned" => true],
-			"student_id" => ["type" => "integer", "unsigned" => true],
+			"username" => ["type" => "string"],
 			"timer" => ["type" => "datetime"],
 		];
 	}
@@ -48,7 +48,7 @@ class EventBookmarks extends \Spot\Entity {
 	public static function relations(MapperInterface $mapper, EntityInterface $entity) {
 		return [
 			'Event' => $mapper->belongsTo($entity, 'App\Event', 'event_id'),
-			'Student' => $mapper->belongsTo($entity, 'App\Event', 'student_id')
+			'Student' => $mapper->belongsTo($entity, 'App\Event', 'username')
 		];
 	}
 }

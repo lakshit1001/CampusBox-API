@@ -11,17 +11,17 @@
 
  $app->post("/bookmarkEvent/{event_id}", function ($request, $response, $arguments) {
    /* Check if token has needed scope. */
-   //if ($this->token->decoded->student_id) {
+   //if ($this->token->decoded->username) {
     //throw new ForbiddenException("Token not allowed", 403);
     //s}
 $body = [
-"student_id" => $this->token->decoded->student_id,
+"username" => $this->token->decoded->username,
 "event_id" => $arguments["event_id"]
 ];
 $bookmark = new EventBookmarks($body);
 if (false === $check = $this->spot->mapper("App\EventBookmarks")->first([
     "event_id" => $arguments["event_id"],
-    "student_id" =>  $this->token->decoded->student_id
+    "username" =>  $this->token->decoded->username
     ])) {
     $this->spot->mapper("App\EventBookmarks")->save($bookmark);
     }else{
@@ -39,13 +39,13 @@ if (false === $check = $this->spot->mapper("App\EventBookmarks")->first([
  
  $app->delete("/bookmarkEvent/{event_id}", function ($request, $response, $arguments) {
     /* Check if token has needed scope. */
-    //if ($this->token->decoded->student_id) {
+    //if ($this->token->decoded->username) {
     //    throw new ForbiddenException("Token not allowed", 403);
     //}
     /* Load existing bookmark using provided event_id */
     if (false === $bookmark = $this->spot->mapper("App\EventBookmarks")->first([
         "event_id" => $arguments["event_id"],
-        "student_id" =>  $this->token->decoded->student_id
+        "username" =>  $this->token->decoded->username
         ])) {
         throw new NotFoundException("Had never bookmarked it.", 404);
     }
@@ -59,17 +59,17 @@ if (false === $check = $this->spot->mapper("App\EventBookmarks")->first([
 
  $app->post("/rsvpEvent/{event_id}", function ($request, $response, $arguments) {
      /* Check if token has needed scope. */
-     //if ($this->token->decoded->student_id) {
+     //if ($this->token->decoded->username) {
      //   throw new ForbiddenException("Token not allowed", 403);
     //}
     $body = [
-    "student_id" => $this->token->decoded->student_id,
+    "username" => $this->token->decoded->username,
     "event_id" => $arguments["event_id"]
     ];
     $rsvp = new EventRsvp($body);
     if (false === $check = $this->spot->mapper("App\EventRsvp")->first([
         "event_id" => $arguments["event_id"],
-        "student_id" =>  $this->token->decoded->student_id
+        "username" =>  $this->token->decoded->username
         ])) {
   $this->spot->mapper("App\EventRsvp")->save($rsvp);
   }else  {
@@ -87,13 +87,13 @@ if (false === $check = $this->spot->mapper("App\EventBookmarks")->first([
 
  $app->delete("/rsvpEvent/{event_id}", function ($request, $response, $arguments) {
      /* Check if token has needed scope. */
-     //if ($this->token->decoded->student_id) {
+     //if ($this->token->decoded->username) {
      //   throw new ForbiddenException("Token not allowed", 403);
     //}
     /* Load existing rsvp using provided event_id */
     if (false === $rsvp = $this->spot->mapper("App\EventRsvp")->first([
         "event_id" => $arguments["event_id"],
-        "student_id" =>  $this->token->decoded->student_id
+        "username" =>  $this->token->decoded->username
         ])) {
         throw new NotFoundException("Had never rsvped it.", 404);
     };

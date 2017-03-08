@@ -42,7 +42,7 @@ Content-Type: application/json
 
 ```
 $ curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN>" -H "Cache-Control: no-cache" -d '{
-        "created_by_id": "3",
+        "created_by_username": "3",
         "college_id": "1",
         "type": "cultural",
         "price":200,
@@ -63,7 +63,7 @@ $ curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer <TOK
 
 ```
 $ curl -X PATCH -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN>" -H "If-Unmodified-Since: Sat, 16 Apr 2016 10:27:16 GMT" -H "Cache-Control: no-cache" -d '{
-        "created_by_id": "3",
+        "created_by_username": "3",
         "college_id": "1",
         "type": "cultural",
         "price":200,
@@ -78,7 +78,7 @@ $ curl -X PATCH -H "Content-Type: application/json" -H "Authorization: Bearer <T
 
 ```
 $ curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN>" -H "If-Unmodified-Since: 2017-02-12 08:11:39.000000" -H "Cache-Control: no-cache" -d '{
-        "created_by_id": "3",
+        "created_by_username": "3",
         "college_id": "1",
         "type": "cultural",
         "price":200,

@@ -13,7 +13,7 @@
  use League\Fractal\Resource\Item;
  use League\Fractal\Serializer\DataArraySerializer;
 
- $app->get("/notifications/{student_id}", function ($request, $response, $arguments) {
+ $app->get("/notifications/{username}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
     // if (true === $this->token->hasScope(["event.all", "event.list"])) {
@@ -22,11 +22,11 @@
 
     // }
 
-    $student_id =$arguments["student_id"];
+    $username =$arguments["username"];
 
     $follows = $this->spot->mapper("App\StudentFollow")
         ->all()
-        ->where(["followed_id" => $student_id])
+        ->where(["followed_id" => $username])
         ->order(["timer" => "DESC"]);
 
     /* Serialize the response data. */
@@ -35,9 +35,9 @@
     if (isset($_GET['include'])) {
         $fractal->parseIncludes($_GET['include']);
     }
-    $resource1 = new Collection($follows, new StudentFollowTransformer(['student_id' => $student_id ]));
-   // $resource2 = new Collection($students, new StudentMiniTransformer(['student_id' => '1' ]));
-   // $resource3 = new Collection($content, new ContentMiniTransformer(['student_id' => '1' ]));
+    $resource1 = new Collection($follows, new StudentFollowTransformer(['username' => $username ]));
+   // $resource2 = new Collection($students, new StudentMiniTransformer(['username' => '1' ]));
+   // $resource3 = new Collection($content, new ContentMiniTransformer(['username' => '1' ]));
     
     $arrs = array();
     $arrs[0] = $fractal->createData($resource1)->toArray();
