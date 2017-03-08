@@ -28,7 +28,7 @@ class Event extends \Spot\Entity {
 			"score" => ["type" => "integer"],
 		];
 	}
-	public static function events(EventEmitter $emitter) {
+		public static function events(EventEmitter $emitter) {
 		$emitter->on("beforeInsert", function (Entity $entity, MapperInterface $mapper) {
 			$entity->event_id = Base62::encode(random_bytes(9));
 		});
@@ -42,10 +42,6 @@ class Event extends \Spot\Entity {
 	public function etag() {
 		return md5($this->id . $this->timestamp());
 	}
-
-
-
-	
 	public function clear() {
 		$this->data([
 		]);

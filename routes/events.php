@@ -72,10 +72,6 @@ $app->get("/events", function ($request, $response, $arguments) {
 
 $app->post("/events", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	//if (true === $this->token->hasScope(["event.all", "event.create"])) {
-//		throw new ForbiddenException("Token not allowed to create events.", 403);
-//	}
 	$body = $request->getParsedBody();
 
 	$event = new Event($body);

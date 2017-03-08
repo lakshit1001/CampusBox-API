@@ -87,5 +87,5 @@ foreach($arrs as $arr) {
 }
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($list, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    ->write(json_encode($arrs[2], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     });
