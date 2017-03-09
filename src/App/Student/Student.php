@@ -14,11 +14,11 @@ class Student extends \Spot\Entity {
 
 	public static function fields() {
 		return [
-			"student_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
+			"student_id" => ["type" => "integer", "unsigned" => true,  "autoincrement" => true],
+			"username" => ["type" => "string", "primary" => true],
 			"college_id" => ["type" => "integer"],
 			"name" => ["type" => "string"],
 			"image" => ["type" => "string"],
-			"username" => ["type" => "string"],
 			"roll_number" => ["type" => "integer"],
 			"email" => ["type" => "string"],
 			"phone" => ["type" => "integer"],
@@ -31,7 +31,7 @@ class Student extends \Spot\Entity {
 			"year" => ["type" => "string"],
 			"class_id" => ["type" => "integer"],
 			"passout_year" => ["type" => "integer"],
-			"birthday" => ["type" => "datetime"],
+			"birthday" => ["type" => "string"],
 			"gender" => ["type" => "string"],
 		];
 	}

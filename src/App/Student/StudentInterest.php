@@ -17,7 +17,7 @@ use Spot\MapperInterface as Mapper;
  
  class StudentInterest extends \Spot\Entity
  {
-    protected static $table = "studentinterests";
+    protected static $table = "student_interests";
 
     public static function fields()
     {
@@ -27,6 +27,7 @@ use Spot\MapperInterface as Mapper;
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "username" => ["type" => "string"],
         "interest_id" => ["type" => "integer"],
+        "interest_name" => ["type" => "string"],
         ];
     }
 

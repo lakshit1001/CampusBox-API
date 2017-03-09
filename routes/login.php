@@ -1,6 +1,7 @@
 <?php
 
 use App\Student;
+use App\SocialAccount;
 use Facebook\Facebook;
 use Firebase\JWT\JWT;
 use Tuupola\Base62;
@@ -14,7 +15,7 @@ $app->post("/login", function ($request, $response, $arguments) {
 			'default_graph_version' => 'v2.8',
 			]);
 		try {
-			$x = $fb->get('/me?fields=email,name,id', $body['token']);
+			$x = $fb->get('/me?fields=email,name,id', $body['access_token']);
 			} catch (\Facebook\Exceptions\FacebookResponseExpception $e) {
 				echo 'Graph returned an error: ' . $e->getMessage();
 				exit;
@@ -22,17 +23,16 @@ $app->post("/login", function ($request, $response, $arguments) {
 					echo 'Facebook SDK returned an error: ' . $e->getMessage();
 					exit;
 				}
-				$me = $x->getGraphUser();
-				$student = new Student();
+				$facebookData = $x->getGraphUser();
+				$student = new SocialAccount();
 				$student = $this->spot
-				->mapper("App\Student")
-				->where(['email' => ($me['email']?:"noemail@campusbox.org")]);
+				->mapper("App\SocialAccount")
+				->where(['social_id' => ($facebookData['id'])])
+				->orwhere(['type' => $body['type']]);
 
 				if (count($student) == 0) {
 					$data["registered"] = false;
-					$data["name"] = $me['name'];
-					$data["email"] = $me['email']?:"noemail@campusbox.org";
-
+		
 					return $response->withStatus(201)
 					->withHeader("Content-Type", "application/json")
 					->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
@@ -48,8 +48,7 @@ $app->post("/login", function ($request, $response, $arguments) {
 					"iat" => $now->getTimeStamp(),
 					"exp" => $future->getTimeStamp(),
 					"jti" => $jti,
-					"sub" => $student[0]->student_id,
-					"student_id" => $student[0]->student_id,
+					"username" => $student[0]->username,
 					];
 					$secret = getenv("JWT_SECRET");
 					$token = JWT::encode($payload, $secret, "HS256");
@@ -67,16 +66,16 @@ $app->post("/login", function ($request, $response, $arguments) {
 			else if ($body['type']=="google"){
 
 				$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
-				$me = json_decode($json);
+				$googleData = json_decode($json);
+				$student = new SocialAccount();
 				$student = $this->spot
-				->mapper("App\Student")
-				->where(['email' => $me->email]);
+				->mapper("App\SocialAccount")
+				->where(['social_id' => $googleData->id])
+				->orwhere(['type' => $body['type']]);
 
 				if (count($student) == 0) {
 					$data["registered"] = false;
-					$data["name"] = $me->name;
-					$data["email"] = $me->email;
-
+					
 					return $response->withStatus(201)
 					->withHeader("Content-Type", "application/json")
 					->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
@@ -92,8 +91,8 @@ $app->post("/login", function ($request, $response, $arguments) {
 					"iat" => $now->getTimeStamp(),
 					"exp" => $future->getTimeStamp(),
 					"jti" => $jti,
-					"sub" => $student[0]->student_id,
-					"student_id" => $student[0]->student_id,
+					"sub" => $student[0]->username,
+					"username" => $student[0]->username,
 					];
 					$secret = getenv("JWT_SECRET");
 					$token = JWT::encode($payload, $secret, "HS256");

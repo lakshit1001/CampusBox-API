@@ -52,7 +52,7 @@ $container["Cors"] = function ($container) {
     return new Cors([
         "logger" => $container["logger"],
         "origin" => ["*"],
-        "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE","OPTIONS"],
         "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
         "headers.expose" => ["Authorization", "Etag"],
         "credentials" => true,

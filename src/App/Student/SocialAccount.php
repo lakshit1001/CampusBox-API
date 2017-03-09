@@ -24,12 +24,14 @@
 
         "social_account_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "username" => ["type" => "string"],
+        "social_id" => ["type" => "string"],
         "type" => ["type" => "integer"],
         "token" => ["type" => "string"],
         "link" => ["type" => "string"],
         "name" => ["type" => "string"],
         "email" => ["type" => "string"],
         "gender" => ["type" => "string"],
+        "about" => ["type" => "string"],
         "birthday" => ["type" => "string"],
         "picture" => ["type" => "string"],
         "cover" => ["type" => "string"]
@@ -54,6 +56,7 @@
                    "name" => null,
                    "email" => null,
                    "gender" => null,
+                   "about" => null,
                    "birthday" => null,
                    "picture" => null,
                    "cover" => null

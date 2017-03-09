@@ -1,5 +1,4 @@
 <?php
- 
 namespace App;
 use Spot\EntityInterface as Entity;
 use Spot\EventEmitter;
@@ -38,7 +37,6 @@ class Content extends \Spot\Entity {
 			"title" => null,
 			"description" => null,
 			"timer" => null,
-		
 		]);
 	}
 	public static function relations(Mapper $mapper, Entity $entity) {

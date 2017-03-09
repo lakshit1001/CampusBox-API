@@ -14,9 +14,9 @@ class ContentTransformer extends Fractal\TransformerAbstract {
 
     public function transform(Content $content) {
 
-        $appreciates = $content->Appreciated->select()->where(['username' => '1']);
+        $appreciates = $content->Appreciated->select()->where(['username' => 'lakshit1001']);
         $this->params['appreciateValue'] = (count($appreciates) > 0 ? true : false); // returns true
-       $bookmarks = $content->Bookmarked->select()->where(['username' => '1']);
+       $bookmarks = $content->Bookmarked->select()->where(['username' => 'lakshit1001']);
         $this->params['bookmarkValue'] = (count($bookmarks) > 0 ? true : false); // returns true
         
         return [
