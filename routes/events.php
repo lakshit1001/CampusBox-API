@@ -71,6 +71,52 @@ $app->get("/events", function ($request, $response, $arguments) {
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
+
+$app->get("/event/{event_id}", function ($request, $response, $arguments) {
+
+	$currentCursor = 3;
+	$previousCursor = 2;
+	$limit = 20;
+	$test = $this->token->decoded->username;
+
+	/* Use ETag and date from Event with most recent update. */
+	$first = $this->spot->mapper("App\Event")
+	->all()
+	->order(["time_created" => "DESC"])
+	->first();
+
+	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
+	// if ($first) {
+	// 	$response = $this->cache->withEtag($response, $first->etag());
+	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
+	// }
+
+	/* If-Modified-Since and If-None-Match request header handling. */
+	/* Heads up! Apache removes previously set Last-Modified header */
+	/* from 304 Not Modified responses. */
+	if ($this->cache->isNotModified($request, $response)) {
+		return $response->withStatus(304);
+	}
+		$events = $this->spot->mapper("App\Event")
+		->where(['event_id' => $arguments['event_id']])
+		->limit(1);
+	
+
+    // $newCursor = $events->last()->id;
+    // $cursor = new Cursor($currentCursor, $previousCursor, $newCursor, $events->count());
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+	$resource = new Collection($events, new EventTransformer(['username' => $test, 'type' => 'get']));
+	$data = $fractal->createData($resource)->toArray();
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
 $app->post("/eventsFilter", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 
@@ -134,6 +180,7 @@ $app->post("/addEvent", function ($request, $response, $arguments) {
 	$event['created_by_username'] =  $this->token->decoded->username;
 	$event['title'] = $body['event']['title'];
     $event['subtitle'] = $body['event']['subtitle'];
+    $event['image'] = $body['event']['croppedDataUrl'];
     $event['price'] = $body['event']['price'];
     $event['description'] = $body['event']['description'];
 	//$event['contactperson1'] = $body['event']['contactperson1'];
@@ -143,7 +190,7 @@ $app->post("/addEvent", function ($request, $response, $arguments) {
     $event['event_category_id'] = (int)$body['event']['category'];
     $event['link'] = $body['event']['link'];
     $event['organiser_name'] = $body['event']['organiserName'];
-    $event['organiser_phone'] = $body['event']['organiserPhone'];
+    $event['organiser_phone'] = (int)$body['event']['organiserPhone'];
     $event['organiser_link'] = $body['event']['organiserLink'];
     
     $event['to_date'] = $body['event']['toDate'];

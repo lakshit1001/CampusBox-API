@@ -53,7 +53,7 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
         LEFT JOIN content_appreciates
         ON contents.content_id = content_appreciates.content_id
         GROUP BY contents.content_id
-        ORDER BY score1 DESC");
+        ORDER BY score1 DESC  limit 4");
     
 
 
@@ -69,17 +69,17 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
 
     $students = $this->spot->mapper("App\Student")
     ->query("SELECT *, MATCH (name) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score1,".
-     "MATCH (username) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score2,".
-     "MATCH (about) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score3 ".
-     "FROM students WHERE MATCH(name) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
-     "or  MATCH(username) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
-     "or MATCH(about) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
-     "or MATCH(name) AGAINST('".$query."*' IN BOOLEAN MODE) ".
-     "OR MATCH(username) AGAINST('".$query."*' IN BOOLEAN MODE) ".
-     "OR name LIKE '%".$query."%'  ".
-     "OR username LIKE '%".$query."%'  ".
-     "OR about LIKE '%".$query."%'  ".
-     "order by score1 desc,score2 desc, score3 desc limit 4" );
+       "MATCH (username) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score2,".
+       "MATCH (about) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score3 ".
+       "FROM students WHERE MATCH(name) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
+       "or  MATCH(username) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
+       "or MATCH(about) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
+       "or MATCH(name) AGAINST('".$query."*' IN BOOLEAN MODE) ".
+       "OR MATCH(username) AGAINST('".$query."*' IN BOOLEAN MODE) ".
+       "OR name LIKE '%".$query."%'  ".
+       "OR username LIKE '%".$query."%'  ".
+       "OR about LIKE '%".$query."%'  ".
+       "order by score1 desc,score2 desc, score3 desc limit 4" );
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
@@ -94,15 +94,17 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
     $arrs[1] = $fractal->createData($resource1)->toArray();
     $arrs[0] = $fractal->createData($resource2)->toArray();
     $arrs[2] = $fractal->createData($resource3)->toArray();
-
-    $list = array();
-
+    $arrs[0] = array_filter($arrs[0]);
+    $arrs[1] = array_filter($arrs[1]);
+    $arrs[2] = array_filter($arrs[2]);
+    $list =[];
     foreach($arrs as $arr) {
-        if(is_array($arr)) {
-            $list = array_merge($list, (array)$arr);
+        foreach($arr as $item) {
+
+            $list[] = $item;
         }
     }
-    return $response->withStatus(200)
-    ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
+        return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($list, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    });
