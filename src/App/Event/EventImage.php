@@ -1,20 +1,20 @@
 <?php
 
- 
 
- namespace App;
 
- use Spot\EntityInterface as Entity;
- use Spot\MapperInterface as Mapper;
- use Spot\EventEmitter;
+namespace App;
 
- use Tuupola\Base62;
+use Spot\EntityInterface as Entity;
+use Spot\MapperInterface as Mapper;
+use Spot\EventEmitter;
 
- use Ramsey\Uuid\Uuid;
- use Psr\Log\LogLevel;
- 
- class ClassGroup extends \Spot\Entity
- {
+use Tuupola\Base62;
+
+use Ramsey\Uuid\Uuid;
+use Psr\Log\LogLevel;
+
+class ClassGroup extends \Spot\Entity
+{
     protected static $table = "event_images";
 
     public static function fields()
@@ -24,8 +24,8 @@
 
         "event_image_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "event_id" => ["type" => "integer" , "unsigned" => true],
-        "usl" => ["type" => "string"],
-                "timer" => ["type" => "datetime", "value" => new \DateTime()],
+        "url" => ["type" => "string"],
+        "timer" => ["type" => "datetime", "value" => new \DateTime()],
 
         ];
     }
@@ -34,11 +34,11 @@
     {
         $emitter->on("beforeInsert", function (EntityInterface $entity, MapperInterface $mapper) {
             $entity->college_id = Base62::encode(random_bytes(9));
-            });
+        });
         
         $emitter->on("beforeUpdate", function (EntityInterface $entity, MapperInterface $mapper) {
             $entity->timestamp = new \DateTime();
-            });
+        });
     }
 
     public function clear()

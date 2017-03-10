@@ -22,7 +22,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 	}
 	else if(!isset($body['roll']) || !isset($body['college_id']) ){
 		$error['message'] = 'Collge or roll missing !' ;
-	
+		
 		return $response->withStatus(201)
 		->withHeader("Content-Type", "application/json")
 		->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
@@ -76,49 +76,52 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		}
 
 				// if same account is not there but one with same emai is there just merge the accounts
-		$student = new SocialAccount();
-		$student = $this->spot
-		->mapper("App\SocialAccount")
-		->where(['email' => $facebookData['email']]);
-		if (count($student) > 0) {
+		if(isset( $facebookData['email'])){
+			
+			$student = new SocialAccount();
+			$student = $this->spot
+			->mapper("App\SocialAccount")
+			->where(['email' => $facebookData['email']]);
+			if (count($student) > 0) {
 
 
-			$social['username'] = $student[0]->username;
-			$social['social_id'] = $facebookData['id'];
-			$social['type'] = "facebook";
-			$social['token'] = $body['token'];
-			$social['name'] = isset($facebookData['name'])?$facebookData['name']:" ";
-			$social['email'] = isset($facebookData['email'])? $facebookData['email']:" ";
-			$social['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
-			$social['birthday'] = isset($facebookData['birthday']) ?$facebookData->getBirthday()->format('m/d/Y'):" ";
-			$social['link'] = isset($facebookData['link']) ?$facebookData['link']:" ";
-			$social['about'] = isset($facebookData['about']) ?$facebookData['about']: " ";
-			$social['picture'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
-			$social['cover'] = isset($facebookData['cover']['url'])?$facebookData['picture']['url']:" ";
-			$socialAccount = new SocialAccount($social);
-			$this->spot->mapper("App\SocialAccount")->save($socialAccount);
+				$social['username'] = $student[0]->username;
+				$social['social_id'] = $facebookData['id'];
+				$social['type'] = "facebook";
+				$social['token'] = $body['token'];
+				$social['name'] = isset($facebookData['name'])?$facebookData['name']:" ";
+				$social['email'] = isset($facebookData['email'])? $facebookData['email']:" ";
+				$social['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
+				$social['birthday'] = isset($facebookData['birthday']) ?$facebookData->getBirthday()->format('m/d/Y'):" ";
+				$social['link'] = isset($facebookData['link']) ?$facebookData['link']:" ";
+				$social['about'] = isset($facebookData['about']) ?$facebookData['about']: " ";
+				$social['picture'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
+				$social['cover'] = isset($facebookData['cover']['url'])?$facebookData['picture']['url']:" ";
+				$socialAccount = new SocialAccount($social);
+				$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 
-			$data["type"] = "login";
-			$now = new DateTime();
-			$future = new DateTime("now +30 days");
-			$server = $request->getServerParams();
-			$jti = Base62::encode(random_bytes(16));
+				$data["type"] = "login";
+				$now = new DateTime();
+				$future = new DateTime("now +30 days");
+				$server = $request->getServerParams();
+				$jti = Base62::encode(random_bytes(16));
 
-			$payload = [
-			"iat" => $now->getTimeStamp(),
-			"exp" => $future->getTimeStamp(),
-			"jti" => $jti,
-			"username" => $student[0]->username,
-			];
-			$secret = getenv("JWT_SECRET");
-			$token = JWT::encode($payload, $secret, "HS256");
-			$data["status"] = 'Already Registered with this email, facebook is now connected to the existing account.';
-			$data["token"] = $token;
-			return $response->withStatus(201)
-			->withHeader("Content-Type", "application/json")
-			->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		}
+				$payload = [
+				"iat" => $now->getTimeStamp(),
+				"exp" => $future->getTimeStamp(),
+				"jti" => $jti,
+				"username" => $student[0]->username,
+				];
+				$secret = getenv("JWT_SECRET");
+				$token = JWT::encode($payload, $secret, "HS256");
+				$data["status"] = 'Already Registered with this email, facebook is now connected to the existing account.';
+				$data["token"] = $token;
+				return $response->withStatus(201)
+				->withHeader("Content-Type", "application/json")
+				->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+			}
 				// making a completly fresh account
+		}
 		else{
 				//we make a new username basis of the email provided 
 			if(isset($facebookData['email'])){
