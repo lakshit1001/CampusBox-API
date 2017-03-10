@@ -64,6 +64,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			"exp" => $future->getTimeStamp(),
 			"jti" => $jti,
 			"username" => $student[0]->username,
+						"student_id" => $student[0]->student_id,
+
 			];
 			$secret = getenv("JWT_SECRET");
 			$token = JWT::encode($payload, $secret, "HS256");
@@ -111,6 +113,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				"exp" => $future->getTimeStamp(),
 				"jti" => $jti,
 				"username" => $student[0]->username,
+				"college_id" => $student[0]->college_id,
 				];
 				$secret = getenv("JWT_SECRET");
 				$token = JWT::encode($payload, $secret, "HS256");
@@ -155,7 +158,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 
 					// add same data to social accounts table
-
+			$social['college_id'] = $body['college_id'];
+			$social['roll_number'] = $body['roll']	;
 			$social['username'] = $newUser['username'];
 			$social['social_id'] = $facebookData['id'];
 			$social['type'] = "facebook";
@@ -199,6 +203,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			"exp" => $future->getTimeStamp(),
 			"jti" => $jti,
 			"username" => $student[0]->username,
+			"student_id" => $student[0]->student_id,
 			];
 			$secret = getenv("JWT_SECRET");
 			$token = JWT::encode($payload, $secret, "HS256");
@@ -217,7 +222,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		->where(['email' => $googleData->email]);
 		if (count($student) > 0) {
 
-
+			$social['college_id'] = $body['college_id'];
+			$social['roll_number'] = $body['roll']	;
 			$social['username'] = $student[0]->username;
 			$social['social_id'] = $googleData->id;
 			$social['type'] = "google";
@@ -244,6 +250,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			"exp" => $future->getTimeStamp(),
 			"jti" => $jti,
 			"username" => $student[0]->username,
+						"student_id" => $student[0]->student_id,
+
 			];
 			$secret = getenv("JWT_SECRET");
 			$token = JWT::encode($payload, $secret, "HS256");
@@ -288,7 +296,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 
 			// add same data to social accounts table
-
+			$social['college_id'] = $body['college_id'];
+			$social['roll_number'] = $body['roll']	;
 			$social['username'] = $newUser['username'];
 			$social['social_id'] = $googleData->id;
 			$social['type'] = "google";
@@ -333,6 +342,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 	"exp" => $future->getTimeStamp(),
 	"jti" => $jti,
 	"username" => $newUser['username'],
+	"college_id" => $newUser['college_id'],
+
 	];
 	$secret = getenv("JWT_SECRET");
 	$token = JWT::encode($payload, $secret, "HS256");

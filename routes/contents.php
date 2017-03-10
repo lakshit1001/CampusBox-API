@@ -57,7 +57,7 @@ $username= 'lakshit1001';
     ->withHeader("Content-Type", "application/json")
     ->write(json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
- }
+ });
 $app->get("/contents[/{content_type_id}]", function ($request, $response, $arguments) {
 
 	/* Check if token has needed scope. */

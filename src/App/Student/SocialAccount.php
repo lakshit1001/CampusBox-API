@@ -18,6 +18,8 @@ class SocialAccount extends \Spot\Entity
     "social_account_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
     "username" => ["type" => "string"],
     "social_id" => ["type" => "string"],
+    "college_id" => ["type" => "integer"],
+    "roll_number" => ["type" => "integer"],
     "type" => ["type" => "integer"],
     "token" => ["type" => "string"],
     "link" => ["type" => "string"],

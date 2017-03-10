@@ -49,6 +49,7 @@ $app->post("/login", function ($request, $response, $arguments) {
 					"exp" => $future->getTimeStamp(),
 					"jti" => $jti,
 					"username" => $student[0]->username,
+					"college_id" => $student[0]->college_id,
 					];
 					$secret = getenv("JWT_SECRET");
 					$token = JWT::encode($payload, $secret, "HS256");
@@ -91,8 +92,8 @@ $app->post("/login", function ($request, $response, $arguments) {
 					"iat" => $now->getTimeStamp(),
 					"exp" => $future->getTimeStamp(),
 					"jti" => $jti,
-					"sub" => $student[0]->username,
 					"username" => $student[0]->username,
+					"college_id" => $student[0]->college_id,
 					];
 					$secret = getenv("JWT_SECRET");
 					$token = JWT::encode($payload, $secret, "HS256");

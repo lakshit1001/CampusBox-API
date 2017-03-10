@@ -3,6 +3,7 @@
 
 
 use App\Event;
+use App\EventTags;
 use App\EventTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
@@ -14,6 +15,7 @@ use League\Fractal\Pagination\Cursor;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\DataArraySerializer;
+
 
 $app->get("/events", function ($request, $response, $arguments) {
 
@@ -124,184 +126,51 @@ $app->post("/eventsFilter", function ($request, $response, $arguments) {
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->post("/addEvent", function ($request, $response, $arguments) {
 
+$app->post("/addEvent", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 
-	$event = new Event($body);
-	$this->spot->mapper("App\Event")->save($event);
+	$event['college_id'] =  $this->token->decoded->college_id;
+	$event['created_by_username'] =  $this->token->decoded->username;
+	$event['title'] = $body['event']['title'];
+    $event['subtitle'] = $body['event']['subtitle'];
+    $event['price'] = $body['event']['price'];
+    $event['description'] = $body['event']['description'];
+	//$event['contactperson1'] = $body['event']['contactperson1'];
+    $event['venue'] = $body['event']['venue'];
+    $event['audience'] = $body['event']['audience'];
+    $event['event_type_id'] = (int)$body['event']['type'];
+    $event['event_category_id'] = (int)$body['event']['category'];
+    $event['link'] = $body['event']['link'];
+    $event['organiser_name'] = $body['event']['organiserName'];
+    $event['organiser_phone'] = $body['event']['organiserPhone'];
+    $event['organiser_link'] = $body['event']['organiserLink'];
+    
+    $event['to_date'] = $body['event']['toDate'];
+    $event['to_time'] = $body['event']['toTime'];
+    $event['to_period'] = $body['event']['toPeriod']=="am"?0:1;
+    $event['from_date'] = $body['event']['fromDate'];
+    $event['from_time'] = $body['event']['fromTime'];
+    $event['from_period'] = $body['event']['fromPeriod']=="am"?0:1;
 
-	// /* Add Last-Modified and ETag headers to response. */
-	// $response = $this->cache->withEtag($response, $event->etag());
-	// $response = $this->cache->withLastModified($response, $event->timestamp());
+    echo var_dump($event);
+    $newEvent = new Event($event);
+    $this->spot->mapper("App\Event")->save($newEvent);
 
-	/* Serialize the response data. */
-	$fractal = new Manager();
-	$fractal->setSerializer(new DataArraySerializer);
-	$resource = new Item($event, new EventTransformer(['type' => 'post']));
-	$data = $fractal->createData($resource)->toArray();
-	$event = new Event($data);
-	$this->spot->mapper("App\Event")->save($event);
-	$data["status"] = "ok";
-	$data["message"] = "New event created";
+	//adding interests 
 
-	return $response->withStatus(201)
-	->withHeader("Content-Type", "application/json")
-		// ->withHeader("Location", $data["data"]["links"]["self"])
-	->write(json_encode($event, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
+    for ($i=0; $i < count($body['tags']); $i++) {
+         $tags['event_id'] = '1';
+         $tags['name'] = $body['tags'][$i]['name'];
+         $intrest = new EventTags($tags);
+         $this->spot->mapper("App\EventTags")->save($intrest);
+ }
 
-$app->get("/event/{id}", function ($request, $response, $arguments) {
-	$test = $this->token->decoded->username;
-
-	/* Check if token has needed scope. */
-//	if (true === $this->token->hasScope(["event.all", "event.read"])) {
-//		throw new ForbiddenException("Token not allowed to list events.", 403);
-//	}
-
-	/* Load existing event using provided id */
-	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"event_id" => $arguments["id"],
-		])) {
-		throw new NotFoundException("Event not found.", 404);
-};
-
-/* Add Last-Modified and ETag headers to response. */
-$response = $this->cache->withEtag($response, $event->etag());
-$response = $this->cache->withLastModified($response, $event->timestamp());
-
-/* If-Modified-Since and If-None-Match request header handling. */
-/* Heads up! Apache removes previously set Last-Modified header */
-/* from 304 Not Modified responses. */
-if ($this->cache->isNotModified($request, $response)) {
-	return $response->withStatus(304);
-}
-
-/* Serialize the response data. */
-$fractal = new Manager();
-$fractal->setSerializer(new DataArraySerializer);
-$resource = new Item($event, new EventTransformer(['username' => $test]));
-$data = $fractal->createData($resource)->toArray();
-
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
-$app->patch("/events/{id}", function ($request, $response, $arguments) {
-
-	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["event.all", "event.update"])) {
-		throw new ForbiddenException("Token not allowed to update events.", 403);
-	}
-
-	/* Load existing event using provided id */
-	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"id" => $arguments["id"],
-		])) {
-		throw new NotFoundException("Event not found.", 404);
-};
-
-/* PATCH requires If-Unmodified-Since or If-Match request header to be present. */
-if (false === $this->cache->hasStateValidator($request)) {
-	throw new PreconditionRequiredException("PATCH request is required to be conditional.", 428);
-}
-
-/* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
-/* someone has modified the event respond with 412 Precondition Failed. */
-if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
-	throw new PreconditionFailedException("Event has been modified.", 412);
-}
-
-$body = $request->getParsedBody();
-$event->data($body);
-$this->spot->mapper("App\Event")->save($event);
-
-/* Add Last-Modified and ETag headers to response. */
-$response = $this->cache->withEtag($response, $event->etag());
-$response = $this->cache->withLastModified($response, $event->timestamp());
-
-$fractal = new Manager();
-$fractal->setSerializer(new DataArraySerializer);
-$resource = new Item($event, new EventTransformer);
-$data = $fractal->createData($resource)->toArray();
-$data["status"] = "ok";
-$data["message"] = "Event updated";
-
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
-$app->put("/events/{id}", function ($request, $response, $arguments) {
-
-	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["event.all", "event.update"])) {
-		throw new ForbiddenException("Token not allowed to update events.", 403);
-	}
-
-	/* Load existing event using provided id */
-	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"id" => $arguments["id"],
-		])) {
-		throw new NotFoundException("Event not found.", 404);
-};
-
-/* PUT requires If-Unmodified-Since or If-Match request header to be present. */
-if (false === $this->cache->hasStateValidator($request)) {
-	throw new PreconditionRequiredException("PUT request is required to be conditional.", 428);
-}
-
-/* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
-/* someone has modified the event respond with 412 Precondition Failed. */
-if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
-	throw new PreconditionFailedException("Event has been modified.", 412);
-}
-
-$body = $request->getParsedBody();
-
-/* PUT request assumes full representation. If any of the properties is */
-/* missing set them to default values by clearing the event object first. */
-$event->clear();
-$event->data($body);
-$this->spot->mapper("App\Event")->save($event);
-
-/* Add Last-Modified and ETag headers to response. */
-$response = $this->cache->withEtag($response, $event->etag());
-$response = $this->cache->withLastModified($response, $event->timestamp());
-
-$fractal = new Manager();
-$fractal->setSerializer(new DataArraySerializer);
-$resource = new Item($event, new EventTransformer);
-$data = $fractal->createData($resource)->toArray();
-$data["status"] = "ok";
-$data["message"] = "Event updated";
-
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
-$app->delete("/events/{id}", function ($request, $response, $arguments) {
-
-	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["event.all", "event.delete"])) {
-		throw new ForbiddenException("Token not allowed to delete events.", 403);
-	}
-
-	/* Load existing event using provided id */
-	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"id" => $arguments["id"],
-		])) {
-		throw new NotFoundException("Event not found.", 404);
-};
-
-$this->spot->mapper("App\Event")->delete($event);
-
-$data["status"] = "ok";
-$data["message"] = "Event deleted";
-
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+ /* Serialize the response data. */
+ $fractal = new Manager();
+ $fractal->setSerializer(new DataArraySerializer);
+ $data["status"] = 'Registered Successfully';
+ return $response->withStatus(201)
+ ->withHeader("Content-Type", "application/json")
+ ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
