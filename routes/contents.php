@@ -16,7 +16,7 @@ use League\Fractal\Serializer\DataArraySerializer;
 $app->get("/contentSorted", function ($request, $response, $arguments) {
 $user_college_id = 2;
 $username= 'lakshit1001';
-    $content1 = $this->spot->mapper("App\Content")
+    $content = $this->spot->mapper("App\Content")
     ->query("SELECT
          contents.content_id,
          contents.created_by_username,
@@ -53,7 +53,9 @@ $username= 'lakshit1001';
         GROUP BY contents.content_id
         ORDER BY interestScore+interScore+followScore DESC,contents.timer ;");
 
-
+    return $response->withStatus(200)
+    ->withHeader("Content-Type", "application/json")
+    ->write(json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
  }
 $app->get("/contents[/{content_type_id}]", function ($request, $response, $arguments) {
