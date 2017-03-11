@@ -46,24 +46,12 @@ $app->get("/skills", function ($request, $response, $arguments) {
 });
 
 $app->get("/skills/{username}", function ($request, $response, $arguments) {
-
-    if (false === $skill = $this->spot->mapper("App\StudentSkill")->first([
-        "username" => $arguments["username"]
-    ])) {
-        throw new NotFoundException("Skill not found.", 404);
-    };
-
-    /* If-Modified-Since and If-None-Match request header handling. */
-    /* Heads up! Apache removes previously set Last-Modified header */
-    /* from 304 Not Modified responses. */
-    if ($this->cache->isNotModified($request, $response)) {
-        return $response->withStatus(304);
-    }
-
+    $skill = $this->spot->mapper("App\StudentSkill")->where([
+        "username" => $arguments["username"]]);
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($skill, new StudentSkillTransformer);
+    $resource = new Collection($skill, new StudentSkillTransformer);
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)

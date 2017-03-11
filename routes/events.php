@@ -4,6 +4,7 @@
 
 use App\Event;
 use App\EventTransformer;
+use App\EventRsvpTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -181,6 +182,20 @@ if ($this->cache->isNotModified($request, $response)) {
 $fractal = new Manager();
 $fractal->setSerializer(new DataArraySerializer);
 $resource = new Item($event, new EventTransformer(['username' => $test]));
+$data = $fractal->createData($resource)->toArray();
+
+return $response->withStatus(200)
+->withHeader("Content-Type", "application/json")
+->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->get("/eventParticipants/{id}", function ($request, $response, $arguments) {
+	$participants = $this->spot->mapper("App\EventRsvp")->where(["event_id" => $arguments['id']]);
+	
+/* Serialize the response data. */
+$fractal = new Manager();
+$fractal->setSerializer(new DataArraySerializer);
+$resource = new Collection($participants, new EventRsvpTransformer);
 $data = $fractal->createData($resource)->toArray();
 
 return $response->withStatus(200)
