@@ -4,7 +4,7 @@
 
 namespace App;
 
-use App\StudentSkill;
+use App\Skill;
 use League\Fractal;
 
 class SkillTransformer extends Fractal\TransformerAbstract
