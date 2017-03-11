@@ -31,7 +31,7 @@ require __DIR__ . "/routes/reports.php";
 require __DIR__ . "/routes/eventActions.php";
 require __DIR__ . "/routes/contentActions.php";
 require __DIR__ . "/routes/colleges.php";
-//require __DIR__ . "/routes/skills.php";
+require __DIR__ . "/routes/skills.php";
 require __DIR__ . "/routes/notifications.php";
 require __DIR__ . "/routes/students.php";
 require __DIR__ . "/routes/login.php";

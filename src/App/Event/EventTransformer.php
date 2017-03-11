@@ -16,9 +16,9 @@ class EventTransformer extends Fractal\TransformerAbstract {
           'Tags'
       ];
 	public function transform(Event $event) {
-        if($this->params['type'] != 'get'){
-     //       $bookmarks = $event->Bookmarked->select()->where(['username' => $this->params['value']]);
-       //     $this->params['value'] = (count($bookmarks) > 0 ? true : false); // returns true
+        if(isset($this->params['type']) && $this->params['type']!= 'get'){
+            $bookmarks = $event->Bookmarked->select()->where(['username' => $this->params['value']]);
+            $this->params['value'] = (count($bookmarks) > 0 ? true : false); // returns true
         } else {
             $bookmarks = null;
             $this->params['value'] = 0;
@@ -70,7 +70,6 @@ class EventTransformer extends Fractal\TransformerAbstract {
                 "by" => [
                     "name" => (string) $event->Owner['name'] ?: null,
                     "username" => (integer) $event->Owner['username'] ?: 0,
-                    "link" => (integer) $event->Owner['username'] ?: 0,
                     "image" => (string) $event->Owner['image'] ?: null,
                 ],
                 "at" => $event->time_created ?: 0,

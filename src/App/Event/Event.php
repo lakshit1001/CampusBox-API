@@ -66,7 +66,7 @@ class Event extends \Spot\Entity {
 		//'Type' => $mapper->belongsTo($entity, 'App\EventType', 'event_type_id'),
 		//'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_username'),
 		//'Bookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'event_id'),
-		//'Bookmarked' => $mapper->hasMany($entity, 'App\EventBookmarks', 'event_id'),
+		'Bookmarked' => $mapper->hasMany($entity, 'App\EventBookmarks', 'event_id'),
 			// 'Images' => $mapper->hasMany($entity, 'App\EventImage', 'event_id'),
 			//'Updates' => $mapper->hasMany($entity, 'App\EventUpdates', 'event_id'),
 			//'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'username', 'event_id'),
