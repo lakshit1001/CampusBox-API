@@ -7,7 +7,6 @@
 use Spot\EntityInterface as Entity;
 use Spot\MapperInterface as Mapper;
  use Spot\EventEmitter;
- use App\Student;
 
 
  use Tuupola\Base62;

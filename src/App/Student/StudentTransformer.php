@@ -12,7 +12,7 @@ class StudentTransformer extends Fractal\TransformerAbstract
   protected $availableIncludes = [
   'Events',
   'Skills',
-          // 'SocialAccounts',
+  'SocialAccounts',
   'Followed',
   'BookmarkedContents',
           // 'BookmarkedEvents'
@@ -20,7 +20,7 @@ class StudentTransformer extends Fractal\TransformerAbstract
   protected $defaultIncludes = [
   'Events',
   'Skills',
-           // 'SocialAccounts',
+  'SocialAccounts',
   'Followed',
   'BookmarkedContents',
   'AttendingEvents'
@@ -78,13 +78,13 @@ class StudentTransformer extends Fractal\TransformerAbstract
   public function includeSkills(Student $student) {
     $skills = $student->Skills;
 
-    return $this->collection($skills, new SkillTransformer);
+    return $this->collection($skills, new StudentSkillTransformer);
   }
-// public function includeSocialAccounts(Student $student) {
-//         $socials = $student->SocialAccounts;
+public function includeSocialAccounts(Student $student) {
+        $socials = $student->SocialAccounts;
 
-//         return $this->collection($socials, new SocialTransformer);
-//     }
+        return $this->collection($socials, new SocialTransformer);
+    }
   public function includeFollowed(Student $student) {
     $socials = $student->Followed;
 

@@ -83,7 +83,7 @@ class Student extends \Spot\Entity {
 		'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'username'),
 		'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'username'),
 		'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'username'),
-		'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'followed_id', 'follower_id'),
+		'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'followed_username', 'follower_username'),
 			//'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'username')
 
 		'Interets' => $mapper->hasMany($entity, 'App\StudentInterest', 'username'),
