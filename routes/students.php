@@ -98,7 +98,6 @@ $app->get("/studentEvents/{username}", function ($request, $response, $arguments
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-
 $app->get("/studentContents/{username}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
@@ -148,44 +147,44 @@ $app->get("/studentContents/{username}", function ($request, $response, $argumen
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->get("/student/{username}/{type}", function ($request, $response, $arguments) {
+// $app->get("/student/{username}/{type}", function ($request, $response, $arguments) {
 
-    /* Check if token has needed scope. */
-    //if (true === $this->token->hasScope(["student.all", "student.read"])) {
-    //    throw new ForbiddenException("Token not allowed to list students.", 403);
-    //}
+//     /* Check if token has needed scope. */
+//     //if (true === $this->token->hasScope(["student.all", "student.read"])) {
+//     //    throw new ForbiddenException("Token not allowed to list students.", 403);
+//     //}
 
-    /* Load existing student using provided id */
-    if (false === $student = $this->spot->mapper("App\Student")->first([
-        "username" => $arguments["username"]
-    ])) {
-        throw new NotFoundException("Student not found.", 404);
-    };
+//     /* Load existing student using provided id */
+//     if (false === $student = $this->spot->mapper("App\Student")->first([
+//         "username" => $arguments["username"]
+//     ])) {
+//         throw new NotFoundException("Student not found.", 404);
+//     };
 
-    /* If-Modified-Since and If-None-Match request header handling. */
-    /* Heads up! Apache removes previously set Last-Modified header */
-    /* from 304 Not Modified responses. */
-    if ($this->cache->isNotModified($request, $response)) {
-        return $response->withStatus(304);
-    }
+//     /* If-Modified-Since and If-None-Match request header handling. */
+//     /* Heads up! Apache removes previously set Last-Modified header */
+//      from 304 Not Modified responses. 
+//     if ($this->cache->isNotModified($request, $response)) {
+//         return $response->withStatus(304);
+//     }
 
-    /* Serialize the response data. */
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    if($arguments["username"]==""){
+//     /* Serialize the response data. */
+//     $fractal = new Manager();
+//     $fractal->setSerializer(new DataArraySerializer);
+//     if($arguments["username"]==""){
         
-    $resource = new Item($student, new StudentTransformer);
-    }elseif($arguments["username"]==""){
+//     $resource = new Item($student, new StudentTransformer);
+//     }elseif($arguments["username"]==""){
 
-    $resource = new Item($student, new StudentTransformer);
-    }
+//     $resource = new Item($student, new StudentTransformer);
+//     }
     
-    $data = $fractal->createData($resource)->toArray();
+//     $data = $fractal->createData($resource)->toArray();
 
-    return $response->withStatus(200)
-        ->withHeader("Content-Type", "appliaction/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
+//     return $response->withStatus(200)
+//         ->withHeader("Content-Type", "appliaction/json")
+//         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+// });
 
 
 

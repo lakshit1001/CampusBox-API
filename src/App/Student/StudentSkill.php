@@ -42,7 +42,7 @@ class StudentSkill extends \Spot\Entity
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-        'Skill' => $mapper->belongsTo($entity, 'App\Student', 'username')
+        'Skills' => $mapper->belongsTo($entity, 'App\Student', 'username')
         ];
     }
 }

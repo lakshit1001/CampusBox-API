@@ -3,7 +3,9 @@
  
 
 use App\Skill;
+use App\StudentSkill;
 use App\SkillTransformer;
+use App\StudentSkillTransformer;
 
 use Exception\NotFoundException;
 use Exception\ForbiddenException;
@@ -50,84 +52,16 @@ $app->get("/skills", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->post("/skills", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["skill.all", "skill.create"])) {
-        throw new ForbiddenException("Token not allowed to create skills.", 403);
-    }
-
-    $body = $request->getParsedBody();
-
-    $skill = new Skill($body);
-    $this->spot->mapper("App\Skill")->save($skill);
-
+$app->get("/skills/{username}", function ($request, $response, $arguments) {
+    $skill = $this->spot->mapper("App\StudentSkill")->where([
+        "username" => $arguments["username"]]);
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($skill, new SkillTransformer);
-    $data = $fractal->createData($resource)->toArray();
-    $data["status"] = "ok";
-    $data["message"] = "New skill created";
-
-    return $response->withStatus(201)
-        ->withHeader("Content-Type", "application/json")
-        ->withHeader("Location", $data["data"]["links"]["self"])
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
-$app->get("/skills/{id}", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["skill.all", "skill.read"])) {
-        throw new ForbiddenException("Token not allowed to list skills.", 403);
-    }
-
-    /* Load existing skill using provided id */
-    if (false === $skill = $this->spot->mapper("App\Skill")->first([
-        "id" => $arguments["id"]
-    ])) {
-        throw new NotFoundException("Skill not found.", 404);
-    };
-
-    /* If-Modified-Since and If-None-Match request header handling. */
-    /* Heads up! Apache removes previously set Last-Modified header */
-    /* from 304 Not Modified responses. */
-    if ($this->cache->isNotModified($request, $response)) {
-        return $response->withStatus(304);
-    }
-
-    /* Serialize the response data. */
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($skill, new SkillTransformer);
+    $resource = new Collection($skill, new StudentSkillTransformer);
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)
         ->withHeader("Content-Type", "appliaction/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
-$app->delete("/skills/{id}", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["skill.all", "skill.delete"])) {
-        throw new ForbiddenException("Token not allowed to delete skills.", 403);
-    }
-
-    /* Load existing skill using provided id */
-    if (false === $skill = $this->spot->mapper("App\Skill")->first([
-        "id" => $arguments["id"]
-    ])) {
-        throw new NotFoundException("Skill not found.", 404);
-    };
-
-    $this->spot->mapper("App\Skill")->delete($skill);
-
-    $data["status"] = "ok";
-    $data["message"] = "Skill deleted";
-
-    return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });

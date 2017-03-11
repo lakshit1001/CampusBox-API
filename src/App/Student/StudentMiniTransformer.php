@@ -33,7 +33,7 @@ class StudentMiniTransformer extends Fractal\TransformerAbstract
   public function includeSkills(Student $student) {
         $skills = $student->Skills;
 
-        return $this->collection($skills, new SkillTransformer);
+        return $this->collection($skills, new StudentSkillTransformer);
     }
 // public function includeSocialAccounts(Student $student) {
 //         $socials = $student->SocialAccounts;

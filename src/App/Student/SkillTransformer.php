@@ -4,13 +4,13 @@
 
 namespace App;
 
-use App\StudentSkill;
+use App\Skill;
 use League\Fractal;
 
 class SkillTransformer extends Fractal\TransformerAbstract
 {
 
-    public function transform(StudentSkill $skill)
+    public function transform(Skill $skill)
     {
         return [
             "name" => (string)$skill->skill_name?: null 

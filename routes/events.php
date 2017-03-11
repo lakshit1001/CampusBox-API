@@ -5,6 +5,7 @@
 use App\Event;
 use App\EventTags;
 use App\EventTransformer;
+use App\EventRsvpTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -220,4 +221,136 @@ $app->post("/addEvent", function ($request, $response, $arguments) {
  return $response->withStatus(201)
  ->withHeader("Content-Type", "application/json")
  ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->get("/eventParticipants/{id}", function ($request, $response, $arguments) {
+	$participants = $this->spot->mapper("App\EventRsvp")->where(["event_id" => $arguments['id']]);
+	
+/* Serialize the response data. */
+$fractal = new Manager();
+$fractal->setSerializer(new DataArraySerializer);
+$resource = new Collection($participants, new EventRsvpTransformer);
+$data = $fractal->createData($resource)->toArray();
+
+return $response->withStatus(200)
+->withHeader("Content-Type", "application/json")
+->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->patch("/events/{id}", function ($request, $response, $arguments) {
+
+	/* Check if token has needed scope. */
+	if (true === $this->token->hasScope(["event.all", "event.update"])) {
+		throw new ForbiddenException("Token not allowed to update events.", 403);
+	}
+
+	/* Load existing event using provided id */
+	if (false === $event = $this->spot->mapper("App\Event")->first([
+		"id" => $arguments["id"],
+		])) {
+		throw new NotFoundException("Event not found.", 404);
+};
+
+/* PATCH requires If-Unmodified-Since or If-Match request header to be present. */
+if (false === $this->cache->hasStateValidator($request)) {
+	throw new PreconditionRequiredException("PATCH request is required to be conditional.", 428);
+}
+
+/* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
+/* someone has modified the event respond with 412 Precondition Failed. */
+if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
+	throw new PreconditionFailedException("Event has been modified.", 412);
+}
+
+$body = $request->getParsedBody();
+$event->data($body);
+$this->spot->mapper("App\Event")->save($event);
+
+/* Add Last-Modified and ETag headers to response. */
+$response = $this->cache->withEtag($response, $event->etag());
+$response = $this->cache->withLastModified($response, $event->timestamp());
+
+$fractal = new Manager();
+$fractal->setSerializer(new DataArraySerializer);
+$resource = new Item($event, new EventTransformer);
+$data = $fractal->createData($resource)->toArray();
+$data["status"] = "ok";
+$data["message"] = "Event updated";
+
+return $response->withStatus(200)
+->withHeader("Content-Type", "application/json")
+->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->put("/events/{id}", function ($request, $response, $arguments) {
+
+	/* Check if token has needed scope. */
+	if (true === $this->token->hasScope(["event.all", "event.update"])) {
+		throw new ForbiddenException("Token not allowed to update events.", 403);
+	}
+
+	/* Load existing event using provided id */
+	if (false === $event = $this->spot->mapper("App\Event")->first([
+		"id" => $arguments["id"],
+		])) {
+		throw new NotFoundException("Event not found.", 404);
+};
+
+/* PUT requires If-Unmodified-Since or If-Match request header to be present. */
+if (false === $this->cache->hasStateValidator($request)) {
+	throw new PreconditionRequiredException("PUT request is required to be conditional.", 428);
+}
+
+/* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
+/* someone has modified the event respond with 412 Precondition Failed. */
+if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
+	throw new PreconditionFailedException("Event has been modified.", 412);
+}
+
+$body = $request->getParsedBody();
+
+/* PUT request assumes full representation. If any of the properties is */
+/* missing set them to default values by clearing the event object first. */
+$event->clear();
+$event->data($body);
+$this->spot->mapper("App\Event")->save($event);
+
+/* Add Last-Modified and ETag headers to response. */
+$response = $this->cache->withEtag($response, $event->etag());
+$response = $this->cache->withLastModified($response, $event->timestamp());
+
+$fractal = new Manager();
+$fractal->setSerializer(new DataArraySerializer);
+$resource = new Item($event, new EventTransformer);
+$data = $fractal->createData($resource)->toArray();
+$data["status"] = "ok";
+$data["message"] = "Event updated";
+
+return $response->withStatus(200)
+->withHeader("Content-Type", "application/json")
+->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->delete("/events/{id}", function ($request, $response, $arguments) {
+
+	/* Check if token has needed scope. */
+	if (true === $this->token->hasScope(["event.all", "event.delete"])) {
+		throw new ForbiddenException("Token not allowed to delete events.", 403);
+	}
+
+	/* Load existing event using provided id */
+	if (false === $event = $this->spot->mapper("App\Event")->first([
+		"id" => $arguments["id"],
+		])) {
+		throw new NotFoundException("Event not found.", 404);
+};
+
+$this->spot->mapper("App\Event")->delete($event);
+
+$data["status"] = "ok";
+$data["message"] = "Event deleted";
+
+return $response->withStatus(200)
+->withHeader("Content-Type", "application/json")
+->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
