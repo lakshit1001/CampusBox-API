@@ -17,13 +17,6 @@ use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/skills", function ($request, $response, $arguments) {
 
-    /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["skill.all", "skill.list"])) {
-        throw new ForbiddenException("Token not allowed to list skills.", 403);
-    }else{
-       
-    }
-
     /* Use ETag and date from Skill with most recent update. */
     $first = $this->spot->mapper("App\Skill")
         ->all()
