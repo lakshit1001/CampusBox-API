@@ -180,9 +180,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 	}
 	else if ($body['type']=="google"){
-		$json = file_get_contents('https://www.googleapis.com/plus/v1/people/me?access_token='.$body['access_token']);
+		$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['access_token']);
 		$googleData = json_decode($json);
-		echo $googleData->name;
 
 		$student = new SocialAccount();
 		$student = $this->spot
