@@ -14,9 +14,9 @@ use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/contentSorted", function ($request, $response, $arguments) {
-$user_college_id = 2;
-$username= 'lakshit1001';
-    $content = $this->spot->mapper("App\Content")
+	$user_college_id = 2;
+	$username= 'lakshit1001';
+	$content = $this->spot->mapper("App\Content")
     ->query("SELECT
          contents.content_id,
          contents.created_by_username,
@@ -57,7 +57,7 @@ $username= 'lakshit1001';
     ->withHeader("Content-Type", "application/json")
     ->write(json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
- });
+});
 $app->get("/contents[/{content_type_id}]", function ($request, $response, $arguments) {
 
 	/* Check if token has needed scope. */
@@ -71,10 +71,10 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	/* Use ETag and date from Content with most recent update. */
 	if(isset($arguments['content_type_id'])){
 		$first = $this->spot->mapper("App\Content")
-			->all()
-			->where(["content_type_id"=>$arguments['content_type_id']])
-			->order(["timer" => "DESC"])
-			->first();
+		->all()
+		->where(["content_type_id"=>$arguments['content_type_id']])
+		->order(["timer" => "DESC"])
+		->first();
 	}else{
 
 		$first = $this->spot->mapper("App\Content")
@@ -95,11 +95,11 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	if ($this->cache->isNotModified($request, $response)) {
 		return $response->withStatus(304);
 	}
-if(isset($arguments['content_type_id'])){
+	if(isset($arguments['content_type_id'])){
 		$contents = $this->spot->mapper("App\Content")
-			->all()
-			->where(["content_type_id"=>$arguments['content_type_id']])
-			->order(["timer" => "DESC"]);
+		->all()
+		->where(["content_type_id"=>$arguments['content_type_id']])
+		->order(["timer" => "DESC"]);
 	}else{
 
 		$contents = $this->spot->mapper("App\Content")
@@ -187,120 +187,42 @@ return $response->withStatus(200)
 ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->patch("/contents/{id}", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["content.all", "content.update"])) {
-		throw new ForbiddenException("Token not allowed to update contents.", 403);
+
+$app->post("/addContent", function ($request, $response, $arguments) {
+	$body = $request->getParsedBody();
+
+	$content['college_id'] =  $this->token->decoded->college_id;
+	$content['created_by_username'] =  $this->token->decoded->username;
+	$content['title'] = $body['content']['title'];
+	$content['content_type_id'] = $body['content']['type'];
+	$newContent = new Content($content);
+	$this->spot->mapper("App\Content")->save($newContent);
+
+			//adding interests 
+
+	for ($i=0; $i < count($body['items']); $i++) {
+		$content['description'] = $body['content']['description'];
+		$items['content_item_type'] = $body['items'][$i]['type'];
+		$content['image'] = $body['content']['image'];
+		$items['embed_url_type'] = $body['items'][$i]['embed_type'];;
+		$itemsElement = new ContentItems($items);
+		$this->spot->mapper("App\ContentItems")->save($tagsElement);
+	}
+	for ($i=0; $i < count($body['tags']); $i++) {
+		$tags['event_id'] = '1';
+		$tags['name'] = $body['tags'][$i]['name'];
+		$tagsElement = new ContentTags($tags);
+		$this->spot->mapper("App\ContentTags")->save($tagsElement);
 	}
 
-	/* Load existing content using provided id */
-	if (false === $content = $this->spot->mapper("App\Content")->first([
-		"id" => $arguments["id"],
-		])) {
-		throw new NotFoundException("Content not found.", 404);
-};
-
-/* PATCH requires If-Unmodified-Since or If-Match request header to be present. */
-if (false === $this->cache->hasStateValidator($request)) {
-	throw new PreconditionRequiredException("PATCH request is required to be conditional.", 428);
-}
-
-/* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
-/* someone has modified the content respond with 412 Precondition Failed. */
-if (false === $this->cache->hasCurrentState($request, $content->etag(), $content->timestamp())) {
-	throw new PreconditionFailedException("Content has been modified.", 412);
-}
-
-$body = $request->getParsedBody();
-$content->data($body);
-$this->spot->mapper("App\Content")->save($content);
-
-/* Add Last-Modified and ETag headers to response. */
-$response = $this->cache->withEtag($response, $content->etag());
-$response = $this->cache->withLastModified($response, $content->timestamp());
-
-$fractal = new Manager();
-$fractal->setSerializer(new DataArraySerializer);
-$resource = new Item($content, new ContentTransformer);
-$data = $fractal->createData($resource)->toArray();
-$data["status"] = "ok";
-$data["message"] = "Content updated";
-
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	$data["status"] = 'Registered Successfully';
+	return $response->withStatus(201)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->put("/contents/{id}", function ($request, $response, $arguments) {
-
-	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["content.all", "content.update"])) {
-		throw new ForbiddenException("Token not allowed to update contents.", 403);
-	}
-
-	/* Load existing content using provided id */
-	if (false === $content = $this->spot->mapper("App\Content")->first([
-		"id" => $arguments["id"],
-		])) {
-		throw new NotFoundException("Content not found.", 404);
-};
-
-/* PUT requires If-Unmodified-Since or If-Match request header to be present. */
-if (false === $this->cache->hasStateValidator($request)) {
-	throw new PreconditionRequiredException("PUT request is required to be conditional.", 428);
-}
-
-/* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
-/* someone has modified the content respond with 412 Precondition Failed. */
-if (false === $this->cache->hasCurrentState($request, $content->etag(), $content->timestamp())) {
-	throw new PreconditionFailedException("Content has been modified.", 412);
-}
-
-$body = $request->getParsedBody();
-
-/* PUT request assumes full representation. If any of the properties is */
-/* missing set them to default values by clearing the content object first. */
-$content->clear();
-$content->data($body);
-$this->spot->mapper("App\Content")->save($content);
-
-/* Add Last-Modified and ETag headers to response. */
-$response = $this->cache->withEtag($response, $content->etag());
-$response = $this->cache->withLastModified($response, $content->timestamp());
-
-$fractal = new Manager();
-$fractal->setSerializer(new DataArraySerializer);
-$resource = new Item($content, new ContentTransformer);
-$data = $fractal->createData($resource)->toArray();
-$data["status"] = "ok";
-$data["message"] = "Content updated";
-
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
-$app->delete("/contents/{id}", function ($request, $response, $arguments) {
-
-	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["content.all", "content.delete"])) {
-		throw new ForbiddenException("Token not allowed to delete contents.", 403);
-	}
-
-	/* Load existing content using provided id */
-	if (false === $content = $this->spot->mapper("App\Content")->first([
-		"id" => $arguments["id"],
-		])) {
-		throw new NotFoundException("Content not found.", 404);
-};
-
-$this->spot->mapper("App\Content")->delete($content);
-
-$data["status"] = "ok";
-$data["message"] = "Content deleted";
-
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
