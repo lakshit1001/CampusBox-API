@@ -59,6 +59,7 @@
                 // 'City' => $mapper->belongsTo($entity, 'App\City', 'college_id'),
 // 
         'CollegeAdmin' => $mapper->hasMany($entity, 'App\CollegeAdmin', 'college_id'),
+        'College' => $mapper->hasMany($entity, 'App\Student', 'college_id'),
         'Programs' => $mapper->hasMany($entity, 'App\Programs', 'college_id')
         ];
     }

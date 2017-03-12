@@ -179,6 +179,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['access_token']);
 		$googleData = json_decode($json);
 		echo $googleData->name;
+
 		$student = new SocialAccount();
 		$student = $this->spot
 		->mapper("App\SocialAccount")
@@ -292,6 +293,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$social['username'] = $newUser['username'];
 			$social['social_id'] = $googleData->id;
 			$social['type'] = "google";
+			$social['college_id'] = $newUser['college_id'];
+			$social['roll_number'] = $newUser['roll_number']	;
 			$social['token'] =$body['access_token'];
 			$social['name'] = isset($googleData->name)?$googleData->name:" ";
 			$social['email'] = isset($googleData->email)? $googleData->email:" ";
