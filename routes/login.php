@@ -49,6 +49,7 @@ $app->post("/login", function ($request, $response, $arguments) {
 					"exp" => $future->getTimeStamp(),
 					"jti" => $jti,
 					"username" => $student[0]->username,
+					"college_id" => $student[0]->college_id,
 					];
 					$secret = getenv("JWT_SECRET");
 					$token = JWT::encode($payload, $secret, "HS256");
@@ -63,9 +64,9 @@ $app->post("/login", function ($request, $response, $arguments) {
 				}
 
 			}
-			else if ($body['type']=="google"){
+			else if ($body['type']=="google" && isset($body['token'])){
 
-				$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
+				$json = file_get_contents('https://www.googleapis.com/plus/v1/people/me?access_token='.$body['token']);
 				$googleData = json_decode($json);
 				$student = new SocialAccount();
 				$student = $this->spot
@@ -91,8 +92,8 @@ $app->post("/login", function ($request, $response, $arguments) {
 					"iat" => $now->getTimeStamp(),
 					"exp" => $future->getTimeStamp(),
 					"jti" => $jti,
-					"sub" => $student[0]->username,
 					"username" => $student[0]->username,
+					"college_id" => $student[0]->college_id,
 					];
 					$secret = getenv("JWT_SECRET");
 					$token = JWT::encode($payload, $secret, "HS256");

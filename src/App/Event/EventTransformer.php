@@ -11,8 +11,12 @@ class EventTransformer extends Fractal\TransformerAbstract {
 		$this->params = $params;
 		$this->params['value'] = false;
 	}
+     protected $defaultIncludes = [
+           // 'SocialAccounts',
+          'Tags'
+      ];
 	public function transform(Event $event) {
-        if($this->params['type'] != 'get'){
+        if(isset($this->params['type']) && $this->params['type']!= 'get'){
             $bookmarks = $event->Bookmarked->select()->where(['username' => $this->params['value']]);
             $this->params['value'] = (count($bookmarks) > 0 ? true : false); // returns true
         } else {
@@ -31,16 +35,25 @@ class EventTransformer extends Fractal\TransformerAbstract {
                 "description" => (string) $event->description ?: null,
                 "rules" => (string) $event->description ?: null,
             ],
-            "timings" => [
-                "date" => [
-                    "start" => (string) $event->date_start ?: null,
-                    "end" => (string) $event->date_end ?: null,
-		          	],
-                "time" => [
-                    "start" => (string) $event->date_start ?: null,
-                    "end" => (string) $event->date_end ?: null,
-                 ],
+                "image" =>(string) $event->image ?: null,
+            "organiser" => [
+                "name" => (string) $event->organiser_name ?: null,
+                "link" =>(string) $event->organiser_link ?: null,
+                "phone" =>(string) $event->organiser_phone ?: null,
             ],
+            "timings" => [
+                "from" => [
+                    "date"=>(string) $event->from_date ?: null,
+                    "time" =>(string) $event->from_time ?: null,
+                    "period"=>(integer) $event->from_period ?: null,
+                ],
+                "to" => [
+                    "date"=> (string) $event->to_date ?: null,
+                    "time" =>(string) $event->to_time ?: null,
+                    "period"=>(integer) $event->to_period ?: null,
+                ],
+            ],
+            
             "Actions" => [
 				"Bookmarked" => [
 					"status" => (bool) $this->params['value'] ?: false,
@@ -52,39 +65,24 @@ class EventTransformer extends Fractal\TransformerAbstract {
 					"total" => (integer) $event->created_by_username ?: 0,
 				]
 			],
-            "contact" => [
-                [
-                    "name" => (string) $event->ContactPerson1['name'] ?: null,
-                    "username" => (integer) $event->ContactPerson1['username'] ?: 0,
-                    "link" => (integer) $event->ContactPerson1['username'] ?: 0,
-                    "image" => (string) $event->ContactPerson1['image'] ?: null,
-                ],
-                [
-                    "name" => (string) $event->ContactPerson1['name'] ?: null,
-                    "link" => (integer) $event->ContactPerson1['username'] ?: 0,
-                    "link" => (integer) $event->ContactPerson1['username'] ?: 0,
-                    "image" => (string) $event->ContactPerson1['image'] ?: null,
-                ],
-            ],
+            
             "created" => [
                 "by" => [
                     "name" => (string) $event->Owner['name'] ?: null,
                     "username" => (integer) $event->Owner['username'] ?: 0,
-                    "link" => (integer) $event->Owner['username'] ?: 0,
                     "image" => (string) $event->Owner['image'] ?: null,
                 ],
                 "at" => $event->time_created ?: 0,
             ],
-			"tags" => [
-				[
-					"name" => (string) $event->Tag['name'] ?: null,
-					"link" => (integer) $event->Tag['tag_id'] ?: 0,
-				],
-				"total" => (integer) $event->created_by_username ?: 0,
-			],
+			
 			"links" => [
 				"self" => "/events/{$event->id}",
 			],
 		];
 	}
+    public function includeTags(Event $event) {
+        $tags = $event->Tags;
+
+        return $this->collection($tags, new EventTagsTransformer);
+    }
 }

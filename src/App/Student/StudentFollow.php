@@ -25,8 +25,8 @@ use Spot\MapperInterface as Mapper;
        
 
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "followed_username" => ["type" => "integer"],
-        "follower_username" => ["type" => "integer"],
+        "followed_username" => ["type" => "string"],
+        "follower_username" => ["type" => "string"],
         "timestamp" => ["type" => "datetime"]
         ];
     }

@@ -51,9 +51,9 @@ $container["JwtAuthentication"] = function ($container) {
 $container["Cors"] = function ($container) {
     return new Cors([
         "logger" => $container["logger"],
-        "origin" => ["*"],
+        "origin" => ["*","192.171.2.213:3000/#!/events"],
         "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE","OPTIONS"],
-        "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
+        "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since" ,"Content-Type"],
         "headers.expose" => ["Authorization", "Etag"],
         "credentials" => true,
         "cache" => 60,
@@ -75,7 +75,7 @@ $container["Negotiation"] = function ($container) {
 
 $app->add("HttpBasicAuthentication");
 $app->add("JwtAuthentication");
-//$app->add("Cors");
+$app->add("Cors");
 $app->add("Negotiation");
 
 $container["cache"] = function ($container) {

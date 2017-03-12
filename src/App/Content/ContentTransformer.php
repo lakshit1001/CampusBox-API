@@ -11,7 +11,12 @@ class ContentTransformer extends Fractal\TransformerAbstract {
         $this->params = $params;
         $this->params['value'] = false;
     }
+  protected $defaultIncludes = [
+           // 'SocialAccounts',
+          'Tags',
+          'Items'
 
+      ];
     public function transform(Content $content) {
 
         $appreciates = $content->Appreciated->select()->where(['username' => 'lakshit1001']);
@@ -70,5 +75,15 @@ class ContentTransformer extends Fractal\TransformerAbstract {
                 "self" => "/contents/{$content->id}",
             ],
         ];
+    }
+     public function includeTags(Content $content) {
+        $tags = $content->Tags;
+
+        return $this->collection($tags, new ContentTagsTransformer);
+    }
+     public function includeItems(Content $content) {
+        $items = $content->Items;
+
+        return $this->collection($items, new ContentItemsTransformer);
     }
 }

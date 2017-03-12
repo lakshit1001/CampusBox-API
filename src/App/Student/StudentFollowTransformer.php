@@ -18,7 +18,7 @@ class StudentFollowTransformer extends Fractal\TransformerAbstract
     public function transform(StudentFollow $follow)
     {
         return [
-            "FollowerId" => (integer)$follow->follower_id?: 0 ,
+            "FollowerId" => (integer)$follow->follower_username?: 0 ,
             
        
         ];
