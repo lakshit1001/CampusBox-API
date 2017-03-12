@@ -4,6 +4,10 @@
 
  use App\StudentFollow;
  use App\StudentFollowTransformer;
+ use App\ContentAppreciate;
+ use App\ContentAppreciateTransformer;
+ use App\EventRsvp;
+ use App\EventRsvpTransformer;
  use Exception\ForbiddenException;
  use Exception\NotFoundException;
  use Exception\PreconditionFailedException;
@@ -15,43 +19,53 @@
 
  $app->get("/notifications/{username}", function ($request, $response, $arguments) {
 
-    /* Check if token has needed scope. */
-    // if (true === $this->token->hasScope(["event.all", "event.list"])) {
-    //     throw new ForbiddenException("Token not allowed to list events.", 403);
-    // }else{
-
-    // }
-
     $username =$arguments["username"];
 
     $follows = $this->spot->mapper("App\StudentFollow")
-        ->all()
-        ->where(["followed_id" => $username])
-        ->order(["timer" => "DESC"]);
+        ->query("SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC LIMIT 5");
+    $appreciate = $this->spot->mapper("App\ContentAppreciate")
+        ->query("SELECT content_appreciates.content_id, content_appreciates.timer, COUNT(content_appreciates.content_id) AS x FROM `content_appreciates`
+LEFT JOIN `contents`
+ON contents.content_id = content_appreciates.content_id
+WHERE created_by_username = '". $username ."'
+GROUP BY content_appreciates.content_id
+ORDER BY content_appreciates.timer DESC");
 
-    /* Serialize the response data. */
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    if (isset($_GET['include'])) {
-        $fractal->parseIncludes($_GET['include']);
-    }
-    $resource1 = new Collection($follows, new StudentFollowTransformer(['username' => $username ]));
-   // $resource2 = new Collection($students, new StudentMiniTransformer(['username' => '1' ]));
-   // $resource3 = new Collection($content, new ContentMiniTransformer(['username' => '1' ]));
-    
-    $arrs = array();
-    $arrs[0] = $fractal->createData($resource1)->toArray();
-   // $arrs[1] = $fractal->createData($resource2)->toArray();
-   // $arrs[2] = $fractal->createData($resource3)->toArray();
+    $participants = $this->spot->mapper("App\EventRsvp")
+        ->query("SELECT event_rsvps.event_id, event_rsvps.timer, COUNT(event_rsvps.event_id) AS x FROM `event_rsvps`
+LEFT JOIN `events`
+ON events.event_id = event_rsvps.event_id
+WHERE created_by_username = '". $username ."'
+GROUP BY event_rsvps.event_id
+ORDER BY event_rsvps.timer DESC");
 
-$list = array();
 
-foreach($arrs as $arr) {
-    if(is_array($arr)) {
-        $list = array_merge($list, (array)$arr);
-    }
-}
+        foreach ($follows as $key) {
+
+            $newNotification1['type'] = "follower"; 
+            $newNotification1['follower_username'] = $key->follower_username; 
+            $newNotification1['timer'] = $key->timer; 
+
+            $notification[]=$newNotification1; 
+        }
+        foreach ($appreciate as $key) {
+            $newNotification2['type'] = "content_appreciate"; 
+            $newNotification2['content_id'] = $key->content_id;             
+            $newNotification2['timer'] = $key->timer;                                     
+            $newNotification2['total'] = $key->x; 
+
+            $notification[]=$newNotification2; 
+        }
+        foreach ($participants as $key) {
+            $newNotification3['type'] = "event_rsvps"; 
+            $newNotification3['event_id'] = $key->event_id;
+            $newNotification3['timer'] = $key->timer;                                     
+            $newNotification3['total'] = $key->x; 
+
+            $notification[]=$newNotification3; 
+        }
+
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($arrs[0], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    });
+    ->write(json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
