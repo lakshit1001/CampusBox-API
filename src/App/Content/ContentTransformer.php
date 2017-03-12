@@ -18,11 +18,18 @@ class ContentTransformer extends Fractal\TransformerAbstract {
 
       ];
     public function transform(Content $content) {
+        if(isset($this->params['type']) && $this->params['type'] != 'get'){
 
         $appreciates = $content->Appreciated->select()->where(['username' => 'lakshit1001']);
         $this->params['appreciateValue'] = (count($appreciates) > 0 ? true : false); // returns true
        $bookmarks = $content->Bookmarked->select()->where(['username' => 'lakshit1001']);
         $this->params['bookmarkValue'] = (count($bookmarks) > 0 ? true : false); // returns true
+    } else{
+        $appreciates = null;
+        $this->params['appreciateValue'] = 0;
+        $bookmarks = null;
+        $this->params['bookmarkValue'] = 0;
+    }
         
         return [
             "id" => (integer) $content->content_id ?: 0,

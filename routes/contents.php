@@ -4,6 +4,7 @@
 
 use App\Content;
 use App\ContentTransformer;
+use App\ContentItems;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -192,34 +193,40 @@ return $response->withStatus(200)
 $app->post("/addContent", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 
-	$content['college_id'] =  $this->token->decoded->college_id;
 	$content['created_by_username'] =  $this->token->decoded->username;
+	$content['college_id'] =  $this->token->decoded->college_id;
 	$content['title'] = $body['content']['title'];
 	$content['content_type_id'] = $body['content']['type'];
+	
 	$newContent = new Content($content);
 	$this->spot->mapper("App\Content")->save($newContent);
 
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    $resource = new Item($newContent, new ContentTransformer);
+    $data = $fractal->createData($resource)->toArray();
 			//adding interests 
 
 	for ($i=0; $i < count($body['items']); $i++) {
-		$content['description'] = $body['content']['description'];
+		$items['content_id'] = $data['data']['id'];
+		// $items['description'] = $body['content']['description'];
 		$items['content_item_type'] = $body['items'][$i]['type'];
-		$content['image'] = $body['content']['image'];
+		$items['image'] = $body['content']['image'];
 		$items['embed_url_type'] = $body['items'][$i]['embed_type'];;
 		$itemsElement = new ContentItems($items);
-		$this->spot->mapper("App\ContentItems")->save($tagsElement);
+		$this->spot->mapper("App\ContentItems")->save($itemsElement);
 	}
-	for ($i=0; $i < count($body['tags']); $i++) {
-		$tags['event_id'] = '1';
-		$tags['name'] = $body['tags'][$i]['name'];
-		$tagsElement = new ContentTags($tags);
-		$this->spot->mapper("App\ContentTags")->save($tagsElement);
-	}
+	// for ($i=0; $i < count($body['tags']); $i++) {
+	// 	$tags['content_id'] = '1';
+	// 	$tags['name'] = $body['tags'][$i]['name'];
+	// 	$tagsElement = new ContentTags($tags);
+	// 	$this->spot->mapper("App\ContentTags")->save($tagsElement);
+	// }
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
 	$fractal->setSerializer(new DataArraySerializer);
-	$data["status"] = 'Registered Successfully';
+	$data["status"] = 'Added Successfully';
 	return $response->withStatus(201)
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));

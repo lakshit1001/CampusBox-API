@@ -19,7 +19,6 @@ class ContentItems extends \Spot\Entity {
 			"content_item_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"content_id" => ["type" => "integer", "unsigned" => true],
 			"content_item_type" => ["type" => "string"],
-			"description" => ["type" => "string"],
 			"image" => ["type" => "string"],
 			"view" => ["type" => "string"],
 			"embed_url_type" => ["type" => "string"],
