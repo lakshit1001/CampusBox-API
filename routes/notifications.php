@@ -22,19 +22,50 @@
     $username =$arguments["username"];
 
     $follows = $this->spot->mapper("App\StudentFollow")
-        ->query("SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC");
+        ->query("SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC LIMIT 5");
     $appreciate = $this->spot->mapper("App\ContentAppreciate")
-        ->query("SELECT * FROM content_appreciates WHERE username = '". $username ."' ORDER BY timer DESC");
-    $participants = $this->spot->mapper("App\EventRsvp")
-        ->query("SELECT * FROM event_rsvps WHERE username = '". $username ."' ORDER BY timer DESC");
+        ->query("SELECT content_appreciates.content_id, content_appreciates.timer, COUNT(content_appreciates.content_id) AS x FROM `content_appreciates`
+LEFT JOIN `contents`
+ON contents.content_id = content_appreciates.content_id
+WHERE created_by_username = '". $username ."'
+GROUP BY content_appreciates.content_id
+ORDER BY content_appreciates.timer DESC");
 
-    $data['followers'] = $follows;
-    $data['followers_count'] = count($follows);
-    $data['content_appreciate'] = $appreciate;
-    $data['content_appreciation_count'] = count($appreciate);
-    $data['event_rsvps'] = $participants;
-    $data['event_rsvp_count'] = count($participants);
+    $participants = $this->spot->mapper("App\EventRsvp")
+        ->query("SELECT event_rsvps.event_id, event_rsvps.timer, COUNT(event_rsvps.event_id) AS x FROM `event_rsvps`
+LEFT JOIN `events`
+ON events.event_id = event_rsvps.event_id
+WHERE created_by_username = '". $username ."'
+GROUP BY event_rsvps.event_id
+ORDER BY event_rsvps.timer DESC");
+
+
+        foreach ($follows as $key) {
+
+            $newNotification1['type'] = "follower"; 
+            $newNotification1['follower_username'] = $key->follower_username; 
+            $newNotification1['timer'] = $key->timer; 
+
+            $notification[]=$newNotification1; 
+        }
+        foreach ($appreciate as $key) {
+            $newNotification2['type'] = "content_appreciate"; 
+            $newNotification2['content_id'] = $key->content_id;             
+            $newNotification2['timer'] = $key->timer;                                     
+            $newNotification2['total'] = $key->x; 
+
+            $notification[]=$newNotification2; 
+        }
+        foreach ($participants as $key) {
+            $newNotification3['type'] = "event_rsvps"; 
+            $newNotification3['event_id'] = $key->event_id;
+            $newNotification3['timer'] = $key->timer;                                     
+            $newNotification3['total'] = $key->x; 
+
+            $notification[]=$newNotification3; 
+        }
+
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    ->write(json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
