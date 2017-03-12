@@ -3,7 +3,9 @@
 
 
 use App\Content;
+use App\ContentItems;
 use App\ContentTransformer;
+use App\ContentItemsTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -194,27 +196,30 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 
 	$content['college_id'] =  $this->token->decoded->college_id;
 	$content['created_by_username'] =  $this->token->decoded->username;
-	$content['title'] = $body['content']['title'];
-	$content['content_type_id'] = $body['content']['type'];
+	$content['title'] = $body['title'];
+	$content['content_type_id'] = $body['type'];
 	$newContent = new Content($content);
 	$this->spot->mapper("App\Content")->save($newContent);
 
 			//adding interests 
 
 	for ($i=0; $i < count($body['items']); $i++) {
-		$content['description'] = $body['content']['description'];
-		$items['content_item_type'] = $body['items'][$i]['type'];
-		$content['image'] = $body['content']['image'];
-		$items['embed_url_type'] = $body['items'][$i]['embed_type'];;
-		$itemsElement = new ContentItems($items);
-		$this->spot->mapper("App\ContentItems")->save($tagsElement);
+		$item['content_id'] = 15;
+		$item['description'] = isset($body['items'][$i]['text']) ?$body['items'][$i]['text']: " ";
+		$item['content_item_type'] = isset($body['items'][$i]['mediaType']) ?$body['items'][$i]['mediaType']: " ";
+		$item['embed_url'] = isset($body['items'][$i]['embedUrl']) ?$body['items'][$i]['embedUrl']: " ";
+		$item['embed'] = isset($body['items'][$i]['embed']) ?$body['items'][$i]['embed']: " ";
+		$item['image'] = isset($body['items'][$i]['image']) ?$body['items'][$i]['image']: " ";
+
+		$itemElement = new ContentItems($item);
+		$this->spot->mapper("App\ContentItems")->save($itemElement);
 	}
-	for ($i=0; $i < count($body['tags']); $i++) {
-		$tags['event_id'] = '1';
-		$tags['name'] = $body['tags'][$i]['name'];
-		$tagsElement = new ContentTags($tags);
-		$this->spot->mapper("App\ContentTags")->save($tagsElement);
-	}
+	// for ($i=0; $i < count($body['tags']); $i++) {
+	// 	$tags['event_id'] = '1';
+	// 	$tags['name'] = $body['tags'][$i]['name'];
+	// 	$tagsElement = new ContentTags($tags);
+	// 	$this->spot->mapper("App\ContentTags")->save($tagsElement);
+	// }
 
 	/* Serialize the response data. */
 	$fractal = new Manager();

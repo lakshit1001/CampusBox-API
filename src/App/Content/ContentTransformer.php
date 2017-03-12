@@ -13,7 +13,7 @@ class ContentTransformer extends Fractal\TransformerAbstract {
     }
   protected $defaultIncludes = [
            // 'SocialAccounts',
-          'Tags',
+          
           'Items'
 
       ];

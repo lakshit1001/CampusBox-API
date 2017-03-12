@@ -22,7 +22,7 @@ class ContentItems extends \Spot\Entity {
 			"description" => ["type" => "string"],
 			"image" => ["type" => "string"],
 			"view" => ["type" => "string"],
-			"embed_url_type" => ["type" => "string"],
+			"embed" => ["type" => "string"],
 			"embed_url" => ["type" => "string"],
 			"priority" => ["type" => "string"],
 			"timer" => ["type" => "datetime"]
