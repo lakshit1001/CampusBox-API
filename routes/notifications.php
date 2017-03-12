@@ -4,6 +4,10 @@
 
  use App\StudentFollow;
  use App\StudentFollowTransformer;
+ use App\ContentAppreciate;
+ use App\ContentAppreciateTransformer;
+ use App\EventRsvp;
+ use App\EventRsvpTransformer;
  use Exception\ForbiddenException;
  use Exception\NotFoundException;
  use Exception\PreconditionFailedException;
@@ -15,43 +19,22 @@
 
  $app->get("/notifications/{username}", function ($request, $response, $arguments) {
 
-    /* Check if token has needed scope. */
-    // if (true === $this->token->hasScope(["event.all", "event.list"])) {
-    //     throw new ForbiddenException("Token not allowed to list events.", 403);
-    // }else{
-
-    // }
-
     $username =$arguments["username"];
 
     $follows = $this->spot->mapper("App\StudentFollow")
-        ->all()
-        ->where(["followed_id" => $username])
-        ->order(["timer" => "DESC"]);
+        ->query("SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC");
+    $appreciate = $this->spot->mapper("App\ContentAppreciate")
+        ->query("SELECT * FROM content_appreciates WHERE username = '". $username ."' ORDER BY timer DESC");
+    $participants = $this->spot->mapper("App\EventRsvp")
+        ->query("SELECT * FROM event_rsvps WHERE username = '". $username ."' ORDER BY timer DESC");
 
-    /* Serialize the response data. */
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    if (isset($_GET['include'])) {
-        $fractal->parseIncludes($_GET['include']);
-    }
-    $resource1 = new Collection($follows, new StudentFollowTransformer(['username' => $username ]));
-   // $resource2 = new Collection($students, new StudentMiniTransformer(['username' => '1' ]));
-   // $resource3 = new Collection($content, new ContentMiniTransformer(['username' => '1' ]));
-    
-    $arrs = array();
-    $arrs[0] = $fractal->createData($resource1)->toArray();
-   // $arrs[1] = $fractal->createData($resource2)->toArray();
-   // $arrs[2] = $fractal->createData($resource3)->toArray();
-
-$list = array();
-
-foreach($arrs as $arr) {
-    if(is_array($arr)) {
-        $list = array_merge($list, (array)$arr);
-    }
-}
+    $data['followers'] = $follows;
+    $data['followers_count'] = count($follows);
+    $data['content_appreciate'] = $appreciate;
+    $data['content_appreciation_count'] = count($appreciate);
+    $data['event_rsvps'] = $participants;
+    $data['event_rsvp_count'] = count($participants);
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($arrs[0], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-    });
+    ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
