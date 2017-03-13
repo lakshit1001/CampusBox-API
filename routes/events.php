@@ -5,6 +5,7 @@
 use App\Event;
 use App\EventTags;
 use App\EventTransformer;
+use App\EventRsvp;
 use App\EventRsvpTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
@@ -223,6 +224,33 @@ $app->post("/addEvent", function ($request, $response, $arguments) {
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
+$app->post("/rsvp", function ($request, $response, $arguments) {
+	$body = $request->getParsedBody();
+
+	$participants = $this->spot->mapper("App\EventRsvp")->query("SELECT * FROM `event_rsvps` WHERE event_id = ". $body['event_id'] ." AND username = '" .$this->token->decoded->username. "'");
+
+	if(count($participants) > 0){
+		$data["status"] = "Already Going";
+	} else {
+		$event['event_id'] =  $body['event_id'];
+		$event['username'] =  $this->token->decoded->username;
+
+		$newEvent = new EventRsvp($event);
+		$this->spot->mapper("App\EventRsvp")->save($newEvent);
+		$data["status"] = "Already Going";
+
+	    $fractal = new Manager();
+	    $fractal->setSerializer(new DataArraySerializer);
+	    $resource = new Item($newEvent, new EventRsvpTransformer);
+	    $data = $fractal->createData($resource)->toArray();
+	}
+
+	/* Serialize the response data. */
+	return $response->withStatus(201)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
 $app->get("/eventParticipants/{id}", function ($request, $response, $arguments) {
 	$participants = $this->spot->mapper("App\EventRsvp")->where(["event_id" => $arguments['id']]);
 	
@@ -235,6 +263,26 @@ $app->get("/eventParticipants/{id}", function ($request, $response, $arguments) 
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->delete("/rsvp", function ($request, $response, $arguments) {
+	$body = $request->getParsedBody();
+
+    /* Load existing todo using provided uid */
+    $rsvp = $this->spot->mapper("App\EventRsvp")->query("SELECT * FROM `event_rsvps` WHERE event_id = ". $body['event_id'] ." AND username = '" .$this->token->decoded->username. "'")->first() ;
+    if(count($rsvp) <= 0){
+		$data["status"] = "Rsvp Not Found";
+	} else {
+
+    $this->spot->mapper("App\EventRsvp")->delete($rsvp);
+
+    $data["status"] = "ok";
+    $data["message"] = "Rsvp deleted";
+	}
+
+    return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
 $app->patch("/events/{id}", function ($request, $response, $arguments) {
