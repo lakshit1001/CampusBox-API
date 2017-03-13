@@ -7,6 +7,8 @@ use App\EventTags;
 use App\EventTransformer;
 use App\EventRsvp;
 use App\EventRsvpTransformer;
+use App\EventBookmarks;
+use App\EventBookmarksTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -251,6 +253,33 @@ $app->post("/rsvp", function ($request, $response, $arguments) {
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
+$app->post("/bookmark", function ($request, $response, $arguments) {
+	$body = $request->getParsedBody();
+
+	$participants = $this->spot->mapper("App\EventBookmarks")->query("SELECT * FROM `event_bookmarks` WHERE event_id = ". $body['event_id'] ." AND username = '" .$this->token->decoded->username. "'");
+
+	if(count($participants) > 0){
+		$data["status"] = "Already Bookmarked";
+	} else {
+		$event['event_id'] =  $body['event_id'];
+		$event['username'] =  $this->token->decoded->username;
+
+		$newEvent = new EventBookmarks($event);
+		$this->spot->mapper("App\EventBookmarks")->save($newEvent);
+		$data["status"] = "Already Going";
+
+	    $fractal = new Manager();
+	    $fractal->setSerializer(new DataArraySerializer);
+	    $resource = new Item($newEvent, new EventBookmarksTransformer);
+	    $data = $fractal->createData($resource)->toArray();
+	}
+
+	/* Serialize the response data. */
+	return $response->withStatus(201)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
 $app->get("/eventParticipants/{id}", function ($request, $response, $arguments) {
 	$participants = $this->spot->mapper("App\EventRsvp")->where(["event_id" => $arguments['id']]);
 	
@@ -269,15 +298,36 @@ $app->delete("/rsvp", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 
     /* Load existing todo using provided uid */
-    $rsvp = $this->spot->mapper("App\EventRsvp")->query("SELECT * FROM `event_rsvps` WHERE event_id = ". $body['event_id'] ." AND username = '" .$this->token->decoded->username. "'")->first() ;
+    $rsvp = $this->spot->mapper("App\EventRsvp")->query("SELECT * FROM `event_rsvps` WHERE event_id = ". $body['event_id'] ." AND username = '" .$this->token->decoded->username. "'");
     if(count($rsvp) <= 0){
 		$data["status"] = "Rsvp Not Found";
 	} else {
-
+	    $rsvp = $this->spot->mapper("App\EventRsvp")->query("SELECT * FROM `event_rsvps` WHERE event_id = ". $body['event_id'] ." AND username = '" .$this->token->decoded->username. "'")->first();
     $this->spot->mapper("App\EventRsvp")->delete($rsvp);
 
     $data["status"] = "ok";
     $data["message"] = "Rsvp deleted";
+	}
+
+    return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->delete("/bookmark", function ($request, $response, $arguments) {
+	$body = $request->getParsedBody();
+
+    /* Load existing todo using provided uid */
+    $rsvp = $this->spot->mapper("App\EventBookmarks")->query("SELECT * FROM `event_bookmarks` WHERE event_id = ". $body['event_id'] ." AND username = '" .$this->token->decoded->username. "'");
+    if(count($rsvp) <= 0){
+		$data["status"] = "Bookmark Not Found";
+	} else {
+
+    $rsvp = $this->spot->mapper("App\EventBookmarks")->query("SELECT * FROM `event_bookmarks` WHERE event_id = ". $body['event_id'] ." AND username = '" .$this->token->decoded->username. "'")->first() ;
+    $this->spot->mapper("App\EventBookmarks")->delete($rsvp);
+
+    $data["status"] = "ok";
+    $data["message"] = "Bookmark deleted";
 	}
 
     return $response->withStatus(200)
