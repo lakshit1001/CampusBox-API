@@ -201,22 +201,22 @@ $app->post("/addEvent", function ($request, $response, $arguments) {
 	$event['from_time'] = $body['event']['fromTime'];
 	$event['from_period'] = $body['event']['fromPeriod']=="am"?0:1;
 
-	echo var_dump($event);
 	$newEvent = new Event($event);
 	$this->spot->mapper("App\Event")->save($newEvent);
 
-	//adding interests 
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    $resource = new Item($newEvent, new EventTransformer);
+    $data = $fractal->createData($resource)->toArray();
 
 	for ($i=0; $i < count($body['tags']); $i++) {
-		$tags['event_id'] = '1';
+		$tags['event_id'] = $data['data']['id'];
 		$tags['name'] = $body['tags'][$i]['name'];
 		$intrest = new EventTags($tags);
 		$this->spot->mapper("App\EventTags")->save($intrest);
 	}
 
 	/* Serialize the response data. */
-	$fractal = new Manager();
-	$fractal->setSerializer(new DataArraySerializer);
 	$data["status"] = 'Registered Successfully';
 	return $response->withStatus(201)
 	->withHeader("Content-Type", "application/json")

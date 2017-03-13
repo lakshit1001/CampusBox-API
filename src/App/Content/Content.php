@@ -11,9 +11,10 @@ class Content extends \Spot\Entity {
 		return [
 			"content_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"created_by_username" => ["type" => "string", "required" => true],
+			"college_id" => ["type" => "integer", "required" => true],
+			"content_type_id" => ["type" => "integer", "required" => true],
 			"title" => ["type" => "string", "required" => true],
-			"description" => ["type" => "string", "required" => true],
-			"timer" => ["type" => "text", "value" => new \DateTime()],
+			"timer" => ["type" => "string"]
 		];
 	}
 	public static function contents(EventEmitter $emitter) {
@@ -31,13 +32,6 @@ class Content extends \Spot\Entity {
 		return md5($this->id . $this->timestamp());
 	}
 	public function clear() {
-		$this->data([
-			"content_id" => null,
-			"created_by_username" => null,
-			"title" => null,
-			"description" => null,
-			"timer" => null,
-		]);
 	}
 	public static function relations(Mapper $mapper, Entity $entity) {
 		return [

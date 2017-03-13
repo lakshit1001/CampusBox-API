@@ -194,28 +194,31 @@ return $response->withStatus(200)
 $app->post("/addContent", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 
-	$content['college_id'] =  $this->token->decoded->college_id;
 	$content['created_by_username'] =  $this->token->decoded->username;
-	$content['title'] = $body['title'];
-	$content['content_type_id'] = $body['type'];
+	$content['college_id'] =  $this->token->decoded->college_id;
+	$content['title'] = $body['content']['title'];
+	$content['content_type_id'] = $body['content']['type'];
+	
 	$newContent = new Content($content);
 	$this->spot->mapper("App\Content")->save($newContent);
 
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    $resource = new Item($newContent, new ContentTransformer);
+    $data = $fractal->createData($resource)->toArray();
 			//adding interests 
 
 	for ($i=0; $i < count($body['items']); $i++) {
-		$item['content_id'] = 15;
-		$item['description'] = isset($body['items'][$i]['text']) ?$body['items'][$i]['text']: " ";
-		$item['content_item_type'] = isset($body['items'][$i]['mediaType']) ?$body['items'][$i]['mediaType']: " ";
-		$item['embed_url'] = isset($body['items'][$i]['embedUrl']) ?$body['items'][$i]['embedUrl']: " ";
-		$item['embed'] = isset($body['items'][$i]['embed']) ?$body['items'][$i]['embed']: " ";
-		$item['image'] = isset($body['items'][$i]['image']) ?$body['items'][$i]['image']: " ";
-
-		$itemElement = new ContentItems($item);
-		$this->spot->mapper("App\ContentItems")->save($itemElement);
+		$items['content_id'] = $data['data']['id'];
+		// $items['description'] = $body['content']['description'];
+		$items['content_item_type'] = $body['items'][$i]['type'];
+		$items['image'] = $body['content']['image'];
+		$items['embed_url_type'] = $body['items'][$i]['embed_type'];;
+		$itemsElement = new ContentItems($items);
+		$this->spot->mapper("App\ContentItems")->save($itemsElement);
 	}
 	// for ($i=0; $i < count($body['tags']); $i++) {
-	// 	$tags['event_id'] = '1';
+	// 	$tags['content_id'] = '1';
 	// 	$tags['name'] = $body['tags'][$i]['name'];
 	// 	$tagsElement = new ContentTags($tags);
 	// 	$this->spot->mapper("App\ContentTags")->save($tagsElement);
@@ -224,7 +227,7 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 	/* Serialize the response data. */
 	$fractal = new Manager();
 	$fractal->setSerializer(new DataArraySerializer);
-	$data["status"] = 'Registered Successfully';
+	$data["status"] = 'Added Successfully';
 	return $response->withStatus(201)
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
