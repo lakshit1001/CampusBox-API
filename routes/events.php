@@ -239,7 +239,7 @@ $app->post("/rsvp", function ($request, $response, $arguments) {
 
 		$newEvent = new EventRsvp($event);
 		$this->spot->mapper("App\EventRsvp")->save($newEvent);
-		$data["status"] = "Already Going";
+		$data["status"] = "Successfull";
 
 	    $fractal = new Manager();
 	    $fractal->setSerializer(new DataArraySerializer);
@@ -266,7 +266,7 @@ $app->post("/bookmark", function ($request, $response, $arguments) {
 
 		$newEvent = new EventBookmarks($event);
 		$this->spot->mapper("App\EventBookmarks")->save($newEvent);
-		$data["status"] = "Already Going";
+		$data["status"] = "Successfull";
 
 	    $fractal = new Manager();
 	    $fractal->setSerializer(new DataArraySerializer);
