@@ -40,7 +40,7 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
             "OR title LIKE '%".$query."%'  
             OR subtitle LIKE '%".$query."%'  ".
             "OR description LIKE '%".$query."%'  ".
-            "order by score1 desc,score2 desc, score3 desc limit 4" );
+            "order by score1 desc,score2 desc, score3 desc,events.to_date desc limit 4" );
 
 
     $content = $this->spot->mapper("App\Content")
@@ -53,7 +53,7 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
         LEFT JOIN content_appreciates
         ON contents.content_id = content_appreciates.content_id
         GROUP BY contents.content_id
-        ORDER BY score1 DESC  limit 4");
+        ORDER BY score1 DESC ,contents.timer desc limit 4");
     
 
 
@@ -65,7 +65,7 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
         "AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
         "or MATCH(title) AGAINST('".$query."*' IN BOOLEAN MODE) ".
         "OR title LIKE '%".$query."%'  ".
-        "order by score1 desc limit 4" );
+        "order by score1 desc,  contents.timer desc limit 4" );
 
     $students = $this->spot->mapper("App\Student")
     ->query("SELECT *, MATCH (name) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score1,".
@@ -100,8 +100,12 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
     $list =[];
     foreach($arrs as $arr) {
         foreach($arr as $item) {
-
-            $list[] = $item;
+        foreach($item as $bitch) {
+            if(isset($bitch['photo'])){
+                $bitch['image'] = $bitch['photo'];
+            }
+            $list[] = $bitch;
+        }
         }
     }
         return $response->withStatus(200)
