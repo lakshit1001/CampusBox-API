@@ -13,12 +13,12 @@ class StudentFollowTransformer extends Fractal\TransformerAbstract
           'Follower'
     ];
     protected $defaultIncludes = [
-           'Follower'
+           // 'Follower'
       ];
     public function transform(StudentFollow $follow)
     {
         return [
-            "FollowerId" => (integer)$follow->follower_username?: 0 ,
+            "follower_username" => (string)$follow->follower_username?: null,
             
        
         ];

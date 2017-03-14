@@ -12,7 +12,7 @@ class EventRsvpTransformer extends Fractal\TransformerAbstract
     public function transform(EventRsvp $x)
     {
         return [
-            "Username" => (string)$x->username?: 0 ,
+            "Username" => (string)$x->username?: null,
         ];
     }
 }

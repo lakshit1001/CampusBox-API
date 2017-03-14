@@ -27,7 +27,7 @@ use Spot\MapperInterface as Mapper;
         "id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
         "followed_username" => ["type" => "string"],
         "follower_username" => ["type" => "string"],
-        "timestamp" => ["type" => "datetime"]
+        "timer" => ["type" => "datetime"]
         ];
     }
 
@@ -46,8 +46,8 @@ use Spot\MapperInterface as Mapper;
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-            'Followed' => $mapper->HasOne($entity, 'App\Student', 'followed_username'),
-            'Follower' => $mapper->HasOne($entity, 'App\Student', 'follower_username')
+            'Followed' => $mapper->belongsTo($entity, 'App\Student', 'followed_username'),
+            'Follower' => $mapper->belongsTo($entity, 'App\Student', 'follower_username')
             ];
     }
 }

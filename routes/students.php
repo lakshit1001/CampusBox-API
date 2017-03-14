@@ -3,8 +3,10 @@
  
 
 use App\Student;
+use App\studentFollow;
 use App\EventTransformer;
 use App\StudentTransformer;
+use App\StudentFollowTransformer;
 use App\ContentTransformer;
 
 use Exception\NotFoundException;
@@ -18,11 +20,6 @@ use League\Fractal\Resource\Collection;
 use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/student/{username}", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    //if (true === $this->token->hasScope(["student.all", "student.read"])) {
-    //    throw new ForbiddenException("Token not allowed to list students.", 403);
-    //}
 
     /* Load existing student using provided id */
     if (false === $student = $this->spot->mapper("App\Student")->first([
@@ -50,15 +47,6 @@ $app->get("/student/{username}", function ($request, $response, $arguments) {
 });
 
 $app->get("/studentEvents/{username}", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    // if (true === $this->token->hasScope(["event.all", "event.list"])) {
-    //     throw new ForbiddenException("Token not allowed to list events.", 403);
-    // }else{
-
-    // }
-
-    //$test = $this->token->decoded->username;
 
     /* Use ETag and date from Event with most recent update. */
     $first = $this->spot->mapper("App\Event")
@@ -275,6 +263,53 @@ $app->delete("/students/{id}", function ($request, $response, $arguments) {
 
     $data["status"] = "ok";
     $data["message"] = "Student deleted";
+
+    return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->post("/studentFollow", function ($request, $response, $arguments) {
+    $body = $request->getParsedBody();
+
+    $participants = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '". $body['followed_username'] ."' AND follower_username = '" .$this->token->decoded->username. "'");
+
+    if(count($participants) > 0){
+        $data["status"] = "Already Following";
+    } else {
+        $event['followed_username'] =  $body['followed_username'];
+        $event['follower_username'] =  $this->token->decoded->username;
+
+        $newEvent = new StudentFollow($event);
+        $this->spot->mapper("App\StudentFollow")->save($newEvent);
+        $data["status"] = "Successfull";
+
+        $fractal = new Manager();
+        $fractal->setSerializer(new DataArraySerializer);
+        $resource = new Item($newEvent, new StudentFollowTransformer);
+        $data = $fractal->createData($resource)->toArray();
+    }
+
+    /* Serialize the response data. */
+    return $response->withStatus(201)
+    ->withHeader("Content-Type", "application/json")
+    ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->delete("/studentFollow", function ($request, $response, $arguments) {
+    $body = $request->getParsedBody();
+
+    /* Load existing todo using provided uid */
+    $rsvp = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '". $body['followed_username'] ."' AND follower_username = '" .$this->token->decoded->username. "'");
+    if(count($rsvp) <= 0){
+        $data["status"] = "Not Following";
+    } else {
+        $rsvp = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '". $body['followed_username'] ."' AND follower_username = '" .$this->token->decoded->username. "'")->first();
+    $this->spot->mapper("App\StudentFollow")->delete($rsvp);
+
+    $data["status"] = "ok";
+    $data["message"] = "Unfollowed";
+    }
 
     return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
