@@ -14,6 +14,7 @@ class ContentTransformer extends Fractal\TransformerAbstract {
   protected $defaultIncludes = [
            // 'SocialAccounts',
           
+          'Tags',
           'Items'
 
       ];
@@ -62,21 +63,17 @@ class ContentTransformer extends Fractal\TransformerAbstract {
                     "total" =>  count($content->Bookmarks) ?: 0,
                     ],
                 ],
-            "details" => [
-                "software" => [
-                        "name" => (string) $content->Tag['name'] ?: null,
-                        "link" => (integer) $content->Tag['tag_id'] ?: 0,
-                    ],
-                "euquipment" => [
-                        "name" => (string) $content->Tag['name'] ?: null,
-                        "link" => (integer) $content->Tag['tag_id'] ?: 0,
-                         ]
-                 ],
+            // "details" => [
+            //     "software" => [
+            //             "name" => (string) $content->Tag['name'] ?: null,
+            //             "link" => (integer) $content->Tag['tag_id'] ?: 0,
+            //         ],
+            //     "euquipment" => [
+            //             "name" => (string) $content->Tag['name'] ?: null,
+            //             "link" => (integer) $content->Tag['tag_id'] ?: 0,
+            //              ]
+            //      ],
 
-            "tags" => [
-                    "name" => (string) $content->Tag['name'] ?: null,
-                    "link" => (integer) $content->Tag['tag_id'] ?: 0,
-                ],
                 "total" => (integer) $content->created_by_username ?: 0,
             "links" => [
                 "self" => "/contents/{$content->id}",

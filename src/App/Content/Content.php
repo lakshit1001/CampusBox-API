@@ -40,7 +40,7 @@ class Content extends \Spot\Entity {
 			//  'Type' => $mapper->belongsTo($entity, 'App\ContentType', 'content_type_id'),
 			//'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_username'),
 			//'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'username', 'content_id'),
-			// 'Tags' => $mapper->hasManyThrough($entity, 'App\Tag', 'App\ContentCategory', 'tag_id', 'content_id'),
+			 'Tags' => $mapper->hasMany($entity, 'App\ContentTags', 'content_id'),
 			// 'Likes' => $mapper->hasManyThrough($entity, 'App\Student', 'App\ContentLikes', 'username', 'content_id'),
 			// 'Bookmarked' => $mapper->hasManyThrough($entity, 'App\Student', 'App\ContentBookmarks', 'username', 'content_id'),
 			//'StudentsBookmarked' => $mapper->hasMany($entity, 'App\ContentBookmarks', 'content_id'),

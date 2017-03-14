@@ -4,6 +4,7 @@
 
 use App\Content;
 use App\ContentItems;
+use App\ContentTags;
 use App\ContentTransformer;
 use App\ContentItemsTransformer;
 use Exception\ForbiddenException;
@@ -196,8 +197,8 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 
 	$content['created_by_username'] =  $this->token->decoded->username;
 	$content['college_id'] =  $this->token->decoded->college_id;
-	$content['title'] = $body['content']['title'];
-	$content['content_type_id'] = $body['content']['type'];
+	$content['title'] = $body['title'];
+	$content['content_type_id'] = $body['type'];
 	
 	$newContent = new Content($content);
 	$this->spot->mapper("App\Content")->save($newContent);
@@ -210,19 +211,19 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 
 	for ($i=0; $i < count($body['items']); $i++) {
 		$items['content_id'] = $data['data']['id'];
-		// $items['description'] = $body['content']['description'];
-		$items['content_item_type'] = $body['items'][$i]['type'];
-		$items['image'] = $body['content']['image'];
-		$items['embed_url_type'] = $body['items'][$i]['embed_type'];;
+		 $items['description'] = $body['items'][$i]['text'];
+		$items['content_item_type'] = $body['items'][$i]['mediaType'];
+		$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:"";
+		$items['embed_url'] = isset($body['items'][$i]['embedUrl'])?$body['items'][$i]['embedUrl']:"";
 		$itemsElement = new ContentItems($items);
 		$this->spot->mapper("App\ContentItems")->save($itemsElement);
 	}
-	// for ($i=0; $i < count($body['tags']); $i++) {
-	// 	$tags['content_id'] = '1';
-	// 	$tags['name'] = $body['tags'][$i]['name'];
-	// 	$tagsElement = new ContentTags($tags);
-	// 	$this->spot->mapper("App\ContentTags")->save($tagsElement);
-	// }
+	for ($i=0; $i < count($body['tags']); $i++) {
+		$tags['content_id'] = $data['data']['id'];
+		$tags['name'] = $body['tags'][$i]['name'];
+		$tagsElement = new ContentTags($tags);
+		$this->spot->mapper("App\ContentTags")->save($tagsElement);
+	}
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
