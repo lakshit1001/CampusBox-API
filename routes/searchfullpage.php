@@ -15,7 +15,7 @@ use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\DataArraySerializer;
 
-$app->get("/search/{query}", function ($request, $response, $arguments) {
+$app->get("/searchfullpage/{query}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
     // if (true === $this->token->hasScope(["event.all", "event.list"])) {
@@ -26,23 +26,21 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
 
     $query =isset($arguments["query"])?isset($arguments["query"]):" ";
 
-    
-  // $events = $this->spot->mapper("App\Event")
-  //   ->query("SELECT *, MATCH (title) AGAINST ".
-  //       "('".$query."*' IN BOOLEAN MODE) AS score1,". 
-  //       "MATCH (subtitle) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score2,".
-  //       "MATCH (description) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score3 ".
-  //       "FROM events".
-  //       " WHERE MATCH(title) ".
-  //       "AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
-  //       "or  MATCH(subtitle) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)".
-  //       "or MATCH(description) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)".
-  //       "or MATCH(title) AGAINST('".$query."*' IN BOOLEAN MODE) ".
-  //       "OR MATCH(subtitle) AGAINST('".$query."*' IN BOOLEAN MODE) ".
-  //           "OR title LIKE '%".$query."%'  
-  //           OR subtitle LIKE '%".$query."%'  ".
-  //           "OR description LIKE '%".$query."%'  ".
-  //           "order by score1 desc,score2 desc, score3 desc,events.to_date desc limit 3" );
+    $events = $this->spot->mapper("App\Event")
+    ->query("SELECT *, MATCH (title) AGAINST ".
+        "('".$query."*' IN BOOLEAN MODE) AS score1,". 
+        "MATCH (subtitle) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score2,".
+        "MATCH (description) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score3 ".
+        "FROM events WHERE MATCH(title) ".
+        "AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
+        "or  MATCH(subtitle) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)".
+        "or MATCH(description) AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)".
+        "or MATCH(title) AGAINST('".$query."*' IN BOOLEAN MODE) ".
+        "OR MATCH(subtitle) AGAINST('".$query."*' IN BOOLEAN MODE) ".
+            "OR title LIKE '%".$query."%'  
+            OR subtitle LIKE '%".$query."%'  ".
+            "OR description LIKE '%".$query."%'  ".
+            "order by score1 desc,score2 desc, score3 desc,events.to_date desc limit 4" );
 
 
     $content = $this->spot->mapper("App\Content")
@@ -55,19 +53,19 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
         LEFT JOIN content_appreciates
         ON contents.content_id = content_appreciates.content_id
         GROUP BY contents.content_id
-        ORDER BY score1 DESC ,contents.timer desc limit 2");
+        ORDER BY score1 DESC ,contents.timer desc limit 4");
     
 
 
 
-  //   $content2 = $this->spot->mapper("App\Content")
-  //   ->query("SELECT *, MATCH (title) AGAINST ".
-  //       "('".$query."*' IN BOOLEAN MODE) AS score1 ". 
-  //       "FROM contents WHERE MATCH(title) ".
-  //       "AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
-  //       "or MATCH(title) AGAINST('".$query."*' IN BOOLEAN MODE) ".
-  //       "OR title LIKE '%".$query."%'  ".
-  //       "order by score1 desc,  contents.timer desc limit 3" );
+    $content2 = $this->spot->mapper("App\Content")
+    ->query("SELECT *, MATCH (title) AGAINST ".
+        "('".$query."*' IN BOOLEAN MODE) AS score1 ". 
+        "FROM contents WHERE MATCH(title) ".
+        "AGAINST('".$query."*' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION) ".
+        "or MATCH(title) AGAINST('".$query."*' IN BOOLEAN MODE) ".
+        "OR title LIKE '%".$query."%'  ".
+        "order by score1 desc,  contents.timer desc limit 4" );
 
     $students = $this->spot->mapper("App\Student")
     ->query("SELECT *, MATCH (name) AGAINST ('".$query."*' IN BOOLEAN MODE) AS score1,".
@@ -81,29 +79,20 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
        "OR name LIKE '%".$query."%'  ".
        "OR username LIKE '%".$query."%'  ".
        "OR about LIKE '%".$query."%'  ".
-       "order by score1 desc,score2 desc, score3 desc limit 2" );
-
-
-    $events = $this->spot->mapper("App\Event")
-    ->query(("SELECT * from events where title LIKE '%".$query."%' limit 2" ));
-  // $students = $this->spot->mapper("App\Student")
-  //   ->query(("SELECT * from students where name LIKE '%".$query."%' limit 3" ));
-  //   $content = $this->spot->mapper("App\Content")
-  //   ->query(("SELECT * from contents where title LIKE '%".$query."%' limit 3" ));
-    
+       "order by score1 desc,score2 desc, score3 desc limit 4" );
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
     if (isset($_GET['include'])) {
         $fractal->parseIncludes($_GET['include']);
     }
-    $resource1 = new Collection($students, new StudentMiniTransformer(['username' => '1' ]));
-    $resource2 = new Collection($events, new EventTransformer(['username' => '1' ]));
+    $resource1 = new Collection($events, new EventTransformer(['username' => '1' ]));
+    $resource2 = new Collection($students, new StudentMiniTransformer(['username' => '1' ]));
     $resource3 = new Collection($content, new ContentMiniTransformer(['username' => '1' ]));
     
     $arrs = array();
-    $arrs[0] = $fractal->createData($resource1)->toArray();
-    $arrs[1] = $fractal->createData($resource2)->toArray();
+    $arrs[1] = $fractal->createData($resource1)->toArray();
+    $arrs[0] = $fractal->createData($resource2)->toArray();
     $arrs[2] = $fractal->createData($resource3)->toArray();
     $arrs[0] = array_filter($arrs[0]);
     $arrs[1] = array_filter($arrs[1]);
@@ -113,12 +102,7 @@ $app->get("/search/{query}", function ($request, $response, $arguments) {
         foreach($arr as $item) {
         foreach($item as $bitch) {
             if(isset($bitch['photo'])){
-                $bitch['type'] = "student";
                 $bitch['image'] = $bitch['photo'];
-            }else if(isset($bitch['content'])){
-                $bitch['type'] = "content";
-            }else{
-                $bitch['type'] = "event";
             }
             $list[] = $bitch;
         }

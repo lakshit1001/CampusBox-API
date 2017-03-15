@@ -20,7 +20,7 @@ class SocialAccount extends \Spot\Entity
     "social_id" => ["type" => "string"],
     "college_id" => ["type" => "integer"],
     "roll_number" => ["type" => "integer"],
-    "type" => ["type" => "integer"],
+    "type" => ["type" => "string"],
     "token" => ["type" => "string"],
     "link" => ["type" => "string"],
     "name" => ["type" => "string"],

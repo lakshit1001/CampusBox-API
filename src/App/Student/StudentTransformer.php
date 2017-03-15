@@ -23,7 +23,8 @@ class StudentTransformer extends Fractal\TransformerAbstract
   'SocialAccounts',
   'Followed',
   'BookmarkedContents',
-  'AttendingEvents'
+  'AttendingEvents',
+  'CreativeContents'
   ];
   public function transform(Student $student)
   {
@@ -67,6 +68,11 @@ class StudentTransformer extends Fractal\TransformerAbstract
   }
   public function includeBookmarkedContents(Student $student) {
     $contents = $student->BookmarkedContents;
+
+    return $this->collection($contents, new ContentMiniTransformer);
+  }
+public function includeCreativeContents(Student $student) {
+    $contents = $student->CreativeContents;
 
     return $this->collection($contents, new ContentMiniTransformer);
   }

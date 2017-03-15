@@ -76,7 +76,7 @@ class Student extends \Spot\Entity {
 			// 'Followers' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'following_id', 'follower_id'),
 
 			// 'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'class_group_id'),
-			// 'CreativeContents' => $mapper->hasMany($entity, 'App\CreativeContent', 'post_id'),
+			 'CreativeContents' => $mapper->hasMany($entity, 'App\Content', 'created_by_username'),
 			// 'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
 			//'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'username'),
 			// 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'username'),
