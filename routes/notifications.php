@@ -17,9 +17,9 @@
  use League\Fractal\Resource\Item;
  use League\Fractal\Serializer\DataArraySerializer;
 
- $app->get("/notifications/{username}", function ($request, $response, $arguments) {
+ $app->get("/notifications", function ($request, $response, $arguments) {
 
-    $username =$arguments["username"];
+    $username =$this->token->decoded->username;
 
     $follows = $this->spot->mapper("App\StudentFollow")
         ->query("SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC LIMIT 5");
