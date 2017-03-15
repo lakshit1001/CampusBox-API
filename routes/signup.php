@@ -64,7 +64,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			"exp" => $future->getTimeStamp(),
 			"jti" => $jti,
 			"username" => $student[0]->username,
-						"student_id" => $student[0]->student_id,
+			"student_id" => $student[0]->student_id,
 
 			];
 			$secret = getenv("JWT_SECRET");
@@ -125,62 +125,59 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			}
 				// making a completly fresh account
 		}
-		else{
+		
 				//we make a new username basis of the email provided 
-			if(isset($facebookData['email'])){
-				$newUser['username'] = strstr($facebookData['email'], '@', TRUE);
-				$student = new SocialAccount();
-				$student = $this->spot
-				->mapper("App\SocialAccount")
-				->where(['username' =>$newUser['username']]);
+		if(isset($facebookData['email'])){
+			$newUser['username'] = strstr($facebookData['email'], '@', TRUE);
+			$student = new SocialAccount();
+			$student = $this->spot
+			->mapper("App\SocialAccount")
+			->where(['username' =>$newUser['username']]);
 							//if same username exists just use the fb id 
-				if (count($student) > 0) {
-					$newUser['username'] = $facebookData['id'];		
-				}
-					// if facebook is not sending the email id (happens with unverified users )
-			}else{		
+			if (count($student) > 0) {
 				$newUser['username'] = $facebookData['id'];		
 			}
+					// if facebook is not sending the email id (happens with unverified users )
+		}else{		
+			$newUser['username'] = $facebookData['id'];		
+		}
 
 					// first add user to students table
-			$newUser['name'] = isset($facebookData['name'])?$facebookData['name']:" ";
-			$newUser['email'] = isset($facebookData['email'])? $facebookData['email']:" ";
-			$newUser['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
-			$newUser['birthday'] = isset($facebookData['birthday']) ?$facebookData->getBirthday()->format('m/d/Y'):" ";
-			$newUser['about'] = isset($facebookData['about']) ?$facebookData['about']: "Apparently, this user prefers to keep an air of mystery about them";
-			$newUser['image'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
+		$newUser['name'] = isset($facebookData['name'])?$facebookData['name']:" ";
+		$newUser['email'] = isset($facebookData['email'])? $facebookData['email']:" ";
+		$newUser['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
+		$newUser['birthday'] = isset($facebookData['birthday']) ?$facebookData->getBirthday()->format('m/d/Y'):" ";
+		$newUser['about'] = isset($facebookData['about']) ?$facebookData['about']: "Apparently, this user prefers to keep an air of mystery about them";
+		$newUser['image'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
 
-			$newUser['college_id'] = $body['college_id'];
-			$newUser['roll_number'] = $body['roll']	;
-			$newUserAccount = new Student($newUser);
-			$this->spot->mapper("App\Student")->save($newUserAccount);
+		$newUser['college_id'] = $body['college_id'];
+		$newUser['roll_number'] = $body['roll']	;
+		$newUserAccount = new Student($newUser);
+		$this->spot->mapper("App\Student")->save($newUserAccount);
 
 
 
 					// add same data to social accounts table
-			$social['college_id'] = $body['college_id'];
-			$social['roll_number'] = $body['roll']	;
-			$social['username'] = $newUser['username'];
-			$social['social_id'] = $facebookData['id'];
-			$social['type'] = "facebook";
-			$social['token'] = $body['token'];
-			$social['name'] = isset($facebookData['name'])?$facebookData['name']:" ";
-			$social['email'] = isset($facebookData['email'])? $facebookData['email']:" ";
-			$social['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
-			$social['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
-			$social['birthday'] = isset($facebookData['birthday']) ?$facebookData->getBirthday()->format('m/d/Y'):" ";
-			$social['link'] = isset($facebookData['link']) ?$facebookData['link']:" ";
-			$social['about'] = isset($facebookData['about']) ?$facebookData['about']: " ";
-			$social['picture'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
-			$social['cover'] = isset($facebookData['cover']['url'])?$facebookData['picture']['url']:" ";
-			$socialAccount = new SocialAccount($social);
-			$this->spot->mapper("App\SocialAccount")->save($socialAccount);
-
-		}
-
+		$social['college_id'] = $body['college_id'];
+		$social['roll_number'] = $body['roll']	;
+		$social['username'] = $newUser['username'];
+		$social['social_id'] = $facebookData['id'];
+		$social['type'] = "facebook";
+		$social['token'] = $body['token'];
+		$social['name'] = isset($facebookData['name'])?$facebookData['name']:" ";
+		$social['email'] = isset($facebookData['email'])? $facebookData['email']:" ";
+		$social['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
+		$social['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
+		$social['birthday'] = isset($facebookData['birthday']) ?$facebookData->getBirthday()->format('m/d/Y'):" ";
+		$social['link'] = isset($facebookData['link']) ?$facebookData['link']:" ";
+		$social['about'] = isset($facebookData['about']) ?$facebookData['about']: " ";
+		$social['picture'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
+		$social['cover'] = isset($facebookData['cover']['url'])?$facebookData['picture']['url']:" ";
+		$socialAccount = new SocialAccount($social);
+		$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 	}
 	else if ($body['type']=="google"){
-		$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['access_token']);
+		$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
 		$googleData = json_decode($json);
 
 		$student = new SocialAccount();
@@ -227,7 +224,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$social['username'] = $student[0]->username;
 			$social['social_id'] = $googleData->id;
 			$social['type'] = "google";
-			$social['token'] = $body['access_token'];
+			$social['token'] = $body['token'];
 			$social['name'] = isset($googleData->name)?$googleData->name:" ";
 			$social['email'] = isset($googleData->email)? $googleData->email:" ";
 			$social['gender'] = isset($googleData->gender)?$googleData->gender:" ";
@@ -250,7 +247,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			"exp" => $future->getTimeStamp(),
 			"jti" => $jti,
 			"username" => $student[0]->username,
-						"student_id" => $student[0]->student_id,
+			"student_id" => $student[0]->student_id,
 
 			];
 			$secret = getenv("JWT_SECRET");
@@ -262,7 +259,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		}
 			// making a completly fresh account
-		else{
+	
 			//we make a new username basis of the email provided 
 
 			if(isset($googleData->email)){
@@ -301,7 +298,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$social['username'] = $newUser['username'];
 			$social['social_id'] = $googleData->id;
 			$social['type'] = "google";
-			$social['token'] =$body['access_token'];
+			$social['token'] =$body['token'];
 			$social['name'] = isset($googleData->name)?$googleData->name:" ";
 			$social['email'] = isset($googleData->email)? $googleData->email:" ";
 			$social['gender'] = isset($googleData->gender)?$googleData->gender:" ";
@@ -314,9 +311,9 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$socialAccount = new SocialAccount($social);
 			$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 
-		}
+		
 	}
-else if ($body['type']=="linkedIN"){
+	else if ($body['type']=="linkedIN"){
 		$json = file_get_contents('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,picture-url,headline,location,industry,summary,specialties,positions,public-profile-url)'.$body['access_token']);
 		$linkedinData = json_decode($json);
 		echo $linkedinData->name;
@@ -387,7 +384,7 @@ else if ($body['type']=="linkedIN"){
 			"exp" => $future->getTimeStamp(),
 			"jti" => $jti,
 			"username" => $student[0]->username,
-						"student_id" => $student[0]->student_id,
+			"student_id" => $student[0]->student_id,
 
 			];
 			$secret = getenv("JWT_SECRET");

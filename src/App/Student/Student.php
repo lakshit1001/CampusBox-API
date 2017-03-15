@@ -11,7 +11,6 @@ class Student extends \Spot\Entity {
 
 	public static function fields() {
 		return [
-		"student_id" => ["type" => "integer", "unsigned" => true,  "autoincrement" => true],
 		"username" => ["type" => "string", "primary" => true],
 		"college_id" => ["type" => "integer"],
 		"name" => ["type" => "string"],
@@ -41,7 +40,6 @@ class Student extends \Spot\Entity {
 
 	public function clear() {
 		$this->data([
-			"student_id" => 0,
 			"college_id" => null,
 			"name" => null,
 			"image" => null,
