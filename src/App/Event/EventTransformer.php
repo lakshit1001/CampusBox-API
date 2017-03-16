@@ -18,10 +18,20 @@ class EventTransformer extends Fractal\TransformerAbstract {
       ];
 	public function transform(Event $event) {
         if(isset($this->params['type']) && $this->params['type'] == 'get'){
-            $bookmarks = $event->Bookmarked->select()->where(['username' => $this->params['username']]);
-            $this->params['value1'] = (count($bookmarks) > 0 ? true : false); // returns true
-            $participants = $event->Participants->select()->where(['username' => $this->params['username']]);
-            $this->params['value2'] = (count($participants) > 0 ? true : false); // returns true
+            $bookmarks = $event->Bookmarked;
+            for ($i=0; $i < count($bookmarks); $i++) { 
+                if($bookmarks[$i]->username == $this->params['username']){
+                    $this->params['value1'] = true;
+                    break;
+                }
+            }
+            $participants = $event->Participants;
+            for ($i=0; $i < count($participants); $i++) { 
+                if($participants[$i]->username == $this->params['username']){
+                    $this->params['value2'] = true;
+                    break;
+                }
+            }
         } else {
             $bookmarks = null;
             $participants = null;
@@ -30,7 +40,7 @@ class EventTransformer extends Fractal\TransformerAbstract {
         }
         return [
 			"id" => (integer) $event->event_id ?: 0,
-			"title" => $bookmarks[0] ?: null,
+			"title" => (string) $event->title ?: null,
 			"subtitle" => (string) $event->subtitle ?: null,
             "details" => [
                 "venue" => (string) $event->venue ?: null,
