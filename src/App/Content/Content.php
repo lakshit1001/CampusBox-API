@@ -38,9 +38,9 @@ class Content extends \Spot\Entity {
 			// 'Images' => $mapper->hasMany($entity, 'App\ContentImage', 'content_id'),
 			//'Updates' => $mapper->hasMany($entity, 'App\ContentUpdates', 'content_id'),
 			//  'Type' => $mapper->belongsTo($entity, 'App\ContentType', 'content_type_id'),
-			//'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_username'),
-			//'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'username', 'content_id'),
-			 'Tags' => $mapper->hasMany($entity, 'App\ContentTags', 'content_id'),
+			'Owner' => $mapper->belongsTo($entity, 'App\Student', 'created_by_username'),
+			// 'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Participants', 'username', 'content_id'),
+			 // 'Tags' => $mapper->hasMany($entity, 'App\ContentTags', 'content_id'),
 			// 'Likes' => $mapper->hasManyThrough($entity, 'App\Student', 'App\ContentLikes', 'username', 'content_id'),
 			// 'Bookmarked' => $mapper->hasManyThrough($entity, 'App\Student', 'App\ContentBookmarks', 'username', 'content_id'),
 			//'StudentsBookmarked' => $mapper->hasMany($entity, 'App\ContentBookmarks', 'content_id'),
@@ -48,7 +48,7 @@ class Content extends \Spot\Entity {
 			'Appreciates' => $mapper->hasMany($entity, 'App\ContentAppreciate', 'content_id'),
 			'Appreciated' => $mapper->hasMany($entity, 'App\ContentAppreciate', 'content_id'),
 			'Bookmarks' => $mapper->hasMany($entity, 'App\ContentBookmarks', 'content_id'),
-			'Bookmarked' => $mapper->hasMany($entity, 'App\ContentBookmarks', 'content_id'),
+			'Bookmarked' => $mapper->hasMany($entity, 'App\ContentBookmarks', 'content_id')
 		];
 	}
 }

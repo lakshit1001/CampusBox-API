@@ -71,27 +71,6 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	// }
 	$test = $this->token->decoded->username;
 
-	/* Use ETag and date from Content with most recent update. */
-	if(isset($arguments['content_type_id'])){
-		$first = $this->spot->mapper("App\Content")
-		->all()
-		->where(["content_type_id"=>$arguments['content_type_id']])
-		->order(["timer" => "DESC"])
-		->first();
-	}else{
-
-		$first = $this->spot->mapper("App\Content")
-		->all()
-		->order(["timer" => "DESC"])
-		->first();
-	}
-
-	/* Add Last-Modified and ETag headers to response when atleast on content exists. */
-	if ($first) {
-		$response = $this->cache->withEtag($response, $first->etag());
-		$response = $this->cache->withLastModified($response, $first->timestamp());
-	}
-
 	/* If-Modified-Since and If-None-Match request header handling. */
 	/* Heads up! Apache removes previously set Last-Modified header */
 	/* from 304 Not Modified responses. */
@@ -116,7 +95,7 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($contents, new ContentTransformer(['username' => $test]));
+	$resource = new Collection($contents, new ContentTransformer([ 'type' => 'get', 'username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
 
 	return $response->withStatus(200)
@@ -180,7 +159,7 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($contents, new ContentTransformer(['username' => $test]));
+	$resource = new Collection($contents, new ContentTransformer([ 'type' => 'get', 'username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
 
 	return $response->withStatus(200)
@@ -242,7 +221,7 @@ $app->get("/contentsTop[/{content_type_id}]", function ($request, $response, $ar
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($contents, new ContentTransformer(['username' => $test]));
+	$resource = new Collection($contents, new ContentTransformer([ 'type' => 'get', 'username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
 
 	return $response->withStatus(200)
@@ -333,28 +312,26 @@ $app->post("/addContent", function ($request, $response, $arguments) {
     $fractal->setSerializer(new DataArraySerializer);
     $resource = new Item($newContent, new ContentTransformer);
     $data = $fractal->createData($resource)->toArray();
+	$data["status"] = 'Added Successfully';
 			//adding interests 
 
-	for ($i=0; $i < count($body['items']); $i++) {
-		$items['content_id'] = $data['data']['id'];
-		 $items['description'] = $body['items'][$i]['text'];
-		$items['content_item_type'] = $body['items'][$i]['mediaType'];
-		$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:"";
-		$items['embed_url'] = isset($body['items'][$i]['embedUrl'])?$body['items'][$i]['embedUrl']:"";
-		$itemsElement = new ContentItems($items);
-		$this->spot->mapper("App\ContentItems")->save($itemsElement);
-	}
-	for ($i=0; $i < count($body['tags']); $i++) {
-		$tags['content_id'] = $data['data']['id'];
-		$tags['name'] = $body['tags'][$i]['name'];
-		$tagsElement = new ContentTags($tags);
-		$this->spot->mapper("App\ContentTags")->save($tagsElement);
-	}
+	// for ($i=0; $i < count($body['items']); $i++) {
+	// 	$items['content_id'] = $data['data']['id'];
+	// 	 $items['description'] = $body['items'][$i]['text'];
+	// 	$items['content_item_type'] = $body['items'][$i]['mediaType'];
+	// 	$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:"";
+	// 	$items['embed_url'] = isset($body['items'][$i]['embedUrl'])?$body['items'][$i]['embedUrl']:"";
+	// 	$itemsElement = new ContentItems($items);
+	// 	$this->spot->mapper("App\ContentItems")->save($itemsElement);
+	// }
+	// for ($i=0; $i < count($body['tags']); $i++) {
+	// 	$tags['content_id'] = $data['data']['id'];
+	// 	$tags['name'] = $body['tags'][$i]['name'];
+	// 	$tagsElement = new ContentTags($tags);
+	// 	$this->spot->mapper("App\ContentTags")->save($tagsElement);
+	// }
 
 	/* Serialize the response data. */
-	$fractal = new Manager();
-	$fractal->setSerializer(new DataArraySerializer);
-	$data["status"] = 'Added Successfully';
 	return $response->withStatus(201)
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));

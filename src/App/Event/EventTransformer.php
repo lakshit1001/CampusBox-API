@@ -72,7 +72,7 @@ class EventTransformer extends Fractal\TransformerAbstract {
             "Actions" => [
 				"Bookmarked" => [
                     "status" => (bool) $this->params['value1'] ?: false,
-                    "total" =>  count($event->Bookmarks) ?: 0,
+                    "total" =>  count($bookmarks) ?: 0,
                 ],
                 "Participants" => [
                     "status" => (bool) $this->params['value2'] ?: false,

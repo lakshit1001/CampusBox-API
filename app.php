@@ -26,10 +26,10 @@ $app->get("/", function ($request, $response, $arguments) {
 require __DIR__ . "/routes/token.php";
 require __DIR__ . "/routes/search.php";
 require __DIR__ . "/routes/events/events.php";
-require __DIR__ . "/routes/contents.php";
+require __DIR__ . "/routes/content/contents.php";
 require __DIR__ . "/routes/reports.php";
 require __DIR__ . "/routes/events/eventActions.php";
-require __DIR__ . "/routes/contentActions.php";
+require __DIR__ . "/routes/content/contentActions.php";
 require __DIR__ . "/routes/colleges.php";
 require __DIR__ . "/routes/skills.php";
 require __DIR__ . "/routes/notifications.php";

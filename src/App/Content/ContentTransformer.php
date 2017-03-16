@@ -13,28 +13,37 @@ class ContentTransformer extends Fractal\TransformerAbstract {
     }
   protected $defaultIncludes = [
            // 'SocialAccounts',
-          
           'Tags',
           'Items'
 
       ];
     public function transform(Content $content) {
-        if(isset($this->params['type']) && $this->params['type'] != 'get'){
 
-        $appreciates = $content->Appreciated->select()->where(['username' => 'lakshit1001']);
-        $this->params['appreciateValue'] = (count($appreciates) > 0 ? true : false); // returns true
-       $bookmarks = $content->Bookmarked->select()->where(['username' => 'lakshit1001']);
-        $this->params['bookmarkValue'] = (count($bookmarks) > 0 ? true : false); // returns true
-    } else{
-        $appreciates = null;
-        $this->params['appreciateValue'] = 0;
-        $bookmarks = null;
-        $this->params['bookmarkValue'] = 0;
-    }
+        if(isset($this->params['type']) && $this->params['type'] == 'get'){
+            $appreciates = $content->Appreciated;
+            for ($i=0; $i < count($appreciates); $i++) { 
+                if($appreciates[$i]->username == $this->params['username']){
+                    $this->params['appreciateValue'] = true;
+                    break;
+                }
+            }
+            $bookmarks = $content->Bookmarked;
+            for ($i=0; $i < count($bookmarks); $i++) { 
+                if($bookmarks[$i]->username == $this->params['username']){
+                    $this->params['bookmarkValue'] = true;
+                    break;
+                }
+            }
+        } else {
+            $appreciates = null;
+            $bookmarks = null;
+            $this->params['appreciateValue'] = 0;
+            $this->params['bookmarkValue'] = 0;
+        }
         
         return [
             "id" => (integer) $content->content_id ?: 0,
-            "title" => (string) $content->title ?: null,
+            "title" => $appreciates[0] ?: null,
             "content" => [
                 "type" => $content->time_created ?: 0,
                 "description" => (string) $content->description ?: null,
