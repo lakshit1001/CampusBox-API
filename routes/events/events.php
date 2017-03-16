@@ -55,7 +55,8 @@ $app->get("/events", function ($request, $response, $arguments) {
 		->order(["time_created" => "DESC"]);
 	} else {
 		$events = $this->spot->mapper("App\Event")
-		->all();
+		->all()
+		->order(["time_created" => "DESC"]);
 	}
 
     // $newCursor = $events->last()->id;
