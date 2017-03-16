@@ -25,7 +25,7 @@
         ->query("SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC LIMIT 5");
 
     $appreciate = $this->spot->mapper("App\ContentAppreciate")
-        ->query("SELECT content_appreciates.content_id, content_appreciates.timer, content_appreciates.username, COUNT(content_appreciates.content_id) AS x FROM `content_appreciates`
+        ->query("SELECT title, content_appreciates.content_id, content_appreciates.timer, content_appreciates.username, COUNT(content_appreciates.content_id) AS x FROM `content_appreciates`
                 LEFT JOIN `contents`
                 ON contents.content_id = content_appreciates.content_id
                 WHERE created_by_username = '". $username ."'
@@ -33,7 +33,7 @@
                 ORDER BY content_appreciates.timer DESC");
 
     $participants = $this->spot->mapper("App\EventRsvp")
-        ->query("SELECT event_rsvps.event_id, event_rsvps.timer, COUNT(event_rsvps.event_id) AS x FROM `event_rsvps`
+        ->query("SELECT title, event_rsvps.event_id, event_rsvps.timer, COUNT(event_rsvps.event_id) AS x FROM `event_rsvps`
                 LEFT JOIN `events`
                 ON events.event_id = event_rsvps.event_id
                 WHERE created_by_username = '". $username ."'
@@ -52,7 +52,7 @@
         foreach ($appreciate as $key) {
             $newNotification2['type'] = "content_appreciate"; 
             $newNotification2['content_id'] = $key->content_id;
-            $newNotification2['username'] = $key->username;
+            $newNotification2['title'] = $key->title;
             $newNotification2['timer'] = $key->timer;                                     
             $newNotification2['total'] = $key->x; 
 
@@ -61,6 +61,7 @@
         foreach ($participants as $key) {
             $newNotification3['type'] = "event_rsvps"; 
             $newNotification3['event_id'] = $key->event_id;
+            $newNotification3['title'] = $key->title;
             $newNotification3['timer'] = $key->timer;                                     
             $newNotification3['total'] = $key->x; 
 

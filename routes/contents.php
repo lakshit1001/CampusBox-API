@@ -123,6 +123,132 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+$app->get("/contentsDashboard", function ($request, $response, $arguments) {
+
+	/* Check if token has needed scope. */
+	// if (true === $this->token->hasScope(["content.all", "content.list"])) {
+	//     throw new ForbiddenException("Token not allowed to list contents.", 403);
+	// }else{
+
+	// }
+	$test = $this->token->decoded->username;
+
+	/* Use ETag and date from Content with most recent update. */
+	if(isset($arguments['content_type_id'])){
+		$first = $this->spot->mapper("App\Content")
+		->all()
+		->where(["content_type_id"=>$arguments['content_type_id']])
+		->order(["timer" => "DESC"])
+		->limit(6)
+		->first();
+	}else{
+
+		$first = $this->spot->mapper("App\Content")
+		->all()
+		->order(["timer" => "DESC"])
+		->limit(6)
+		->first();
+	}
+
+	/* Add Last-Modified and ETag headers to response when atleast on content exists. */
+	if ($first) {
+		$response = $this->cache->withEtag($response, $first->etag());
+		$response = $this->cache->withLastModified($response, $first->timestamp());
+	}
+
+	/* If-Modified-Since and If-None-Match request header handling. */
+	/* Heads up! Apache removes previously set Last-Modified header */
+	/* from 304 Not Modified responses. */
+	if ($this->cache->isNotModified($request, $response)) {
+		return $response->withStatus(304);
+	}
+	if(isset($arguments['content_type_id'])){
+		$contents = $this->spot->mapper("App\Content")
+		->all()
+		->where(["content_type_id"=>$arguments['content_type_id']])
+		->order(["timer" => "DESC"]);
+	}else{
+
+		$contents = $this->spot->mapper("App\Content")
+		->all()
+		->order(["timer" => "DESC"]);
+	}
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+	$resource = new Collection($contents, new ContentTransformer(['username' => $test]));
+	$data = $fractal->createData($resource)->toArray();
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+$app->get("/contentsTop[/{content_type_id}]", function ($request, $response, $arguments) {
+
+	/* Check if token has needed scope. */
+	// if (true === $this->token->hasScope(["content.all", "content.list"])) {
+	//     throw new ForbiddenException("Token not allowed to list contents.", 403);
+	// }else{
+
+	// }
+	$test = $this->token->decoded->username;
+
+	/* Use ETag and date from Content with most recent update. */
+	if(isset($arguments['content_type_id'])){
+		$first = $this->spot->mapper("App\Content")
+		->all()
+		->where(["content_type_id"=>$arguments['content_type_id']])
+		->order(["timer" => "DESC"])
+		->first();
+	}else{
+
+		$first = $this->spot->mapper("App\Content")
+		->all()
+		->order(["timer" => "DESC"])
+		->first();
+	}
+
+	/* Add Last-Modified and ETag headers to response when atleast on content exists. */
+	if ($first) {
+		$response = $this->cache->withEtag($response, $first->etag());
+		$response = $this->cache->withLastModified($response, $first->timestamp());
+	}
+
+	/* If-Modified-Since and If-None-Match request header handling. */
+	/* Heads up! Apache removes previously set Last-Modified header */
+	/* from 304 Not Modified responses. */
+	if ($this->cache->isNotModified($request, $response)) {
+		return $response->withStatus(304);
+	}
+	if(isset($arguments['content_type_id'])){
+		$contents = $this->spot->mapper("App\Content")
+		->all()
+		->where(["content_type_id"=>$arguments['content_type_id']])
+		->order(["timer" => "DESC"]);
+	}else{
+
+		$contents = $this->spot->mapper("App\Content")
+		->all()
+		->order(["timer" => "DESC"]);
+	}
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+	$resource = new Collection($contents, new ContentTransformer(['username' => $test]));
+	$data = $fractal->createData($resource)->toArray();
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
 
 $app->post("/contents", function ($request, $response, $arguments) {
 
