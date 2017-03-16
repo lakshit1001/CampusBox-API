@@ -211,7 +211,7 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 
 	for ($i=0; $i < count($body['items']); $i++) {
 		$items['content_id'] = $data['data']['id'];
-		 $items['description'] = $body['items'][$i]['text'];
+		 $items['description'] = isset($body['items'][$i]['text']);
 		$items['content_item_type'] = $body['items'][$i]['mediaType'];
 		$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:"";
 		$items['embed_url'] = isset($body['items'][$i]['embedUrl'])?$body['items'][$i]['embedUrl']:"";

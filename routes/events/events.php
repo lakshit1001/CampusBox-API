@@ -23,8 +23,8 @@ use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/events", function ($request, $response, $arguments) {
 
-	$currentCursor = 3;
-	$previousCursor = 2;
+	$currentCursor = 0;
+	$previousCursor = 0;
 	$limit = 20;
 	$test = $this->token->decoded->username;
 
@@ -47,7 +47,7 @@ $app->get("/events", function ($request, $response, $arguments) {
 		return $response->withStatus(304);
 	}
 
-	if($currentCursor){
+	if(0){
 
 		$events = $this->spot->mapper("App\Event")
 		->where(['event_id >' => $currentCursor])
@@ -55,8 +55,7 @@ $app->get("/events", function ($request, $response, $arguments) {
 		->order(["time_created" => "DESC"]);
 	} else {
 		$events = $this->spot->mapper("App\Event")
-		->limit($limit)
-		->get();
+		->all();
 	}
 
     // $newCursor = $events->last()->id;
