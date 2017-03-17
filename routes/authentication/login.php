@@ -27,8 +27,7 @@ $app->post("/login", function ($request, $response, $arguments) {
 				$student = new SocialAccount();
 				$student = $this->spot
 				->mapper("App\SocialAccount")
-				->where(['social_id' => ($facebookData['id'])])
-				->orwhere(['type' => $body['type']]);
+				->where(['social_id' => ($facebookData['id']), 'type' => $body['type']]);
 
 				if (count($student) == 0) {
 					$data["registered"] = false;
@@ -71,8 +70,7 @@ $app->post("/login", function ($request, $response, $arguments) {
 				$student = new SocialAccount();
 				$student = $this->spot
 				->mapper("App\SocialAccount")
-				->where(['social_id' => $googleData->id])
-				->orwhere(['type' => $body['type']]);
+				->where(['social_id' => $googleData->id, 'type' => $body['type']]);
 
 				if (count($student) == 0) {
 					$data["registered"] = false;

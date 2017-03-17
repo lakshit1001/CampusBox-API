@@ -47,8 +47,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$student = new SocialAccount();
 		$student = $this->spot
 		->mapper("App\SocialAccount")
-		->where(['social_id' => $facebookData['id']])
-		->orWhere(['link' => $facebookData['link']]);
+		->where(['social_id' => $facebookData['id'], 'link' => $facebookData['link']]);
 
 					//check it account is already there 
 
@@ -91,6 +90,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				$social['social_id'] = $facebookData['id'];
 				$social['type'] = "facebook";
 				$social['token'] = $body['token'];
+				$social['college_id'] = $body['college_id'];
+				$social['roll_number'] = $body['roll'];
 				$social['name'] = isset($facebookData['name'])?$facebookData['name']:" ";
 				$social['email'] = isset($facebookData['email'])? $facebookData['email']:" ";
 				$social['gender'] = isset($facebookData['gender'])?$facebookData['gender']:" ";
@@ -183,8 +184,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$student = new SocialAccount();
 		$student = $this->spot
 		->mapper("App\SocialAccount")
-		->where(['social_id' => $googleData->id])
-		->orWhere(['link' => $googleData->link]);
+		->where(['social_id' => $googleData->id, 'link' => $googleData->link]);
 
 				//check it account is already there 
 
