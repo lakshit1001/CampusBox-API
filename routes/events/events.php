@@ -79,7 +79,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 
 	$currentCursor = 3;
 	$previousCursor = 2;
-	$limit = 6;
+	$limit = 4;
 	$test = $this->token->decoded->username;
 
 	/* Use ETag and date from Event with most recent update. */
@@ -122,6 +122,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+
 
 $app->get("/eventsTop", function ($request, $response, $arguments) {
 
