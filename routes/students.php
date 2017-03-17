@@ -44,6 +44,31 @@ $app->get("/student/{username}", function ($request, $response, $arguments) {
         ->withHeader("Content-Type", "appliaction/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+$app->get("/myProfile", function ($request, $response, $arguments) {
+
+    /* Load existing student using provided id */
+    if (false === $student = $this->spot->mapper("App\Student")->first([
+        "username" => $this->token->decoded->username
+    ])) {
+        throw new NotFoundException("Student not found.", 404);
+    };
+    /* If-Modified-Since and If-None-Match request header handling. */
+    /* Heads up! Apache removes previously set Last-Modified header */
+    /* from 304 Not Modified responses. */
+    if ($this->cache->isNotModified($request, $response)) {
+        return $response->withStatus(304);
+    }
+
+    /* Serialize the response data. */
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    $resource = new Item($student, new StudentTransformer);
+    $data = $fractal->createData($resource)->toArray();
+
+    return $response->withStatus(200)
+        ->withHeader("Content-Type", "appliaction/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
 
 $app->get("/studentEvents/{username}", function ($request, $response, $arguments) {
 
