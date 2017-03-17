@@ -2,8 +2,8 @@
 
  
 
-use App\CollegeUpdates;
-use App\CollegeUpdatesTransformer;
+use App\CollegeUpdate;
+use App\CollegeUpdateTransformer;
 
 use Exception\ForbiddenException;
 
@@ -15,9 +15,10 @@ $app->get("/college_updates", function ($request, $response, $arguments) {
 
    
 
-    /* Use ETag and date from CollegeUpdates with most recent update. */
-    $first = $this->spot->mapper("App\CollegeUpdates")
+    /* Use ETag and date from CollegeUpdate with most recent update. */
+    $first = $this->spot->mapper("App\CollegeUpdate")
         ->all()
+        ->where(["college_id" => $this->token->decoded->college_id])
         ->first();
 
     /* If-Modified-Since and If-None-Match request header handling. */
@@ -27,14 +28,15 @@ $app->get("/college_updates", function ($request, $response, $arguments) {
         return $response->withStatus(304);
     }
 
-    $colleges = $this->spot->mapper("App\CollegeUpdates")
+    $colleges = $this->spot->mapper("App\CollegeUpdate")
         ->all()
+        ->where(["college_id" => $this->token->decoded->college_id])
         ;
 
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Collection($colleges, new CollegeUpdatesTransformer);
+    $resource = new Collection($colleges, new CollegeUpdateTransformer);
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)

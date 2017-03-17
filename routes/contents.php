@@ -18,7 +18,7 @@ use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/contentSorted", function ($request, $response, $arguments) {
 	$user_college_id = 2;
-	$username= 'lakshit1001';
+	$username= $this->token->decoded->username;
 	$content = $this->spot->mapper("App\Content")
     ->query("SELECT
          contents.content_id,
