@@ -9,19 +9,34 @@ class EventTransformer extends Fractal\TransformerAbstract {
 
 	function __construct($params = []) {
 		$this->params = $params;
-		$this->params['value'] = false;
+        $this->params['value1'] = false;
+		$this->params['value2'] = false;
 	}
      protected $defaultIncludes = [
            // 'SocialAccounts',
           'Tags'
       ];
 	public function transform(Event $event) {
-        if(isset($this->params['type']) && $this->params['type']!= 'get'){
-            $bookmarks = $event->Bookmarked->select()->where(['username' => $this->params['value']]);
-            $this->params['value'] = (count($bookmarks) > 0 ? true : false); // returns true
+        if(isset($this->params['type']) && $this->params['type'] == 'get'){
+            $bookmarks = $event->Bookmarked;
+            for ($i=0; $i < count($bookmarks); $i++) { 
+                if($bookmarks[$i]->username == $this->params['username']){
+                    $this->params['value1'] = true;
+                    break;
+                }
+            }
+            $participants = $event->Participants;
+            for ($i=0; $i < count($participants); $i++) { 
+                if($participants[$i]->username == $this->params['username']){
+                    $this->params['value2'] = true;
+                    break;
+                }
+            }
         } else {
             $bookmarks = null;
-            $this->params['value'] = 0;
+            $participants = null;
+            $this->params['value1'] = 0;
+            $this->params['value2'] = 0;
         }
         return [
 			"id" => (integer) $event->event_id ?: 0,
@@ -56,13 +71,12 @@ class EventTransformer extends Fractal\TransformerAbstract {
             
             "Actions" => [
 				"Bookmarked" => [
-					"status" => (bool) $this->params['value'] ?: false,
-					"total" =>  count($event->Bookmarks) ?: 0,
-                    "bookmarks" => count($bookmarks),
-				],
-				"Participants" => [
-					"status" => (bool) $event->created_by_username ?: false,
-					"total" => (integer) $event->created_by_username ?: 0,
+                    "status" => (bool) $this->params['value1'] ?: false,
+                    "total" =>  count($bookmarks) ?: 0,
+                ],
+                "Participants" => [
+                    "status" => (bool) $this->params['value2'] ?: false,
+                    "total" =>  count($event->Participants) ?: 0,
 				]
 			],
             

@@ -79,7 +79,55 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 
 	$currentCursor = 3;
 	$previousCursor = 2;
-	$limit = 5;
+	$limit = 6;
+	$test = $this->token->decoded->username;
+
+	/* Use ETag and date from Event with most recent update. */
+	$first = $this->spot->mapper("App\Event")
+	->all()
+	->order(["time_created" => "DESC"])
+	->first();
+
+	/* If-Modified-Since and If-None-Match request header handling. */
+	/* Heads up! Apache removes previously set Last-Modified header */
+	/* from 304 Not Modified responses. */
+	if ($this->cache->isNotModified($request, $response)) {
+		return $response->withStatus(304);
+	}
+
+	if($currentCursor){
+
+		$events = $this->spot->mapper("App\Event")
+		->where(['event_id >' => $currentCursor])
+		->limit($limit)
+		->order(["time_created" => "DESC"]);
+	} else {
+		$events = $this->spot->mapper("App\Event")
+		->limit(5)
+		->get();
+	}
+
+    // $newCursor = $events->last()->id;
+    // $cursor = new Cursor($currentCursor, $previousCursor, $newCursor, $events->count());
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+	$resource = new Collection($events, new EventTransformer(['username' => $test, 'type' => 'get']));
+	$data = $fractal->createData($resource)->toArray();
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->get("/eventsTop", function ($request, $response, $arguments) {
+
+	$currentCursor = 3;
+	$previousCursor = 2;
+	$limit = 3;
 	$test = $this->token->decoded->username;
 
 	/* Use ETag and date from Event with most recent update. */

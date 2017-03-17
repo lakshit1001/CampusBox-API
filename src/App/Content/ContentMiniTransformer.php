@@ -14,10 +14,27 @@ class ContentMiniTransformer extends Fractal\TransformerAbstract {
 
     public function transform(Content $content) {
 
-        $appreciates = $content->Appreciated->select()->where(['username' => '1']);
-        $this->params['appreciateValue'] = (count($appreciates) > 0 ? true : false); // returns true
-       $bookmarks = $content->Bookmarked->select()->where(['username' => '1']);
-        $this->params['bookmarkValue'] = (count($bookmarks) > 0 ? true : false); // returns true
+        if(isset($this->params['type']) && $this->params['type'] == 'get'){
+            $appreciates = $content->Appreciated;
+            for ($i=0; $i < count($appreciates); $i++) { 
+                if($appreciates[$i]->username == $this->params['username']){
+                    $this->params['appreciateValue'] = true;
+                    break;
+                }
+            }
+            $bookmarks = $content->Bookmarked;
+            for ($i=0; $i < count($bookmarks); $i++) { 
+                if($bookmarks[$i]->username == $this->params['username']){
+                    $this->params['bookmarkValue'] = true;
+                    break;
+                }
+            }
+        } else {
+            $appreciates = null;
+            $bookmarks = null;
+            $this->params['appreciateValue'] = 0;
+            $this->params['bookmarkValue'] = 0;
+        }
         
         return [
             "id" => (integer) $content->content_id ?: 0,
