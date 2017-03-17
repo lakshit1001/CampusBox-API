@@ -59,7 +59,7 @@ $app->get("/todos", function ($request, $response, $arguments) {
 $app->post("/todos", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["todo.all", "todo.create"])) {
+    if (false === $this->token->hasScope(["todo.all", "todo.create"])) {
         throw new ForbiddenException("Token not allowed to create todos.", 403);
     }
 

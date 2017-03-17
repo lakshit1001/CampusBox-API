@@ -27,7 +27,6 @@ $app->get("/student/{username}", function ($request, $response, $arguments) {
     ])) {
         throw new NotFoundException("Student not found.", 404);
     };
-
     /* If-Modified-Since and If-None-Match request header handling. */
     /* Heads up! Apache removes previously set Last-Modified header */
     /* from 304 Not Modified responses. */
