@@ -75,10 +75,11 @@ $app->get("/events", function ($request, $response, $arguments) {
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->get("/eventsDashboard", function ($request, $response, $arguments) {
 
-	$currentCursor = 3;
-	$previousCursor = 2;
+$app->get("/eventsTop", function ($request, $response, $arguments) {
+
+	$currentCursor = 0;
+	$previousCursor = 0;
 	$limit = 4;
 	$test = $this->token->decoded->username;
 
@@ -88,6 +89,12 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	->order(["time_created" => "DESC"])
 	->first();
 
+	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
+	// if ($first) {
+	// 	$response = $this->cache->withEtag($response, $first->etag());
+	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
+	// }
+
 	/* If-Modified-Since and If-None-Match request header handling. */
 	/* Heads up! Apache removes previously set Last-Modified header */
 	/* from 304 Not Modified responses. */
@@ -95,7 +102,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 		return $response->withStatus(304);
 	}
 
-	if($currentCursor){
+	if(0){
 
 		$events = $this->spot->mapper("App\Event")
 		->where(['event_id >' => $currentCursor])
@@ -103,8 +110,8 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 		->order(["time_created" => "DESC"]);
 	} else {
 		$events = $this->spot->mapper("App\Event")
-		->limit(5)
-		->get();
+		->all()
+		->order(["time_created" => "DESC"]);
 	}
 
     // $newCursor = $events->last()->id;
@@ -124,10 +131,11 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 });
 
 
-$app->get("/eventsTop", function ($request, $response, $arguments) {
 
-	$currentCursor = 3;
-	$previousCursor = 2;
+$app->get("/eventsDashboard", function ($request, $response, $arguments) {
+
+	$currentCursor = 0;
+	$previousCursor = 0;
 	$limit = 3;
 	$test = $this->token->decoded->username;
 
@@ -137,6 +145,12 @@ $app->get("/eventsTop", function ($request, $response, $arguments) {
 	->order(["time_created" => "DESC"])
 	->first();
 
+	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
+	// if ($first) {
+	// 	$response = $this->cache->withEtag($response, $first->etag());
+	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
+	// }
+
 	/* If-Modified-Since and If-None-Match request header handling. */
 	/* Heads up! Apache removes previously set Last-Modified header */
 	/* from 304 Not Modified responses. */
@@ -144,7 +158,7 @@ $app->get("/eventsTop", function ($request, $response, $arguments) {
 		return $response->withStatus(304);
 	}
 
-	if($currentCursor){
+	if(0){
 
 		$events = $this->spot->mapper("App\Event")
 		->where(['event_id >' => $currentCursor])
@@ -152,8 +166,8 @@ $app->get("/eventsTop", function ($request, $response, $arguments) {
 		->order(["time_created" => "DESC"]);
 	} else {
 		$events = $this->spot->mapper("App\Event")
-		->limit(5)
-		->get();
+		->all()
+		->order(["time_created" => "DESC"]);
 	}
 
     // $newCursor = $events->last()->id;
