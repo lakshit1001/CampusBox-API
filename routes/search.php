@@ -67,7 +67,7 @@ $app->get("/search/events/{username}", function ($request, $response, $arguments
 
   $events = $this->spot->mapper("App\Event")->query('
       SELECT * FROM events
-      WHERE title LIKE "%'.$arguments['username'].'%"
+      WHERE title LIKE "%'.$arguments['title'].'%"
     ');
 
   if(isset($events) ){
