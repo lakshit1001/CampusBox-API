@@ -297,6 +297,7 @@ return $response->withStatus(200)
 
 
 
+
 $app->post("/addContent", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 
@@ -312,26 +313,27 @@ $app->post("/addContent", function ($request, $response, $arguments) {
     $fractal->setSerializer(new DataArraySerializer);
     $resource = new Item($newContent, new ContentTransformer);
     $data = $fractal->createData($resource)->toArray();
-	$data["status"] = 'Added Successfully';
 			//adding interests 
 
-	// for ($i=0; $i < count($body['items']); $i++) {
-	// 	$items['content_id'] = $data['data']['id'];
-	// 	 $items['description'] = $body['items'][$i]['text'];
-	// 	$items['content_item_type'] = $body['items'][$i]['mediaType'];
-	// 	$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:"";
-	// 	$items['embed_url'] = isset($body['items'][$i]['embedUrl'])?$body['items'][$i]['embedUrl']:"";
-	// 	$itemsElement = new ContentItems($items);
-	// 	$this->spot->mapper("App\ContentItems")->save($itemsElement);
-	// }
-	// for ($i=0; $i < count($body['tags']); $i++) {
-	// 	$tags['content_id'] = $data['data']['id'];
-	// 	$tags['name'] = $body['tags'][$i]['name'];
-	// 	$tagsElement = new ContentTags($tags);
-	// 	$this->spot->mapper("App\ContentTags")->save($tagsElement);
-	// }
+	for ($i=0; $i < count($body['items']); $i++) {
+		$items['content_id'] = $data['data']['id'];
+		 $items['description'] = isset($body['items'][$i]['text'])?$body['items'][$i]['text']:"";
+		$items['content_item_type'] = $body['items'][$i]['mediaType'];
+		$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:"";
+		$items['embed_url'] = isset($body['items'][$i]['embedUrl'])?$body['items'][$i]['embedUrl']:"";
+		$itemsElement = new ContentItems($items);
+		$this->spot->mapper("App\ContentItems")->save($itemsElement);
+	}
+	for ($i=0; $i < count($body['tags']); $i++) {
+		$tags['content_id'] = $data['data']['id'];
+		$tags['name'] = $body['tags'][$i]['name'];
+		$tagsElement = new ContentTags($tags);
+		$this->spot->mapper("App\ContentTags")->save($tagsElement);
+	}
 
 	/* Serialize the response data. */
+	$data["status"] = true;
+	$data["message"] = 'Added Successfully';
 	return $response->withStatus(201)
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
