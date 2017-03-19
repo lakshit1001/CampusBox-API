@@ -35,7 +35,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			'default_graph_version' => 'v2.8',
 			]);
 		try {
-			$x = $fb->get('/me?fields=email,name,id,gender,about,website,birthday,picture,link,cover', $body['token']);
+			$x = $fb->get('/me?fields=email,name,id,gender,about,website,birthday,picture.width(800).height(800),link,cover', $body['token']);
 		} catch (\Facebook\Exceptions\FacebookResponseExpception $e) {
 			echo 'Graph returned an error: ' . $e->getMessage();
 			exit;
@@ -382,7 +382,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$social['picture'] = isset($linkedinData->picture)?$linkedinData->picture:" ";
 			$social['cover'] = isset($linkedinData->cover['url'])?$linkedinData->picture:" ";
 			$socialAccount = new SocialAccount($social);
-			//$this->spot->mapper("App\SocialAccount")->save($socialAccount);
+			$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 
 			$data["type"] = "login";
 			$now = new DateTime();
