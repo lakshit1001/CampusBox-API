@@ -293,10 +293,10 @@ $app->delete("/students/{id}", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->post("/studentFollow", function ($request, $response, $arguments) {
+$app->post("/studentFollow/{username}", function ($request, $response, $arguments) {
     $body = $request->getParsedBody();
 
-    $participants = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '". $body['followed_username'] ."' AND follower_username = '" .$this->token->decoded->username. "'");
+    $participants = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '".  $arguments['username'] ."' AND follower_username = '" .$this->token->decoded->username. "'");
 
     if(count($participants) > 0){
         $data["status"] = "Already Following";
@@ -324,7 +324,7 @@ $app->delete("/studentFollow", function ($request, $response, $arguments) {
     $body = $request->getParsedBody();
 
     /* Load existing todo using provided uid */
-    $rsvp = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '". $body['followed_username'] ."' AND follower_username = '" .$this->token->decoded->username. "'");
+    $rsvp = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '". $arguments['username'] ."' AND follower_username = '" .$this->token->decoded->username. "'");
     if(count($rsvp) <= 0){
         $data["status"] = "Not Following";
     } else {

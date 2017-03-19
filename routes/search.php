@@ -17,7 +17,7 @@ use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\DataArraySerializer;
 
-$app->get("/search/students/{username}", function ($request, $response, $arguments) {
+$app->get("/search/students/{name}", function ($request, $response, $arguments) {
 
   /* Load existing student using provided id */
     // if (false === $student = $this->spot->mapper("App\Student")->first([
@@ -34,7 +34,7 @@ $app->get("/search/students/{username}", function ($request, $response, $argumen
 
   $students = $this->spot->mapper("App\Student")->query('
       SELECT * FROM students
-      WHERE username LIKE "%'.$arguments['username'].'%"
+      WHERE name LIKE "%'.$arguments['name'].'%"
     ');
 
   if(isset($students) ){
