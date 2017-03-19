@@ -35,7 +35,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			'default_graph_version' => 'v2.8',
 			]);
 		try {
-			$x = $fb->get('/me?fields=email,name,id,gender,about,website,birthday,picture,link,cover', $body['token']);
+			$x = $fb->get('/me?fields=email,name,id,gender,about,website,birthday,picture.width(800).height(800),link,cover', $body['token']);
 		} catch (\Facebook\Exceptions\FacebookResponseExpception $e) {
 			echo 'Graph returned an error: ' . $e->getMessage();
 			exit;
@@ -178,8 +178,16 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 	}
 	else if ($body['type']=="google"){
-		$json = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
-		$googleData = json_decode($json);
+
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
+		curl_setopt($ch, CURLOPT_HEADER, 0);            // No header in the result 
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return, do not echo result   
+		$raw_data = curl_exec($ch);
+		curl_close($ch);
+		$googleData = json_decode($raw_data);
+
 
 		$student = new SocialAccount();
 		$student = $this->spot
@@ -217,6 +225,9 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$student = $this->spot
 		->mapper("App\SocialAccount")
 		->where(['email' => $googleData->email]);
+
+
+
 		if (count($student) > 0) {
 
 			$social['college_id'] = $body['college_id'];
@@ -234,7 +245,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$social['picture'] = isset($googleData->picture)?$googleData->picture:" ";
 			$social['cover'] = isset($googleData->cover['url'])?$googleData->picture:" ";
 			$socialAccount = new SocialAccount($social);
-			//$this->spot->mapper("App\SocialAccount")->save($socialAccount);
+			$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 
 			$data["type"] = "login";
 			$now = new DateTime();
@@ -371,7 +382,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$social['picture'] = isset($linkedinData->picture)?$linkedinData->picture:" ";
 			$social['cover'] = isset($linkedinData->cover['url'])?$linkedinData->picture:" ";
 			$socialAccount = new SocialAccount($social);
-			//$this->spot->mapper("App\SocialAccount")->save($socialAccount);
+			$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 
 			$data["type"] = "login";
 			$now = new DateTime();
