@@ -140,10 +140,10 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	$test = $this->token->decoded->username;
 
 	/* Use ETag and date from Event with most recent update. */
-	$first = $this->spot->mapper("App\Event")
-	->all()
-	->order(["time_created" => "DESC"])
-	->first();
+	// $first = $this->spot->mapper("App\Event")
+	// ->all()
+	// ->order(["time_created" => "DESC"])
+	// ->first();
 
 	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
 	// if ($first) {
@@ -158,7 +158,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 		return $response->withStatus(304);
 	}
 
-	if(0){
+	if(1){
 
 		$events = $this->spot->mapper("App\Event")
 		->where(['event_id >' => $currentCursor])
