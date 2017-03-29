@@ -9,14 +9,14 @@ class EventTransformer extends Fractal\TransformerAbstract {
 
 	function __construct($params = []) {
 		$this->params = $params;
-        $this->params['value1'] = false;
-		$this->params['value2'] = false;
-	}
+    }
      protected $defaultIncludes = [
            // 'SocialAccounts',
           'Tags'
       ];
-	public function transform(Event $event) {
+    public function transform(Event $event) {
+        $this->params['value1'] = false;
+		$this->params['value2'] = false;
         if(isset($this->params['type']) && $this->params['type'] == 'get'){
             $bookmarks = $event->Bookmarked;
             for ($i=0; $i < count($bookmarks); $i++) { 
