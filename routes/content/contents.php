@@ -112,22 +112,12 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 	// }
 	$test = $this->token->decoded->username;
 
-	/* Use ETag and date from Content with most recent update. */
-	if(isset($arguments['content_type_id'])){
-		$first = $this->spot->mapper("App\Content")
-		->all()
-		->where(["content_type_id"=>$arguments['content_type_id']])
-		->order(["timer" => "DESC"])
-		->limit(6)
-		->first();
-	}else{
+	
+	$first = $this->spot->mapper("App\Content")
+	->order(["timer" => "DESC"])
+	->limit(6)
+	->first();
 
-		$first = $this->spot->mapper("App\Content")
-		->all()
-		->order(["timer" => "DESC"])
-		->limit(6)
-		->first();
-	}
 
 	/* Add Last-Modified and ETag headers to response when atleast on content exists. */
 	if ($first) {
@@ -150,6 +140,7 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 
 		$contents = $this->spot->mapper("App\Content")
 		->all()
+		->limit(6)
 		->order(["timer" => "DESC"]);
 	}
 
@@ -309,15 +300,15 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 	$newContent = new Content($content);
 	$this->spot->mapper("App\Content")->save($newContent);
 
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($newContent, new ContentTransformer);
-    $data = $fractal->createData($resource)->toArray();
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	$resource = new Item($newContent, new ContentTransformer);
+	$data = $fractal->createData($resource)->toArray();
 			//adding interests 
 
 	for ($i=0; $i < count($body['items']); $i++) {
 		$items['content_id'] = $data['data']['id'];
-		 $items['description'] = isset($body['items'][$i]['text'])?$body['items'][$i]['text']:"";
+		$items['description'] = isset($body['items'][$i]['text'])?$body['items'][$i]['text']:"";
 		$items['content_item_type'] = $body['items'][$i]['mediaType'];
 		$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:"";
 		$items['embed_url'] = isset($body['items'][$i]['embedUrl'])?$body['items'][$i]['embedUrl']:"";

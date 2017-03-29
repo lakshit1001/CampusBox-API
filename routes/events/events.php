@@ -167,6 +167,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	} else {
 		$events = $this->spot->mapper("App\Event")
 		->all()
+		->limit($limit)
 		->order(["time_created" => "DESC"]);
 	}
 

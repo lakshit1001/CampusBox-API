@@ -35,9 +35,9 @@ class StudentMiniTransformer extends Fractal\TransformerAbstract
 
         return $this->collection($skills, new StudentSkillTransformer);
     }
-// public function includeSocialAccounts(Student $student) {
-//         $socials = $student->SocialAccounts;
+public function includeSocialAccounts(Student $student) {
+        $socials = $student->SocialAccounts;
 
-//         return $this->collection($socials, new SocialTransformer);
-//     }
+        return $this->collection($socials, new SocialTransformer);
+    }
 }
