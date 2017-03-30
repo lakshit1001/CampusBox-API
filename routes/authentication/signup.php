@@ -4,6 +4,8 @@ use App\Student;
 use App\StudentTransformer;
 use App\SocialAccount;
 use App\StudentSkill;
+use App\College;
+use App\CollegeTransformer;
 use App\StudentInterest;
 use Firebase\JWT\JWT;
 use League\Fractal\Manager;
@@ -76,7 +78,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 		}
 
-				// if same account is not there but one with same emai is there just merge the accounts
+				// if same account is not there but one with same email is there just merge the accounts
 		if(isset( $facebookData['email'])){
 			
 			$student = new SocialAccount();
@@ -100,6 +102,21 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				$social['about'] = isset($facebookData['about']) ?$facebookData['about']: " ";
 				$social['picture'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
 				$social['cover'] = isset($facebookData['cover']['url'])?$facebookData['picture']['url']:" ";
+				
+				if($social['college_id'] == 0){
+					$college['name'] = $body['College_Name'];
+					$newCollege = new College($college);
+					$this->spot->mapper("App\College")->save($newCollege);
+
+				    $fractal = new Manager();
+				    $fractal->setSerializer(new DataArraySerializer);
+				    $resource = new Item($newCollege, new CollegeTransformer);
+    				$data = $fractal->createData($resource)->toArray();
+    				$social['college_id'] = $data['data']['id'];
+    				echo "i entered here";
+
+				}
+
 				$socialAccount = new SocialAccount($social);
 				$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 
@@ -153,13 +170,31 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 		$newUser['college_id'] = $body['college_id'];
 		$newUser['roll_number'] = $body['roll']	;
+
+				if($newUser['college_id'] == 0){
+					$college['name'] = $body['College_Name'];
+					$newCollege = new College($college);
+					$this->spot->mapper("App\College")->save($newCollege);
+
+				    $fractal = new Manager();
+				    $fractal->setSerializer(new DataArraySerializer);
+				    $resource = new Item($newCollege, new CollegeTransformer);
+    				$data = $fractal->createData($resource)->toArray();
+    				$newUser['college_id'] = $data['data']['id'];
+				}
+
 		$newUserAccount = new Student($newUser);
 		$this->spot->mapper("App\Student")->save($newUserAccount);
 
 
 
 					// add same data to social accounts table
-		$social['college_id'] = $body['college_id'];
+		if($body['college_id'] == 0){
+			$social['college_id'] = $data['data']['id'];
+		} else{
+			$social['college_id'] = $body['college_id'];
+		}
+
 		$social['roll_number'] = $body['roll']	;
 		$social['username'] = $newUser['username'];
 		$social['social_id'] = $facebookData['id'];
@@ -174,6 +209,8 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$social['about'] = isset($facebookData['about']) ?$facebookData['about']: " ";
 		$social['picture'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
 		$social['cover'] = isset($facebookData['cover']['url'])?$facebookData['picture']['url']:" ";
+		
+
 		$socialAccount = new SocialAccount($social);
 		$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 	}
@@ -244,6 +281,22 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$social['about'] = isset($googleData->about) ?$googleData->about: " ";
 			$social['picture'] = isset($googleData->picture)?$googleData->picture:" ";
 			$social['cover'] = isset($googleData->cover['url'])?$googleData->picture:" ";
+			
+				if($social['college_id'] == 0){
+					$college['name'] = $body['College_Name'];
+					$newCollege = new College($college);
+					$this->spot->mapper("App\College")->save($newCollege);
+
+				    $fractal = new Manager();
+				    $fractal->setSerializer(new DataArraySerializer);
+				    $resource = new Item($newCollege, new CollegeTransformer);
+    				$data = $fractal->createData($resource)->toArray();
+    				$social['college_id'] = $data['data']['id'];
+    				echo "i entered here";
+
+				}
+
+
 			$socialAccount = new SocialAccount($social);
 			$this->spot->mapper("App\SocialAccount")->save($socialAccount);
 
@@ -298,6 +351,23 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 			$newUser['college_id'] = $body['college_id'];
 			$newUser['roll_number'] = $body['roll']	;
+			
+				if($social['college_id'] == 0){
+					$college['name'] = $body['College_Name'];
+					$newCollege = new College($college);
+					$this->spot->mapper("App\College")->save($newCollege);
+
+				    $fractal = new Manager();
+				    $fractal->setSerializer(new DataArraySerializer);
+				    $resource = new Item($newCollege, new CollegeTransformer);
+    				$data = $fractal->createData($resource)->toArray();
+    				$social['college_id'] = $data['data']['id'];
+    				echo "i entered here";
+
+				}
+
+
+
 			$newUserAccount = new Student($newUser);
 			$this->spot->mapper("App\Student")->save($newUserAccount);
 

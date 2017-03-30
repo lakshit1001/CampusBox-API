@@ -113,17 +113,18 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 	$test = $this->token->decoded->username;
 
 	
-	$first = $this->spot->mapper("App\Content")
-	->order(["timer" => "DESC"])
-	->limit(6)
-	->first();
+	// $first = $this->spot->mapper("App\Content")
+	// ->all()
+	// ->limit(6)
+	// ->order(["timer" => "DESC"])
+	// // ->first();
 
 
-	/* Add Last-Modified and ETag headers to response when atleast on content exists. */
-	if ($first) {
-		$response = $this->cache->withEtag($response, $first->etag());
-		$response = $this->cache->withLastModified($response, $first->timestamp());
-	}
+	//  Add Last-Modified and ETag headers to response when atleast on content exists. 
+	// if ($first) {
+	// 	$response = $this->cache->withEtag($response, $first->etag());
+	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
+	// }
 
 	/* If-Modified-Since and If-None-Match request header handling. */
 	/* Heads up! Apache removes previously set Last-Modified header */

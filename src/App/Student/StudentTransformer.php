@@ -34,12 +34,16 @@ class StudentTransformer extends Fractal\TransformerAbstract
   public function transform(Student $student)
   {
     $this->params['value1'] = false;
-    $followed = $student->Followed;
-    for ($i=0; $i < count($followed); $i++) { 
-        if($followed[$i]->username == $this->params['username']){
-            $this->params['value1'] = true;
-            break;
-        }
+    if(isset($this->params['type']) && $this->params['type'] == 'get'){
+      $followed = $student->Followed;
+      for ($i=0; $i < count($followed); $i++) { 
+          if($followed[$i]->username == $this->params['username']){
+              $this->params['value1'] = true;
+              break;
+          }
+      }
+    } else {
+      $this->params['value1'] = false;
     }
     return [
     "username" => (string)$student->username?: 0 ,

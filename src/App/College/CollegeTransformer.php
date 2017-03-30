@@ -13,7 +13,7 @@ class CollegeTransformer extends Fractal\TransformerAbstract
     public function transform(College $college)
     {
         return [
-            "id" => (integer)$college->id?: 0 ,
+            "id" => (integer)$college->college_id?: 0 ,
             "name" => (string)$college->name?: null ,
             "lat" => (float)$college->lat?: 0 ,
             "long" => (float)$college->long?: 0 ,
