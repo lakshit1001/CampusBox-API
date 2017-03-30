@@ -69,8 +69,8 @@ class StudentTransformer extends Fractal\TransformerAbstract
     "year" => (string)$student->year?: null,
     "class_id" => (integer)$student->class_id?: null,
     "passout_year" => (integer)$student->passout_year?: null,
-    "following" => $this->params['value1'],
     ],
+    "following" => $this->params['value1']
     
     ];
   }

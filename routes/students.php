@@ -301,7 +301,7 @@ $app->post("/studentFollow/{username}", function ($request, $response, $argument
     if(count($participants) > 0){
         $data["status"] = "Already Following";
     } else {
-        $event['followed_username'] =  $body['followed_username'];
+        $event['followed_username'] =  $arguments['username'];
         $event['follower_username'] =  $this->token->decoded->username;
 
         $newEvent = new StudentFollow($event);
