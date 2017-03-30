@@ -23,17 +23,24 @@ class StudentTransformer extends Fractal\TransformerAbstract
   // 'BookmarkedEvents'
   ];
   protected $defaultIncludes = [
+  'Followed',
   'Events',
   'Skills',
   'SocialAccounts',
-  'Followed',
   'BookmarkedContents',
   'AttendingEvents',
   'CreativeContents'
   ];
   public function transform(Student $student)
   {
-    $this->params['username'] = (string)$student->username;
+    $this->params['value1'] = false;
+    $followed = $student->Followed;
+    for ($i=0; $i < count($followed); $i++) { 
+        if($followed[$i]->username == $this->params['username']){
+            $this->params['value1'] = true;
+            break;
+        }
+    }
     return [
     "username" => (string)$student->username?: 0 ,
     "name" => (string)$student->name?: null,
@@ -62,7 +69,7 @@ class StudentTransformer extends Fractal\TransformerAbstract
     "year" => (string)$student->year?: null,
     "class_id" => (integer)$student->class_id?: null,
     "passout_year" => (integer)$student->passout_year?: null,
-    // "college" => (string)$student->Owner['name']?: null,
+    "following" => $this->params['value1'],
     ],
     
     ];
@@ -98,8 +105,8 @@ public function includeSocialAccounts(Student $student) {
         return $this->collection($socials, new SocialTransformer);
     }
   public function includeFollowed(Student $student) {
-    $socials = $student->Followed;
+    $followers = $student->Followed;
 
-    return $this->collection($socials, new StudentMiniTransformer);
+    return $this->collection($followers, new StudentMiniTransformer);
   }
 }

@@ -64,22 +64,18 @@ class Student extends \Spot\Entity {
 	public static function relations(Mapper $mapper, Entity $entity) {
 		return [
 		'College' => $mapper->belongsTo($entity, 'App\College', 'college_id'),
+
 		'Owner' => $mapper->hasMany($entity, 'App\Event', 'created_by_username'),
-		'SocialAccounts' => $mapper->hasMany($entity, 'App\SocialAccount', 'username'),
-		'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'username'),
-		'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'username'),
 		'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'username'),
-		'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'followed_username', 'follower_username'),
+		'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'username'),
 		'Interets' => $mapper->hasMany($entity, 'App\StudentInterest', 'username'),
-			// 'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'class_group_id'),
+		'SocialAccounts' => $mapper->hasMany($entity, 'App\SocialAccount', 'username'),
 		'CreativeContents' => $mapper->hasMany($entity, 'App\Content', 'created_by_username'),
-			// 'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
-			//'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'username'),
-		'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'username'),
+
+		'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'followed_username', 'follower_username'),
+		'Follower' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'follower_username', 'followed_username'),
 		'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'username'),
-		'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'username'),
-		// 'Follower' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'follower_username', 'username'),
-		'Follower' => $mapper->hasMany($entity, 'App\StudentFollow', 'username'),
+		'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'username'),
 		];
 	}
 }

@@ -20,7 +20,7 @@ use League\Fractal\Resource\Collection;
 use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/student/{username}", function ($request, $response, $arguments) {
-
+    $test = $this->token->decoded->username;
     /* Load existing student using provided id */
     if (false === $student = $this->spot->mapper("App\Student")->first([
         "username" => $arguments["username"]
@@ -37,7 +37,7 @@ $app->get("/student/{username}", function ($request, $response, $arguments) {
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($student, new StudentTransformer);
+    $resource = new Item($student, new StudentTransformer(['username' => $test]));
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)
