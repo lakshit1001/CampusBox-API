@@ -22,7 +22,14 @@
     $username =$this->token->decoded->username;
 
     $follows = $this->spot->mapper("App\StudentFollow")
-        ->query("SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC LIMIT 5");
+        ->query("
+SELECT id, followed_username, follower_username, name, timer
+FROM followers
+LEFT JOIN students
+ON followers.follower_username = students.username
+WHERE followed_username = '". $username ."' 
+ORDER BY timer DESC LIMIT 5");
+            // SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC LIMIT 5");
 
     $appreciate = $this->spot->mapper("App\ContentAppreciate")
         ->query("SELECT title, content_appreciates.content_id, content_appreciates.timer, content_appreciates.username, COUNT(content_appreciates.content_id) AS x FROM `content_appreciates`
@@ -71,5 +78,5 @@
 
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    ->write(json_encode($follows, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });

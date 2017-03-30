@@ -10,17 +10,15 @@ use League\Fractal;
 class StudentFollowTransformer extends Fractal\TransformerAbstract
 {
   protected $availableIncludes = [
-          'Follower'
+      'Follower'
     ];
     protected $defaultIncludes = [
-           // 'Follower'
+      'Follower'
       ];
     public function transform(StudentFollow $follow)
     {
         return [
             "follower_username" => (string)$follow->follower_username?: null,
-            
-       
         ];
     }
 

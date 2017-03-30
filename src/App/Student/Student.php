@@ -71,21 +71,15 @@ class Student extends \Spot\Entity {
 		'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'username'),
 		'Followed' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'followed_username', 'follower_username'),
 		'Interets' => $mapper->hasMany($entity, 'App\StudentInterest', 'username'),
-			// 'Following' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'follower_id', 'following_id'),
-			// 'Followers' => $mapper->hasManyThrough($entity, 'App\Student', 'App\Follow', 'following_id', 'follower_id'),
 			// 'ClassGroup' => $mapper->belongsTo($entity, 'App\ClassGroup', 'class_group_id'),
 		'CreativeContents' => $mapper->hasMany($entity, 'App\Content', 'created_by_username'),
 			// 'EventLikes' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventLike', 'post_id'),
 			//'EventBookmarks' => $mapper->hasMany($entity, 'App\EventBookmarks', 'username'),
-			// 'EventParticipated' => $mapper->hasManyThrough($entity, 'App\Event', 'App\Student', 'post_id', 'username'),
-			//'Participants' => $mapper->hasMany($entity, 'App\Event', 'username'),
-//			'Skills' => $mapper->hasMany($entity, 'App\Skill', 'username'),
 		'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'username'),
 		'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'username'),
 		'Skills' => $mapper->hasMany($entity, 'App\StudentSkill', 'username'),
-		'Follower' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'follower_username', 'username'),
-			//'Socialid' => $mapper->hasOne($entity, 'App\Socialid', 'username')
-			// 'hostel' => $mapper->hasOne($entity, 'App\College', 'user_id')
+		// 'Follower' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'follower_username', 'username'),
+		'Follower' => $mapper->hasMany($entity, 'App\StudentFollow', 'username'),
 		];
 	}
 }
