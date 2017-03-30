@@ -26,7 +26,7 @@ if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
     ])) {
     $this->spot->mapper("App\ContentBookmarks")->save($bookmark);
     }else{
-        throw new NotFoundException("Already liked", 404);
+        throw new NotFoundException("Already Bookmarked", 404);
     }
     /* Add Last-Modified and ETag headers to response. */
     $response = $this->cache->withEtag($response, $bookmark->etag());
@@ -74,13 +74,13 @@ if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
         ])) {
   $this->spot->mapper("App\ContentAppreciate")->save($appreciate);
   }else  {
-        throw new NotFoundException("Had never appreciateed it.", 404);
+        throw new NotFoundException("Already appreciated.", 404);
     };
   /* Add Last-Modified and ETag headers to response. */
   $response = $this->cache->withEtag($response, $appreciate->etag());
   $response = $this->cache->withLastModified($response, $appreciate->timestamp());
   $data["status"] = "ok";
-  $data["message"] = "RSVP adeed";
+  $data["message"] = "Appreciated";
   return $response->withStatus(201)
   ->withHeader("Content-Type", "application/json")
   ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
@@ -100,7 +100,7 @@ if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
     };
     $this->spot->mapper("App\ContentAppreciate")->delete($appreciate);
     $data["status"] = "ok";
-    $data["message"] = "Rsvp Removed";
+    $data["message"] = "Appreciation Removed";
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
     ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));

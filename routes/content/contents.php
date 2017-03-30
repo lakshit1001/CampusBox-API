@@ -278,7 +278,7 @@ if ($this->cache->isNotModified($request, $response)) {
 /* Serialize the response data. */
 $fractal = new Manager();
 $fractal->setSerializer(new DataArraySerializer);
-$resource = new Item($content, new ContentTransformer);
+$resource = new Item($content, new ContentTransformer(['username' => $test, 'type' => 'get']));
 $data = $fractal->createData($resource)->toArray();
 
 return $response->withStatus(200)

@@ -18,6 +18,8 @@ class ContentTransformer extends Fractal\TransformerAbstract {
 
       ];
     public function transform(Content $content) {
+        $this->params['appreciateValue'] = false;
+        $this->params['bookmarkValue'] = false;
 
         if(isset($this->params['type']) && $this->params['type'] == 'get'){
             $appreciates = $content->Appreciated;
