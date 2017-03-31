@@ -3,6 +3,7 @@
  
 
 use App\Student;
+use App\StudentSkill;
 use App\studentFollow;
 use App\EventTransformer;
 use App\StudentTransformer;
@@ -159,47 +160,6 @@ $app->get("/studentContents/{username}", function ($request, $response, $argumen
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-// $app->get("/student/{username}/{type}", function ($request, $response, $arguments) {
-
-//     /* Check if token has needed scope. */
-//     //if (true === $this->token->hasScope(["student.all", "student.read"])) {
-//     //    throw new ForbiddenException("Token not allowed to list students.", 403);
-//     //}
-
-//     /* Load existing student using provided id */
-//     if (false === $student = $this->spot->mapper("App\Student")->first([
-//         "username" => $arguments["username"]
-//     ])) {
-//         throw new NotFoundException("Student not found.", 404);
-//     };
-
-//     /* If-Modified-Since and If-None-Match request header handling. */
-//     /* Heads up! Apache removes previously set Last-Modified header */
-//      from 304 Not Modified responses. 
-//     if ($this->cache->isNotModified($request, $response)) {
-//         return $response->withStatus(304);
-//     }
-
-//     /* Serialize the response data. */
-//     $fractal = new Manager();
-//     $fractal->setSerializer(new DataArraySerializer);
-//     if($arguments["username"]==""){
-        
-//     $resource = new Item($student, new StudentTransformer);
-//     }elseif($arguments["username"]==""){
-
-//     $resource = new Item($student, new StudentTransformer);
-//     }
-    
-//     $data = $fractal->createData($resource)->toArray();
-
-//     return $response->withStatus(200)
-//         ->withHeader("Content-Type", "appliaction/json")
-//         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-// });
-
-
-
 $app->patch("/students/{id}", function ($request, $response, $arguments) {
 
     /* Check if token has needed scope. */
@@ -293,6 +253,27 @@ $app->delete("/students/{id}", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
+$app->post("/addStudentSkills", function ($request, $response, $arguments) {
+    $body = $request->getParsedBody();
+
+    $skills['skills'] = $body['skills'];
+
+    foreach ($skills['skills'] as $key ) {
+        
+        $newSkills['skill_name'] = $key;
+        $newSkills['username'] = $this->token->decoded->username;
+
+        echo $key;
+        
+        $newSkill = new StudentSkill($newSkills);
+        $this->spot->mapper("App\StudentSkill")->save($newSkill);
+    }
+    /* Serialize the response data. */
+    return $response->withStatus(201)
+    ->withHeader("Content-Type", "application/json")
+    ->write(json_encode("Skills added", JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
 $app->post("/studentFollow/{username}", function ($request, $response, $arguments) {
     $body = $request->getParsedBody();
 
@@ -304,9 +285,6 @@ $app->post("/studentFollow/{username}", function ($request, $response, $argument
         $event['followed_username'] =  $arguments['username'];
         $event['follower_username'] =  $this->token->decoded->username;
 
-        $newEvent = new StudentFollow($event);
-        $this->spot->mapper("App\StudentFollow")->save($newEvent);
-        $data["status"] = "Successfull";
 
         $fractal = new Manager();
         $fractal->setSerializer(new DataArraySerializer);
@@ -339,3 +317,4 @@ $app->delete("/studentFollow", function ($request, $response, $arguments) {
         ->withHeader("Content-Type", "application/json")
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+
