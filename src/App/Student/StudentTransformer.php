@@ -18,12 +18,13 @@ class StudentTransformer extends Fractal\TransformerAbstract
   'Events',
   'Skills',
   'SocialAccounts',
-  'Followed',
+  'Following',
   'BookmarkedContents',
-  // 'BookmarkedEvents'
+  'Follower'
   ];
   protected $defaultIncludes = [
-  'Followed',
+  'Follower',
+  'Following',
   'Events',
   'Skills',
   'SocialAccounts',
@@ -33,18 +34,16 @@ class StudentTransformer extends Fractal\TransformerAbstract
   ];
   public function transform(Student $student)
   {
-    $this->params['value1'] = false;
-    if(isset($this->params['type']) && $this->params['type'] == 'get'){
-      $followed = $student->Followed;
-      for ($i=0; $i < count($followed); $i++) { 
-          if($followed[$i]->username == $this->params['username']){
-              $this->params['value1'] = true;
-              break;
-          }
-      }
-    } else {
       $this->params['value1'] = false;
-    }
+     if(isset($this->params['type']) && $this->params['type'] == 'get'){
+       $following = $student->Follower;
+       for ($i=0; $i < count($student->Follower); $i++) { 
+           if($student->Follower[$i]->username == $this->params['username']){
+               $this->params['value1'] = true;
+               break;
+           }
+       }
+     }
     return [
     "username" => (string)$student->username?: 0 ,
     "name" => (string)$student->name?: null,
@@ -108,8 +107,13 @@ public function includeSocialAccounts(Student $student) {
 
         return $this->collection($socials, new SocialTransformer);
     }
-  public function includeFollowed(Student $student) {
-    $followers = $student->Followed;
+  public function includeFollowing(Student $student) {
+    $followers = $student->Following;
+
+    return $this->collection($followers, new StudentMiniTransformer);
+  }
+  public function includeFollower(Student $student) {
+    $followers = $student->Follower;
 
     return $this->collection($followers, new StudentMiniTransformer);
   }

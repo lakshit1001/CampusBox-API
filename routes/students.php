@@ -38,7 +38,7 @@ $app->get("/student/{username}", function ($request, $response, $arguments) {
     /* Serialize the response data. */
     $fractal = new Manager();
     $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($student, new StudentTransformer(['username' => $test]));
+    $resource = new Item($student, new StudentTransformer(['username' => $test, 'type' => 'get']));
     $data = $fractal->createData($resource)->toArray();
 
     return $response->withStatus(200)
@@ -275,7 +275,6 @@ $app->post("/addStudentSkills", function ($request, $response, $arguments) {
 });
 
 $app->post("/studentFollow/{username}", function ($request, $response, $arguments) {
-    $body = $request->getParsedBody();
 
     $participants = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '".  $arguments['username'] ."' AND follower_username = '" .$this->token->decoded->username. "'");
 
@@ -285,6 +284,8 @@ $app->post("/studentFollow/{username}", function ($request, $response, $argument
         $event['followed_username'] =  $arguments['username'];
         $event['follower_username'] =  $this->token->decoded->username;
 
+        $newEvent = new StudentFollow($event);
+        $this->spot->mapper("App\StudentFollow")->save($newEvent);
 
         $fractal = new Manager();
         $fractal->setSerializer(new DataArraySerializer);
@@ -298,7 +299,7 @@ $app->post("/studentFollow/{username}", function ($request, $response, $argument
     ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->delete("/studentFollow", function ($request, $response, $arguments) {
+$app->delete("/studentFollow/{username}", function ($request, $response, $arguments) {
     $body = $request->getParsedBody();
 
     /* Load existing todo using provided uid */
@@ -306,7 +307,7 @@ $app->delete("/studentFollow", function ($request, $response, $arguments) {
     if(count($rsvp) <= 0){
         $data["status"] = "Not Following";
     } else {
-        $rsvp = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '". $body['followed_username'] ."' AND follower_username = '" .$this->token->decoded->username. "'")->first();
+        $rsvp = $this->spot->mapper("App\StudentFollow")->query("SELECT * FROM `followers` WHERE followed_username = '". $arguments['username'] ."' AND follower_username = '" .$this->token->decoded->username. "'")->first();
     $this->spot->mapper("App\StudentFollow")->delete($rsvp);
 
     $data["status"] = "ok";
@@ -318,3 +319,20 @@ $app->delete("/studentFollow", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
+$app->get("/userImage", function ($request, $response, $arguments) {
+
+    $username =$this->token->decoded->username;
+
+    $follows = $this->spot->mapper("App\Student")
+        ->query("
+                SELECT name, image
+                FROM students
+                WHERE username = '". $username ."' ");
+    $data['username'] = $this->token->decoded->username;
+    $data['name'] = $follows[0]->name;
+    $data['image'] = $follows[0]->image;
+
+    return $response->withStatus(200)
+    ->withHeader("Content-Type", "application/json")
+    ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});

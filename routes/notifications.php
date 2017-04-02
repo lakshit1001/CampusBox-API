@@ -23,16 +23,15 @@
 
     $follows = $this->spot->mapper("App\StudentFollow")
         ->query("
-SELECT id, followed_username, follower_username, name, timer
-FROM followers
-LEFT JOIN students
-ON followers.follower_username = students.username
-WHERE followed_username = '". $username ."' 
-ORDER BY timer DESC LIMIT 5");
-            // SELECT * FROM followers WHERE followed_username = '". $username ."' ORDER BY timer DESC LIMIT 5");
+                SELECT id, followed_username, follower_username, name, timer
+                FROM followers
+                LEFT JOIN students
+                ON followers.follower_username = students.username
+                WHERE followed_username = '". $username ."' 
+                ORDER BY timer DESC LIMIT 5");
 
     $appreciate = $this->spot->mapper("App\ContentAppreciate")
-        ->query("SELECT title, content_appreciates.content_id, content_appreciates.timer, content_appreciates.username, COUNT(content_appreciates.content_id) AS x FROM `content_appreciates`
+        ->query("SELECT title, content_appreciates.content_id, content_appreciates.timer, content_appreciates.username, COUNT(content_appreciates.content_id    ) AS x FROM `content_appreciates`
                 LEFT JOIN `contents`
                 ON contents.content_id = content_appreciates.content_id
                 WHERE created_by_username = '". $username ."'

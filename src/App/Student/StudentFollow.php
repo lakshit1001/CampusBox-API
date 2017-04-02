@@ -46,7 +46,7 @@ use Spot\MapperInterface as Mapper;
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-            'Followed' => $mapper->belongsTo($entity, 'App\Student', 'followed_username'),
+            'Following' => $mapper->belongsTo($entity, 'App\Student', 'followed_username'),
             'Follower' => $mapper->belongsTo($entity, 'App\Student', 'follower_username')
             ];
     }
