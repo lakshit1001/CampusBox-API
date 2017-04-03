@@ -25,51 +25,32 @@ $app->get("/events", function ($request, $response, $arguments) {
 
 	$currentCursor = 0;
 	$previousCursor = 0;
-	$limit = 20;
 	$test = $this->token->decoded->username;
+	$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
+	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
-	/* Use ETag and date from Event with most recent update. */
-	$first = $this->spot->mapper("App\Event")
-	->all()
-	->order(["time_created" => "DESC"])
-	->first();
-
-	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
-	// if ($first) {
-	// 	$response = $this->cache->withEtag($response, $first->etag());
-	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
-	// }
-
-	/* If-Modified-Since and If-None-Match request header handling. */
-	/* Heads up! Apache removes previously set Last-Modified header */
-	/* from 304 Not Modified responses. */
-	if ($this->cache->isNotModified($request, $response)) {
-		return $response->withStatus(304);
-	}
-
-	if(0){
-
-		$events = $this->spot->mapper("App\Event")
-		->where(['event_id >' => $currentCursor])
-		->limit($limit)
-		->order(["time_created" => "DESC"]);
-	} else {
-		$events = $this->spot->mapper("App\Event")
+	$events = $this->spot->mapper("App\Event")
 		->all()
-		->order(["time_created" => "DESC"]);
-	}
-
-    // $newCursor = $events->last()->id;
-    // $cursor = new Cursor($currentCursor, $previousCursor, $newCursor, $events->count());
+		->order(["time_created" => "DESC"])
+		->limit($limit, $offset);
+		
+	$offset += $limit;
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
 	$fractal->setSerializer(new DataArraySerializer);
+
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
+
 	$resource = new Collection($events, new EventTransformer(['username' => $test, 'type' => 'get']));
 	$data = $fractal->createData($resource)->toArray();
+	
+	$data['meta']['offset'] = $offset;
+	$data['meta']['limit'] = $limit;
+
+
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
@@ -318,10 +299,10 @@ $app->post("/addEvent", function ($request, $response, $arguments) {
 	$newEvent = new Event($event);
 	$this->spot->mapper("App\Event")->save($newEvent);
 
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($newEvent, new EventTransformer);
-    $data = $fractal->createData($resource)->toArray();
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	$resource = new Item($newEvent, new EventTransformer);
+	$data = $fractal->createData($resource)->toArray();
 
 	for ($i=0; $i < count($body['tags']); $i++) {
 		$tags['event_id'] = $data['data']['id'];

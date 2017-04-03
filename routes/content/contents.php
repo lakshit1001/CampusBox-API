@@ -61,47 +61,39 @@ $app->get("/contentSorted", function ($request, $response, $arguments) {
     ->write(json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 });
+
 $app->get("/contents[/{content_type_id}]", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	// if (true === $this->token->hasScope(["content.all", "content.list"])) {
-	//     throw new ForbiddenException("Token not allowed to list contents.", 403);
-	// }else{
+	$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
+	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
-	// }
 	$test = $this->token->decoded->username;
 
-	/* If-Modified-Since and If-None-Match request header handling. */
-	/* Heads up! Apache removes previously set Last-Modified header */
-	/* from 304 Not Modified responses. */
-	if ($this->cache->isNotModified($request, $response)) {
-		return $response->withStatus(304);
-	}
-	if(isset($arguments['content_type_id'])){
-		$contents = $this->spot->mapper("App\Content")
+	$contents = $this->spot->mapper("App\Content")
 		->all()
-		->where(["content_type_id"=>$arguments['content_type_id']])
-		->order(["timer" => "DESC"]);
-	}else{
-
-		$contents = $this->spot->mapper("App\Content")
-		->all()
-		->order(["timer" => "DESC"]);
-	}
+		->order(["timer" => "DESC"])
+		->limit($limit, $offset);
+		
+	$offset += $limit;
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
 	$fractal->setSerializer(new DataArraySerializer);
-	if (isset($_GET['include'])) {
+	if (isset($_GET['include'])) {	
 		$fractal->parseIncludes($_GET['include']);
 	}
 	$resource = new Collection($contents, new ContentTransformer([ 'type' => 'get', 'username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
 
+	$data['meta']['offset'] = $offset;
+	$data['meta']['limit'] = $limit;
+
+
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+
 $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 
 	/* Check if token has needed scope. */
