@@ -1,7 +1,5 @@
 <?php
 
-
-
 use App\Content;
 use App\ContentItems;
 use App\ContentTags;

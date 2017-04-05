@@ -352,7 +352,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$newUser['college_id'] = $body['college_id'];
 			$newUser['roll_number'] = $body['roll']	;
 			
-				if($social['college_id'] == 0){
+				if($newUser['college_id'] == 0){
 					$college['name'] = $body['College_Name'];
 					$newCollege = new College($college);
 					$this->spot->mapper("App\College")->save($newCollege);

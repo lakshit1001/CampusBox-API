@@ -39,7 +39,8 @@ class EventTransformer extends Fractal\TransformerAbstract {
             $this->params['value2'] = 0;
         }
         return [
-			"id" => (integer) $event->event_id ?: 0,
+            "id" => (integer) $event->event_id ?: 0,
+			"college_id" => (integer) $event->college_id ?: 0,
 			"title" => (string) $event->title ?: null,
 			"subtitle" => (string) $event->subtitle ?: null,
             "details" => [

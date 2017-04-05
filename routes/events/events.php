@@ -1,7 +1,5 @@
 <?php
 
-
-
 use App\Event;
 use App\EventTags;
 use App\EventTransformer;
@@ -30,9 +28,13 @@ $app->get("/events", function ($request, $response, $arguments) {
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
 	$events = $this->spot->mapper("App\Event")
-		->all()
-		->order(["time_created" => "DESC"])
-		->limit($limit, $offset);
+		->query("SELECT * FROM `events` 
+			WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
+			ORDER BY CASE 
+				WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
+		    	ELSE audience
+			END
+			LIMIT " . $limit ." OFFSET " . $offset);
 		
 	$offset += $limit;
 
