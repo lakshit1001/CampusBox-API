@@ -28,9 +28,6 @@ if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
     }else{
         throw new NotFoundException("Already Bookmarked", 404);
     }
-    /* Add Last-Modified and ETag headers to response. */
-    $response = $this->cache->withEtag($response, $bookmark->etag());
-    $response = $this->cache->withLastModified($response, $bookmark->timestamp());
     $data["status"] = "ok";
     $data["message"] = "New bookmark created";
     return $response->withStatus(201)
@@ -76,9 +73,6 @@ if (false === $check = $this->spot->mapper("App\ContentBookmarks")->first([
   }else  {
         throw new NotFoundException("Already appreciated.", 404);
     };
-  /* Add Last-Modified and ETag headers to response. */
-  $response = $this->cache->withEtag($response, $appreciate->etag());
-  $response = $this->cache->withLastModified($response, $appreciate->timestamp());
   $data["status"] = "ok";
   $data["message"] = "Appreciated";
   return $response->withStatus(201)
