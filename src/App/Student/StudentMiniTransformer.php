@@ -22,6 +22,7 @@ class StudentMiniTransformer extends Fractal\TransformerAbstract
         return [
             "username" => (string)$student->username?: 0 ,
             "title" => (string)$student->name?: null,
+            "about" => (string)$student->about?: null,
             "photo" => (string)$student->image?: null,
             "about" => (string)$student->about?: null,
             "college" => [

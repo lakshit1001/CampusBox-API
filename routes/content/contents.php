@@ -69,6 +69,9 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	// }else{
 
 	// }
+		$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
+	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
+
 	$test = $this->token->decoded->username;
 
 	/* If-Modified-Since and If-None-Match request header handling. */
@@ -86,8 +89,10 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 
 		$contents = $this->spot->mapper("App\Content")
 		->all()
+		->limit($limit, $offset);
 		->order(["timer" => "DESC"]);
 	}
+$offset += $limit;
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
@@ -97,6 +102,9 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	}
 	$resource = new Collection($contents, new ContentTransformer([ 'type' => 'get', 'username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
+	
+	$data['meta']['offset'] = $offset;
+	$data['meta']['limit'] = $limit;
 
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")

@@ -18,20 +18,7 @@ use League\Fractal\Serializer\DataArraySerializer;
 $app->get("/colleges", function ($request, $response, $arguments) {
 
    
-
-    /* Use ETag and date from College with most recent update. */
-    $first = $this->spot->mapper("App\College")
-        ->all()
-        ->first();
-
-    /* If-Modified-Since and If-None-Match request header handling. */
-    /* Heads up! Apache removes previously set Last-Modified header */
-    /* from 304 Not Modified responses. */
-    if ($this->cache->isNotModified($request, $response)) {
-        return $response->withStatus(304);
-    }
-
-    $colleges = $this->spot->mapper("App\College")
+ $colleges = $this->spot->mapper("App\College")
         ->all()//->with('students')
         ;
 
