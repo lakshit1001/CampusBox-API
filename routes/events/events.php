@@ -21,8 +21,6 @@ use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/events", function ($request, $response, $arguments) {
 
-	$currentCursor = 0;
-	$previousCursor = 0;
 	$test = $this->token->decoded->username;
 	$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;

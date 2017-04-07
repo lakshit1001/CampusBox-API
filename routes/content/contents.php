@@ -1,7 +1,5 @@
 <?php
 
-
-
 use App\Content;
 use App\ContentItems;
 use App\ContentTags;
@@ -17,8 +15,8 @@ use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/contentSorted", function ($request, $response, $arguments) {
-	$user_college_id = 2;
-	$username= 'lakshit1001';
+	$user_college_id = $this->token->decoded->college_id;
+	$username= $this->token->decoded->username;
 	$content = $this->spot->mapper("App\Content")
     ->query("SELECT
          contents.content_id,
@@ -54,7 +52,9 @@ $app->get("/contentSorted", function ($request, $response, $arguments) {
         ON contents.content_id = content_appreciates.content_id
         
         GROUP BY contents.content_id
-        ORDER BY interestScore+interScore+followScore DESC,contents.timer ;");
+        ORDER BY interestScore+interScore+followScore DESC,contents.timer 
+    	LIMIT 3 OFFSET 0
+        ;");
 
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
@@ -63,23 +63,11 @@ $app->get("/contentSorted", function ($request, $response, $arguments) {
 });
 $app->get("/contents[/{content_type_id}]", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	// if (true === $this->token->hasScope(["content.all", "content.list"])) {
-	//     throw new ForbiddenException("Token not allowed to list contents.", 403);
-	// }else{
-
-	// }
-		$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
+	$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
 	$test = $this->token->decoded->username;
 
-	/* If-Modified-Since and If-None-Match request header handling. */
-	/* Heads up! Apache removes previously set Last-Modified header */
-	/* from 304 Not Modified responses. */
-	if ($this->cache->isNotModified($request, $response)) {
-		return $response->withStatus(304);
-	}
 	if(isset($arguments['content_type_id'])){
 		$contents = $this->spot->mapper("App\Content")
 		->all()
@@ -89,10 +77,10 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 
 		$contents = $this->spot->mapper("App\Content")
 		->all()
-		->limit($limit, $offset);
+		->limit($limit, $offset)
 		->order(["timer" => "DESC"]);
 	}
-$offset += $limit;
+	$offset += $limit;
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
@@ -112,34 +100,8 @@ $offset += $limit;
 });
 $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	// if (true === $this->token->hasScope(["content.all", "content.list"])) {
-	//     throw new ForbiddenException("Token not allowed to list contents.", 403);
-	// }else{
-
-	// }
 	$test = $this->token->decoded->username;
 
-	
-	// $first = $this->spot->mapper("App\Content")
-	// ->all()
-	// ->limit(6)
-	// ->order(["timer" => "DESC"])
-	// // ->first();
-
-
-	//  Add Last-Modified and ETag headers to response when atleast on content exists. 
-	// if ($first) {
-	// 	$response = $this->cache->withEtag($response, $first->etag());
-	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
-	// }
-
-	/* If-Modified-Since and If-None-Match request header handling. */
-	/* Heads up! Apache removes previously set Last-Modified header */
-	/* from 304 Not Modified responses. */
-	if ($this->cache->isNotModified($request, $response)) {
-		return $response->withStatus(304);
-	}
 	if(isset($arguments['content_type_id'])){
 		$contents = $this->spot->mapper("App\Content")
 		->all()
@@ -168,21 +130,17 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 });
 $app->get("/contentsTop[/{content_type_id}]", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	// if (true === $this->token->hasScope(["content.all", "content.list"])) {
-	//     throw new ForbiddenException("Token not allowed to list contents.", 403);
-	// }else{
-
-	// }
 	$test = $this->token->decoded->username;
 
 	/* Use ETag and date from Content with most recent update. */
 	if(isset($arguments['content_type_id'])){
+
 		$first = $this->spot->mapper("App\Content")
 		->all()
 		->where(["content_type_id"=>$arguments['content_type_id']])
 		->order(["timer" => "DESC"])
 		->first();
+
 	}else{
 
 		$first = $this->spot->mapper("App\Content")
@@ -191,18 +149,6 @@ $app->get("/contentsTop[/{content_type_id}]", function ($request, $response, $ar
 		->first();
 	}
 
-	/* Add Last-Modified and ETag headers to response when atleast on content exists. */
-	if ($first) {
-		$response = $this->cache->withEtag($response, $first->etag());
-		$response = $this->cache->withLastModified($response, $first->timestamp());
-	}
-
-	/* If-Modified-Since and If-None-Match request header handling. */
-	/* Heads up! Apache removes previously set Last-Modified header */
-	/* from 304 Not Modified responses. */
-	if ($this->cache->isNotModified($request, $response)) {
-		return $response->withStatus(304);
-	}
 	if(isset($arguments['content_type_id'])){
 		$contents = $this->spot->mapper("App\Content")
 		->all()
@@ -261,11 +207,7 @@ $app->post("/contents", function ($request, $response, $arguments) {
 
 $app->get("/content/{id}", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	//if (true === $this->token->hasScope(["content.all", "content.read"])) {
-	//	throw new ForbiddenException("Token not allowed to list contents.", 403);
-	//}
-
+	$test = $this->token->decoded->username;
 	/* Load existing content using provided id */
 	if (false === $content = $this->spot->mapper("App\Content")->first([
 		"content_id" => $arguments["id"],
@@ -283,9 +225,6 @@ return $response->withStatus(200)
 ->withHeader("Content-Type", "application/json")
 ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
-
-
-
 
 $app->post("/addContent", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();

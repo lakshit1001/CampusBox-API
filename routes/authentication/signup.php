@@ -221,6 +221,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
 		curl_setopt($ch, CURLOPT_HEADER, 0);            // No header in the result 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return, do not echo result   
+		curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
 		$raw_data = curl_exec($ch);
 		curl_close($ch);
 		$googleData = json_decode($raw_data);
@@ -292,7 +293,6 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				    $resource = new Item($newCollege, new CollegeTransformer);
     				$data = $fractal->createData($resource)->toArray();
     				$social['college_id'] = $data['data']['id'];
-    				echo "i entered here";
 
 				}
 

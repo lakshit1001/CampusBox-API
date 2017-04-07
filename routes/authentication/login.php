@@ -64,13 +64,15 @@ $app->post("/login", function ($request, $response, $arguments) {
 
 			}
 			else if ($body['type']=="google" && isset($body['token'])){
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
-		curl_setopt($ch, CURLOPT_HEADER, 0);            // No header in the result 
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return, do not echo result   
-		$raw_data = curl_exec($ch);
-		curl_close($ch);
-		$googleData = json_decode($raw_data);
+
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$body['token']);
+				curl_setopt($ch, CURLOPT_HEADER, 0);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
+				$raw_data = curl_exec($ch);
+				curl_close($ch);
+				$googleData = json_decode($raw_data);
 
 				$student = new SocialAccount();
 				$student = $this->spot

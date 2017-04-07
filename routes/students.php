@@ -160,16 +160,11 @@ $app->get("/studentContents/{username}", function ($request, $response, $argumen
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->patch("/students/{id}", function ($request, $response, $arguments) {
+$app->patch("/students/{username}", function ($request, $response, $arguments) {
 
-    /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["student.all", "student.update"])) {
-        throw new ForbiddenException("Token not allowed to update students.", 403);
-    }
-
-    /* Load existing student using provided id */
+    /* Load existing student using provided username */
     if (false === $student = $this->spot->mapper("App\Student")->first([
-        "id" => $arguments["id"]
+        "username" => $arguments["username"]
     ])) {
         throw new NotFoundException("Student not found.", 404);
     };
@@ -260,11 +255,9 @@ $app->post("/addStudentSkills", function ($request, $response, $arguments) {
 
     foreach ($skills['skills'] as $key ) {
         
-        $newSkills['skill_name'] = $key;
+        $newSkills['skill_name'] = $key['name'];
         $newSkills['username'] = $this->token->decoded->username;
 
-        echo $key;
-        
         $newSkill = new StudentSkill($newSkills);
         $this->spot->mapper("App\StudentSkill")->save($newSkill);
     }
