@@ -58,7 +58,7 @@ class ContentTransformer extends Fractal\TransformerAbstract {
             "created" => [
                 "by" => [
                     "name" => (string) $content->Owner['name'] ?: null,
-                    "username" => (integer) $content->Owner['username'] ?: 0,
+                    "username" => (string) $content->Owner['username'] ?: null,
                     "link" => (integer) $content->Owner['username'] ?: 0,
                     "image" => (string) $content->Owner['image'] ?: null,
                     ],
