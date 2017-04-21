@@ -22,7 +22,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		->withHeader("Content-Type", "application/json")
 		->write(json_encode($error, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 	}
-	else if(!isset($body['roll']) || !isset($body['college_id']) ){
+	else if(!isset($body['roll']) || !isset($body['college']) ){
 		$error['message'] = 'Collge or roll missing !' ;
 		
 		return $response->withStatus(201)
@@ -92,7 +92,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				$social['social_id'] = $facebookData['id'];
 				$social['type'] = "facebook";
 				$social['token'] = $body['token'];
-				$social['college_id'] = $body['college_id'];
+				$social['college_id'] = $body['college'];
 				$social['roll_number'] = $body['roll'];
 				$social['name'] = isset($facebookData['name'])?$facebookData['name']:" ";
 				$social['email'] = isset($facebookData['email'])? $facebookData['email']:" ";
@@ -168,7 +168,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		$newUser['about'] = isset($facebookData['about']) ?$facebookData['about']: "Apparently, this user prefers to keep an air of mystery about them";
 		$newUser['image'] = isset($facebookData['picture']['url'])?$facebookData['picture']['url']:" ";
 
-		$newUser['college_id'] = $body['college_id'];
+		$newUser['college_id'] = $body['college'];
 		$newUser['roll_number'] = $body['roll']	;
 
 				if($newUser['college_id'] == 0){
@@ -189,10 +189,10 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 
 					// add same data to social accounts table
-		if($body['college_id'] == 0){
+		if($body['college'] == 0){
 			$social['college_id'] = $data['data']['id'];
 		} else{
-			$social['college_id'] = $body['college_id'];
+			$social['college_id'] = $body['college'];
 		}
 
 		$social['roll_number'] = $body['roll']	;
@@ -268,7 +268,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 		if (count($student) > 0) {
 
-			$social['college_id'] = $body['college_id'];
+			$social['college_id'] = $body['college'];
 			$social['roll_number'] = $body['roll']	;
 			$social['username'] = $student[0]->username;
 			$social['social_id'] = $googleData->id;
@@ -349,7 +349,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$newUser['about'] = isset($googleData->about) ?$googleData->about: "Apparently, this user prefers to keep an air of mystery about them";
 			$newUser['image'] = isset($googleData->picture)?$googleData->picture:" ";
 
-			$newUser['college_id'] = $body['college_id'];
+			$newUser['college_id'] = $body['college'];
 			$newUser['roll_number'] = $body['roll']	;
 			
 				if($newUser['college_id'] == 0){
@@ -374,7 +374,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 
 			// add same data to social accounts table
-			$social['college_id'] = $body['college_id'];
+			$social['college_id'] = $body['college'];
 			$social['roll_number'] = $body['roll']	;
 			$social['username'] = $newUser['username'];
 			$social['social_id'] = $googleData->id;
@@ -437,7 +437,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 		->where(['email' => $linkedinData->email]);
 		if (count($student) > 0) {
 
-			$social['college_id'] = $body['college_id'];
+			$social['college_id'] = $body['college'];
 			$social['roll_number'] = $body['roll']	;
 			$social['username'] = $student[0]->username;
 			$social['social_id'] = $linkedinData->id;
@@ -503,7 +503,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 			$newUser['about'] = isset($googleData->about) ?$googleData->about: "Apparently, this user prefers to keep an air of mystery about them";
 			$newUser['image'] = isset($googleData->picture)?$googleData->picture:" ";
 
-			$newUser['college_id'] = $body['college_id'];
+			$newUser['college_id'] = $body['college'];
 			$newUser['roll_number'] = $body['roll']	;
 			$newUserAccount = new Student($newUser);
 			$this->spot->mapper("App\Student")->save($newUserAccount);
@@ -511,7 +511,7 @@ $app->post("/signup", function ($request, $response, $arguments) {
 
 
 			// add same data to social accounts table
-			$social['college_id'] = $body['college_id'];
+			$social['college_id'] = $body['college'];
 			$social['roll_number'] = $body['roll']	;
 			$social['username'] = $newUser['username'];
 			$social['social_id'] = $googleData->id;
