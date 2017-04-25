@@ -22,7 +22,7 @@ use League\Fractal\Serializer\DataArraySerializer;
 $app->get("/events", function ($request, $response, $arguments) {
 
 	$test = $this->token->decoded->username;
-	$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
+	$limit = isset($_GET['limit']) ? $_GET['limit'] : 2;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
 	$events = $this->spot->mapper("App\Event")
@@ -117,7 +117,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 
 	$currentCursor = 0;
 	$previousCursor = 0;
-	$limit = 3;
+	$limit = 2;
 	$test = $this->token->decoded->username;
 
 	/* Use ETag and date from Event with most recent update. */

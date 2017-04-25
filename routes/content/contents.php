@@ -128,6 +128,27 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+$app->get("/contentsRandom", function ($request, $response, $arguments) {
+
+	$test = $this->token->decoded->username;
+
+	
+		$contents = $this->spot->mapper("App\Content")
+    ->query("SELECT * from contents ORDER BY RAND() limit 3"); 
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+	$resource = new Collection($contents, new ContentTransformer([ 'type' => 'get', 'username' => $test]));
+	$data = $fractal->createData($resource)->toArray();
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
 $app->get("/contentsTop[/{content_type_id}]", function ($request, $response, $arguments) {
 
 	$test = $this->token->decoded->username;
