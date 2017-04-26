@@ -142,9 +142,8 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	if(1){
 
 		$events = $this->spot->mapper("App\Event")
-		->where(['event_id >' => $currentCursor])
-		->limit($limit)
-		->order(["time_created" => "DESC"]);
+		    ->query("SELECT * from events ORDER BY RAND() limit 2"); 
+
 	} else {
 		$events = $this->spot->mapper("App\Event")
 		->all()
