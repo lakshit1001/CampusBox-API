@@ -1,7 +1,4 @@
 <?php
-
- 
-
 use App\Student;
 use App\StudentSkill;
 use App\studentFollow;
@@ -218,6 +215,40 @@ $app->put("/students/{id}", function ($request, $response, $arguments) {
     $data = $fractal->createData($resource)->toArray();
     $data["status"] = "ok";
     $data["message"] = "Student updated";
+
+    return $response->withStatus(200)
+        ->withHeader("Content-Type", "application/json")
+        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->post("/about", function ($request, $response, $arguments) {
+
+  
+    /* Load existing student using provided id */
+    if (false === $student = $this->spot->mapper("App\Student")->first([
+        "username" => $this->token->decoded->username
+    ])) {
+        throw new NotFoundException("Student not found.", 404);
+    };
+
+
+    $body = $request->getParsedBody();
+
+    /* PUT request assumes full representation. If any of the properties is */
+    /* missing set them to default values by clearing the student object first. */
+    $entity = $this->spot->mapper("App\Student")->first(['username' => $this->token->decoded->username]);
+    if ($entity) {
+        $entity->about = $body;
+        $this->spot->mapper("App\Student")->update($entity);
+    }
+
+    $fractal = new Manager();
+    $fractal->setSerializer(new DataArraySerializer);
+    $resource = new Item($entity, new StudentTransformer);
+    $data = $fractal->createData($resource)->toArray();
+    $data["status"] = "ok";
+    $data["message"] = "Student updated";
+    $data["body"] = $body;
 
     return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
