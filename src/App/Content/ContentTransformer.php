@@ -47,7 +47,7 @@ class ContentTransformer extends Fractal\TransformerAbstract {
             "id" => (integer) $content->content_id ?: 0,
             "title" => (string) $content->title ?: null,
             "content" => [
-                "type" => $content->time_created ?: 0,
+                "type" => $content->content_type_id ?: 0,
                 "description" => (string) $content->description ?: null,
                 "embed" => (string) $content->Owner['name'] ?: null,
                 "images" => [
