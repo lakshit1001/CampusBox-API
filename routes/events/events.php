@@ -3,6 +3,7 @@
 use App\Event;
 use App\EventTags;
 use App\EventTransformer;
+use App\EventHomeMiniTransformer;
 use App\EventRsvp;
 use App\EventRsvpTransformer;
 use App\EventBookmarks;
@@ -45,6 +46,43 @@ $app->get("/events", function ($request, $response, $arguments) {
 	}
 
 	$resource = new Collection($events, new EventTransformer(['username' => $test, 'type' => 'get']));
+	$data = $fractal->createData($resource)->toArray();
+	
+	$data['meta']['offset'] = $offset;
+	$data['meta']['limit'] = $limit;
+
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->get("/minievents", function ($request, $response, $arguments) {
+
+	$test = $this->token->decoded->username;
+	$limit = isset($_GET['limit']) ? $_GET['limit'] : 2;
+	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
+
+	$events = $this->spot->mapper("App\Event")
+		->query("SELECT * FROM `events` 
+			WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
+			ORDER BY CASE 
+				WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
+		    	ELSE audience
+			END
+			LIMIT " . $limit ." OFFSET " . $offset);
+		
+	$offset += $limit;
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+
+	$resource = new Collection($events, new EventHomeMiniTransformer(['username' => $test, 'type' => 'get']));
 	$data = $fractal->createData($resource)->toArray();
 	
 	$data['meta']['offset'] = $offset;
