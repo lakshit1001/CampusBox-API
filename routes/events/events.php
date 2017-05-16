@@ -371,36 +371,36 @@ $app->get("/eventParticipants/{id}", function ($request, $response, $arguments) 
 
 $app->patch("/events/{id}", function ($request, $response, $arguments) {
 
-	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["event.all", "event.update"])) {
-		throw new ForbiddenException("Token not allowed to update events.", 403);
-	}
+	// /* Check if token has needed scope. */
+	// if (true === $this->token->hasScope(["event.all", "event.update"])) {
+	// 	throw new ForbiddenException("Token not allowed to update events.", 403);
+	// }
 
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"id" => $arguments["id"],
+		"event_id" => $arguments["id"],
 		])) {
 		throw new NotFoundException("Event not found.", 404);
 };
 
 /* PATCH requires If-Unmodified-Since or If-Match request header to be present. */
-if (false === $this->cache->hasStateValidator($request)) {
-	throw new PreconditionRequiredException("PATCH request is required to be conditional.", 428);
-}
+// if (false === $this->cache->hasStateValidator($request)) {
+// 	throw new PreconditionRequiredException("PATCH request is required to be conditional.", 428);
+// }
 
 /* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
 /* someone has modified the event respond with 412 Precondition Failed. */
-if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
-	throw new PreconditionFailedException("Event has been modified.", 412);
-}
+// if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
+// 	throw new PreconditionFailedException("Event has been modified.", 412);
+// }
 
 $body = $request->getParsedBody();
 $event->data($body);
 $this->spot->mapper("App\Event")->save($event);
 
-/* Add Last-Modified and ETag headers to response. */
-$response = $this->cache->withEtag($response, $event->etag());
-$response = $this->cache->withLastModified($response, $event->timestamp());
+// /* Add Last-Modified and ETag headers to response. */
+// $response = $this->cache->withEtag($response, $event->etag());
+// $response = $this->cache->withLastModified($response, $event->timestamp());
 
 $fractal = new Manager();
 $fractal->setSerializer(new DataArraySerializer);
