@@ -331,3 +331,22 @@ return $response->withStatus(200)
 ->withHeader("Content-Type", "application/json")
 ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+
+$app->delete("/content/{id}", function ($request, $response, $arguments) {
+
+	/* Load existing event using provided id */
+	if (false === $content = $this->spot->mapper("App\Content")->first([
+		"content_id" => $arguments["id"],
+		])) {
+		throw new NotFoundException("Content not found.", 404);
+};
+
+$this->spot->mapper("App\Content")->delete($content);
+
+$data["status"] = "ok";
+$data["message"] = "Content deleted";
+
+return $response->withStatus(200)
+->withHeader("Content-Type", "application/json")
+->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});

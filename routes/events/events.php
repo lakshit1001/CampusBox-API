@@ -463,16 +463,11 @@ return $response->withStatus(200)
 ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->delete("/events/{id}", function ($request, $response, $arguments) {
-
-	/* Check if token has needed scope. */
-	if (true === $this->token->hasScope(["event.all", "event.delete"])) {
-		throw new ForbiddenException("Token not allowed to delete events.", 403);
-	}
+$app->delete("/event/{id}", function ($request, $response, $arguments) {
 
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"id" => $arguments["id"],
+		"event_id" => $arguments["id"],
 		])) {
 		throw new NotFoundException("Event not found.", 404);
 };
