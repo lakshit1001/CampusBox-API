@@ -295,13 +295,13 @@ $app->patch("/content/{id}", function ($request, $response, $arguments) {
 	// }
 
 	/* Load existing event using provided id */
-	if (false === $event = $this->spot->mapper("App\Content")->first([
+	if (false === $content = $this->spot->mapper("App\Content")->first([
 		"content_id" => $arguments["id"],
 		])) {
 		throw new NotFoundException("Content not found.", 404);
 };
 
-// /* PATCH requires If-Unmodified-Since or If-Match request header to be present. */
+/* PATCH requires If-Unmodified-Since or If-Match request header to be present. */
 // if (false === $this->cache->hasStateValidator($request)) {
 // 	throw new PreconditionRequiredException("PATCH request is required to be conditional.", 428);
 // }
