@@ -50,7 +50,7 @@ $app->get("/search/students/{name}", function ($request, $response, $arguments) 
   ->withHeader("Content-Type", "appliaction/json")
   ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
-$app->get("/search/events/{username}", function ($request, $response, $arguments) {
+$app->get("/search/events/{title}", function ($request, $response, $arguments) {
 
   /* Load existing student using provided id */
     // if (false === $student = $this->spot->mapper("App\Student")->first([
@@ -64,7 +64,7 @@ $app->get("/search/events/{username}", function ($request, $response, $arguments
   if ($this->cache->isNotModified($request, $response)) {
     return $response->withStatus(304);
   }
-
+  $test = $this->token->decoded->username;
   $events = $this->spot->mapper("App\Event")->query('
       SELECT * FROM events
       WHERE title LIKE "%'.$arguments['title'].'%"
@@ -76,7 +76,7 @@ $app->get("/search/events/{username}", function ($request, $response, $arguments
 
     $fractal->setSerializer(new DataArraySerializer);
 
-    $resource = new Collection($events, new EventTransformer);
+    $resource = new Collection($events, new EventTransformer(['username' => $test, 'type' => 'get']));
     $data = $fractal->createData($resource)->toArray();
   }
   return $response->withStatus(200)
