@@ -3,6 +3,7 @@
 use App\Event;
 use App\EventTags;
 use App\EventTransformer;
+use App\EventDashboardTransformer;
 use App\EventRsvp;
 use App\EventRsvpTransformer;
 use App\EventBookmarks;
@@ -160,7 +161,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($events, new EventTransformer(['username' => $test, 'type' => 'get']));
+	$resource = new Collection($events, new EventDashboardTransformer(['username' => $test, 'type' => 'get']));
 	$data = $fractal->createData($resource)->toArray();
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")
