@@ -14,6 +14,6 @@ class Token
     public function hasScope(array $scope)
     {
         return true;
-        //return !!count(array_intersect($scope, (array)$this->decoded->scope));
+        // return !!count(array_intersect($scope, (array)$this->decoded->scope));
     }
 }

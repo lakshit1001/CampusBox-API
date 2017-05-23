@@ -113,7 +113,6 @@ $app->post("/signup", function ($request, $response, $arguments) {
 				    $resource = new Item($newCollege, new CollegeTransformer);
     				$data = $fractal->createData($resource)->toArray();
     				$social['college_id'] = $data['data']['id'];
-    				echo "i entered here";
 
 				}
 

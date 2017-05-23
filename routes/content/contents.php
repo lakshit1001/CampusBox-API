@@ -287,3 +287,66 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+$app->patch("/content/{id}", function ($request, $response, $arguments) {
+
+	// /* Check if token has needed scope. */
+	// if (true === $this->token->hasScope(["event.all", "event.update"])) {
+	// 	throw new ForbiddenException("Token not allowed to update events.", 403);
+	// }
+
+	/* Load existing event using provided id */
+	if (false === $content = $this->spot->mapper("App\Content")->first([
+		"content_id" => $arguments["id"],
+		])) {
+		throw new NotFoundException("Content not found.", 404);
+};
+
+/* PATCH requires If-Unmodified-Since or If-Match request header to be present. */
+// if (false === $this->cache->hasStateValidator($request)) {
+// 	throw new PreconditionRequiredException("PATCH request is required to be conditional.", 428);
+// }
+
+/* If-Unmodified-Since and If-Match request header handling. If in the meanwhile  */
+/* someone has modified the event respond with 412 Precondition Failed. */
+// if (false === $this->cache->hasCurrentState($request, $event->etag(), $event->timestamp())) {
+// 	throw new PreconditionFailedException("Event has been modified.", 412);
+// }
+
+$body = $request->getParsedBody();
+$content->data($body);
+$this->spot->mapper("App\Content")->save($content);
+
+// /* Add Last-Modified and ETag headers to response. */
+// $response = $this->cache->withEtag($response, $event->etag());
+// $response = $this->cache->withLastModified($response, $event->timestamp());
+
+$fractal = new Manager();
+$fractal->setSerializer(new DataArraySerializer);
+$resource = new Item($content, new ContentTransformer);
+$data = $fractal->createData($resource)->toArray();
+$data["status"] = "ok";
+$data["message"] = "Content updated";
+
+return $response->withStatus(200)
+->withHeader("Content-Type", "application/json")
+->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->delete("/content/{id}", function ($request, $response, $arguments) {
+
+	/* Load existing event using provided id */
+	if (false === $content = $this->spot->mapper("App\Content")->first([
+		"content_id" => $arguments["id"],
+		])) {
+		throw new NotFoundException("Content not found.", 404);
+};
+
+$this->spot->mapper("App\Content")->delete($content);
+
+$data["status"] = "ok";
+$data["message"] = "Content deleted";
+
+return $response->withStatus(200)
+->withHeader("Content-Type", "application/json")
+->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});

@@ -182,45 +182,6 @@ $app->patch("/students/{username}", function ($request, $response, $arguments) {
         ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-$app->put("/students/{id}", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["student.all", "student.update"])) {
-        throw new ForbiddenException("Token not allowed to update students.", 403);
-    }
-
-    /* Load existing student using provided id */
-    if (false === $student = $this->spot->mapper("App\Student")->first([
-        "id" => $arguments["id"]
-    ])) {
-        throw new NotFoundException("Student not found.", 404);
-    };
-
-    /* PUT requires If-Unmodified-Since or If-Match request header to be present. */
-    if (false === $this->cache->hasStateValidator($request)) {
-        throw new PreconditionRequiredException("PUT request is required to be conditional.", 428);
-    }
-
-    $body = $request->getParsedBody();
-
-    /* PUT request assumes full representation. If any of the properties is */
-    /* missing set them to default values by clearing the student object first. */
-    $student->clear();
-    $student->data($body);
-    $this->spot->mapper("App\Student")->save($student);
-
-    $fractal = new Manager();
-    $fractal->setSerializer(new DataArraySerializer);
-    $resource = new Item($student, new StudentTransformer);
-    $data = $fractal->createData($resource)->toArray();
-    $data["status"] = "ok";
-    $data["message"] = "Student updated";
-
-    return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
 $app->post("/about", function ($request, $response, $arguments) {
 
   
@@ -249,30 +210,6 @@ $app->post("/about", function ($request, $response, $arguments) {
     $data["status"] = "ok";
     $data["message"] = "Student updated";
     $data["body"] = $body;
-
-    return $response->withStatus(200)
-        ->withHeader("Content-Type", "application/json")
-        ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-});
-
-$app->delete("/students/{id}", function ($request, $response, $arguments) {
-
-    /* Check if token has needed scope. */
-    if (true === $this->token->hasScope(["student.all", "student.delete"])) {
-        throw new ForbiddenException("Token not allowed to delete students.", 403);
-    }
-
-    /* Load existing student using provided id */
-    if (false === $student = $this->spot->mapper("App\Student")->first([
-        "id" => $arguments["id"]
-    ])) {
-        throw new NotFoundException("Student not found.", 404);
-    };
-
-    $this->spot->mapper("App\Student")->delete($student);
-
-    $data["status"] = "ok";
-    $data["message"] = "Student deleted";
 
     return $response->withStatus(200)
         ->withHeader("Content-Type", "application/json")
