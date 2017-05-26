@@ -15,28 +15,28 @@ class EventTransformer extends Fractal\TransformerAbstract {
           'Tags'
       ];
     public function transform(Event $event) {
-        $this->params['value1'] = false;
-		$this->params['value2'] = false;
+        $this->params['bookmaked_status'] = false;
+		$this->params['participation_status'] = false;
         if(isset($this->params['type']) && $this->params['type'] == 'get'){
             $bookmarks = $event->Bookmarked;
             for ($i=0; $i < count($bookmarks); $i++) { 
                 if($bookmarks[$i]->username == $this->params['username']){
-                    $this->params['value1'] = true;
+                    $this->params['bookmaked_status'] = true;
                     break;
                 }
             }
             $participants = $event->Participants;
             for ($i=0; $i < count($participants); $i++) { 
                 if($participants[$i]->username == $this->params['username']){
-                    $this->params['value2'] = true;
+                    $this->params['participation_status'] = true;
                     break;
                 }
             }
         } else {
             $bookmarks = null;
             $participants = null;
-            $this->params['value1'] = 0;
-            $this->params['value2'] = 0;
+            $this->params['bookmaked_status'] = 0;
+            $this->params['participation_status'] = 0;
         }
         return [
             "id" => (integer) $event->event_id ?: 0,
@@ -72,11 +72,11 @@ class EventTransformer extends Fractal\TransformerAbstract {
             
             "Actions" => [
 				"Bookmarked" => [
-                    "status" => (bool) $this->params['value1'] ?: false,
+                    "status" => (bool) $this->params['bookmaked_status'] ?: false,
                     "total" =>  count($bookmarks) ?: 0,
                 ],
                 "Participants" => [
-                    "status" => (bool) $this->params['value2'] ?: false,
+                    "status" => (bool) $this->params['participation_status'] ?: false,
                     "total" =>  count($event->Participants) ?: 0,
 				]
 			],
