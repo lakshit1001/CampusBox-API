@@ -67,7 +67,7 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
-	$test = $this->token->decoded->username;
+	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 
 	if(isset($arguments['content_type_id'])){
 		$contents = $this->spot->mapper("App\Content")
@@ -101,7 +101,7 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 });
 $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 
-	$test = $this->token->decoded->username;
+	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 
 	if(isset($arguments['content_type_id'])){
 		$contents = $this->spot->mapper("App\Content")
@@ -145,7 +145,7 @@ $app->get("/contentsImage/{content_item_id}", function ($request, $response, $ar
 });
 $app->get("/contentsRandom", function ($request, $response, $arguments) {
 
-	$test = $this->token->decoded->username;
+	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 
 	
 	$contents = $this->spot->mapper("App\Content")
@@ -166,7 +166,7 @@ $app->get("/contentsRandom", function ($request, $response, $arguments) {
 });
 $app->get("/contentsTop[/{content_type_id}]", function ($request, $response, $arguments) {
 
-	$test = $this->token->decoded->username;
+	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 
 	/* Use ETag and date from Content with most recent update. */
 	if(isset($arguments['content_type_id'])){
@@ -243,7 +243,7 @@ $app->post("/contents", function ($request, $response, $arguments) {
 
 $app->get("/content/{id}", function ($request, $response, $arguments) {
 
-	$test = $this->token->decoded->username;
+	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 	/* Load existing content using provided id */
 	if (false === $content = $this->spot->mapper("App\Content")->first([
 		"content_id" => $arguments["id"],
