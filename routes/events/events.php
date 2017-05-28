@@ -23,18 +23,24 @@ use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/events", function ($request, $response, $arguments) {
 
-	$test = $this->token->decoded->username;
+	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 	$limit = isset($_GET['limit']) ? $_GET['limit'] : 2;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
-
-	$events = $this->spot->mapper("App\Event")
-	->query("SELECT * FROM `events` 
-		WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
-		ORDER BY CASE 
-		WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
-		ELSE audience
-		END
-		LIMIT " . $limit ." OFFSET " . $offset);
+	
+	if(isset($this->token->decoded->username)){
+		$events = $this->spot->mapper("App\Event")
+		->query("SELECT * FROM `events` 
+			WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
+			ORDER BY CASE 
+			WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
+			ELSE audience
+			END
+			LIMIT " . $limit ." OFFSET " . $offset);
+	} else{
+		$events = $this->spot->mapper("App\Event")
+		->query("SELECT * FROM `events`
+			LIMIT " . $limit ." OFFSET " . $offset);
+	}
 	
 	$offset += $limit;
 
