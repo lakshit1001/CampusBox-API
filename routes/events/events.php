@@ -206,6 +206,21 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
+$app->get("/eventsImage/{event_id}", function ($request, $response, $arguments) {
+
+	$event = $this->spot->mapper("App\Event")
+	->where(["event_id"=>$arguments['event_id']])
+	->first();
+
+	$new_data=explode(";",$event->image);
+	$type=$new_data[0];
+	$data=explode(",",$new_data[1]);
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", $type)
+	->write(base64_decode($data[1]));
+});
+
 
 $app->get("/event/{event_id}", function ($request, $response, $arguments) {
 
