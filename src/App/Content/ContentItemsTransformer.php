@@ -22,7 +22,7 @@ class ContentItemsTransformer extends Fractal\TransformerAbstract {
 					"id" => (integer) $content_items->content_item_id ?: 0,
 					"type" => (string) $content_items->content_item_type ?: 4,
 					"priority" => (string) $content_items->priority ?: 0,
-					"image" => (string) $content_items->image ?: null	
+					"url" => "https://campusbox.org/dist/api/public/contentsImage/" . $content_items->content_item_id
 				];
 			} else{
 				return [
