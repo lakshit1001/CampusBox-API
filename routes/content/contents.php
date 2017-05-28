@@ -5,6 +5,7 @@ use App\ContentItems;
 use App\ContentTags;
 use App\ContentTransformer;
 use App\ContentItemsTransformer;
+use App\ContentImageTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -18,47 +19,47 @@ $app->get("/contentSorted", function ($request, $response, $arguments) {
 	$user_college_id = $this->token->decoded->college_id;
 	$username= $this->token->decoded->username;
 	$content = $this->spot->mapper("App\Content")
-    ->query("SELECT
-         contents.content_id,
-         contents.created_by_username,
-         contents.timer,
-         contents.college_id,
-         contents.title,
-         contents.content_type_id,
-         student_interests.username ,
-         count(content_appreciates.content_id) as likes,
+	->query("SELECT
+		contents.content_id,
+		contents.created_by_username,
+		contents.timer,
+		contents.college_id,
+		contents.title,
+		contents.content_type_id,
+		student_interests.username ,
+		count(content_appreciates.content_id) as likes,
 
-        CASE WHEN (student_interests.username = '".$username."') 
-                    THEN 6 ELSE 0 END AS interestScore,
-        
-        CASE WHEN (contents.college_id = ".$user_college_id.") 
-                    THEN 3 ELSE 0 END AS interScore,
-        
-        CASE WHEN (followers.follower_username = '".$username."') 
-                    THEN 0 ELSE 8 END AS followScore,
-        
-        CASE WHEN content_appreciates.content_id IS NULL 
-                    THEN 0 ELSE LOG(COUNT(content_appreciates.content_id))  END AS appriciateScore
+		CASE WHEN (student_interests.username = '".$username."') 
+		THEN 6 ELSE 0 END AS interestScore,
 
-        FROM contents
-        
-        LEFT JOIN student_interests
-        ON  contents.content_type_id =student_interests.interest_id 
-        
-        LEFT JOIN followers
-        ON contents.created_by_username = followers.followed_username
-        
-        LEFT JOIN content_appreciates
-        ON contents.content_id = content_appreciates.content_id
-        
-        GROUP BY contents.content_id
-        ORDER BY interestScore+interScore+followScore DESC,contents.timer 
-    	LIMIT 3 OFFSET 0
-        ;");
+		CASE WHEN (contents.college_id = ".$user_college_id.") 
+		THEN 3 ELSE 0 END AS interScore,
 
-    return $response->withStatus(200)
-    ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		CASE WHEN (followers.follower_username = '".$username."') 
+		THEN 0 ELSE 8 END AS followScore,
+
+		CASE WHEN content_appreciates.content_id IS NULL 
+		THEN 0 ELSE LOG(COUNT(content_appreciates.content_id))  END AS appriciateScore
+
+		FROM contents
+
+		LEFT JOIN student_interests
+		ON  contents.content_type_id =student_interests.interest_id 
+
+		LEFT JOIN followers
+		ON contents.created_by_username = followers.followed_username
+
+		LEFT JOIN content_appreciates
+		ON contents.content_id = content_appreciates.content_id
+
+		GROUP BY contents.content_id
+		ORDER BY interestScore+interScore+followScore DESC,contents.timer 
+		LIMIT 3 OFFSET 0
+		;");
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 });
 $app->get("/contents[/{content_type_id}]", function ($request, $response, $arguments) {
@@ -128,13 +129,27 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+$app->get("/contentsImage/{content_item_id}", function ($request, $response, $arguments) {
+
+	$content = $this->spot->mapper("App\ContentItems")
+	->where(["content_item_id"=>$arguments['content_item_id']])
+	->first();
+
+	$new_data=explode(";",$content->image);
+	$type=$new_data[0];
+	$data=explode(",",$new_data[1]);
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", $type)
+	->write(base64_decode($data[1]));
+});
 $app->get("/contentsRandom", function ($request, $response, $arguments) {
 
 	$test = $this->token->decoded->username;
 
 	
-		$contents = $this->spot->mapper("App\Content")
-    ->query("SELECT * from contents ORDER BY RAND() limit 3"); 
+	$contents = $this->spot->mapper("App\Content")
+	->query("SELECT * from contents ORDER BY RAND() limit 3"); 
 
 	/* Serialize the response data. */
 	$fractal = new Manager();
