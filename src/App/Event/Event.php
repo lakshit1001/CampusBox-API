@@ -15,6 +15,7 @@ class Event extends \Spot\Entity {
 		"created_by_username" => ["type" => "string", "required" => true],
 		"title" => ["type" => "string", "required" => true],
 		"subtitle" => ["type" => "string"],
+		"loc_type" => ["type" => "boolean"],
 		"venue" => ["type" => "string", "required" => true],
 		"description" => ["type" => "string", "required" => true],
 		"contactperson1" => ["type" => "integer"],
