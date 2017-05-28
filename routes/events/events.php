@@ -28,14 +28,14 @@ $app->get("/events", function ($request, $response, $arguments) {
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
 	$events = $this->spot->mapper("App\Event")
-		->query("SELECT * FROM `events` 
-			WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
-			ORDER BY CASE 
-				WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
-		    	ELSE audience
-			END
-			LIMIT " . $limit ." OFFSET " . $offset);
-		
+	->query("SELECT * FROM `events` 
+		WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
+		ORDER BY CASE 
+		WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
+		ELSE audience
+		END
+		LIMIT " . $limit ." OFFSET " . $offset);
+	
 	$offset += $limit;
 
 	/* Serialize the response data. */
@@ -65,14 +65,14 @@ $app->get("/minievents", function ($request, $response, $arguments) {
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
 	$events = $this->spot->mapper("App\Event")
-		->query("SELECT * FROM `events` 
-			WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
-			ORDER BY CASE 
-				WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
-		    	ELSE audience
-			END
-			LIMIT " . $limit ." OFFSET " . $offset);
-		
+	->query("SELECT * FROM `events` 
+		WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
+		ORDER BY CASE 
+		WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
+		ELSE audience
+		END
+		LIMIT " . $limit ." OFFSET " . $offset);
+	
 	$offset += $limit;
 
 	/* Serialize the response data. */
@@ -181,7 +181,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	if(1){
 
 		$events = $this->spot->mapper("App\Event")
-		    ->query("SELECT * from events ORDER BY RAND() limit 2"); 
+		->query("SELECT * from events ORDER BY RAND() limit 2"); 
 
 	} else {
 		$events = $this->spot->mapper("App\Event")
