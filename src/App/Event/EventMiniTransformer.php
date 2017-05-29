@@ -65,7 +65,7 @@ class EventMiniTransformer extends Fractal\TransformerAbstract {
         "price" => (integer) $event->price ?: 0,
         "image" =>"http://campusbox.org/dist/api/public/eventsImage/".$event->event_id,
         "college_id" => (integer) $event->college_id ?: 0,
-        "audience" => (string) $event->audience ?: null,
+        "audience" => (integer) $event->audience ?: null,
         "participants" => [
         "status" => (int) $this->params['state'] ?: 0,
         "total" =>  count($participants) ?: 0,
