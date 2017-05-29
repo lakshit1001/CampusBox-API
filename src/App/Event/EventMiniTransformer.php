@@ -10,9 +10,6 @@ class EventMiniTransformer extends Fractal\TransformerAbstract {
     function __construct($params = []) {
         $this->params = $params;
     }
-    protected $defaultIncludes = [
-    'tags'
-    ];
 
     public function transform(Event $event) {
         $this->params['state'] = 0;             // State implies state of going or interested
@@ -119,10 +116,5 @@ class EventMiniTransformer extends Fractal\TransformerAbstract {
         // "self" => "/events/{$event->id}",
         // ],
         ];
-    }
-    public function includetags(Event $event) {
-        $tags = $event->Tags;
-
-        return $this->collection($tags, new EventTagsTransformer);
     }
 }
