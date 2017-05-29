@@ -139,7 +139,7 @@ $app->get("/contentsImage/{content_item_id}", function ($request, $response, $ar
 	$type=$new_data[0];
 	$data=explode(",",$new_data[1]);
 
-	return $response->withStatus(200)
+	return $response->withStatus(304)
 	->withHeader("Content-Type", $type)
 	->write(base64_decode($data[1]));
 });
