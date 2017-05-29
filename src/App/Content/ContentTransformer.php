@@ -85,8 +85,6 @@ class ContentTransformer extends Fractal\TransformerAbstract {
             //             "link" => (integer) $content->Tag['tag_id'] ?: 0,
             //              ]
             //      ],
-
-                "total" => (integer) $content->created_by_username ?: 0,
             "links" => [
                 "self" => "/contents/{$content->id}",
             ],

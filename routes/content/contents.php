@@ -5,7 +5,6 @@ use App\ContentItems;
 use App\ContentTags;
 use App\ContentTransformer;
 use App\ContentItemsTransformer;
-use App\ContentImageTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -139,7 +138,7 @@ $app->get("/contentsImage/{content_item_id}", function ($request, $response, $ar
 	$type=$new_data[0];
 	$data=explode(",",$new_data[1]);
 
-	return $response->withStatus(304)
+	return $response->withStatus(200)
 	->withHeader("Content-Type", $type)
 	->write(base64_decode($data[1]));
 });
