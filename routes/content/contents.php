@@ -6,6 +6,7 @@ use App\ContentTags;
 use App\ContentTransformer;
 use App\ContentItemsTransformer;
 use App\ContentImageTransformer;
+use App\ContentAppreciateTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -142,6 +143,25 @@ $app->get("/contentsImage/{content_item_id}", function ($request, $response, $ar
 	return $response->withStatus(304)
 	->withHeader("Content-Type", $type)
 	->write(base64_decode($data[1]));
+});
+$app->get("/contentAppreciates/{content_id}", function ($request, $response, $arguments) {
+
+	$content = $this->spot->mapper("App\ContentAppreciate")
+	->all()
+	->where(["content_id"=>$arguments['content_id']]);
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+	$resource = new Collection($content, new ContentAppreciateTransformer());
+	$data = $fractal->createData($resource)->toArray();
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 $app->get("/contentsRandom", function ($request, $response, $arguments) {
 
