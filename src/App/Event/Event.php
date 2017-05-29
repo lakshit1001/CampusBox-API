@@ -17,6 +17,8 @@ class Event extends \Spot\Entity {
 		"subtitle" => ["type" => "string"],
 		"loc_type" => ["type" => "boolean"],
 		"venue" => ["type" => "string", "required" => true],
+		"city" => ["type" => "string"],
+		"state" => ["type" => "string"],
 		"description" => ["type" => "string", "required" => true],
 		"contactperson1" => ["type" => "integer"],
 		"contactperson2" => ["type" => "integer"],
