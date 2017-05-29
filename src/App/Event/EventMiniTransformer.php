@@ -38,10 +38,8 @@ class EventMiniTransformer extends Fractal\TransformerAbstract {
              * True means Offline event and city of the event's location is sent
              * False means Online event and base domain of the  event's link is sent
              */
-            if ((bool)$event->loc_type) {
-                $loc = explode(',', $event->venue);
-                $this->params['location_data'] = (string) end($loc) ?: null;
-            }
+            if ((bool)$event->loc_type) 
+                $this->params['location_data'] = (string) $event->city ?: null;
             else{
                 $pieces = parse_url($event->link);
                 $domain = isset($pieces['host']) ? $pieces['host'] : '';
