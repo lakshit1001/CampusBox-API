@@ -18,7 +18,7 @@ class ContentAppreciate extends \Spot\Entity {
 
 			"content_appreciate_id" => ["type" => "integer", "unsigned" => true, "primary" => true, "autoincrement" => true],
 			"content_id" => ["type" => "integer", "unsigned" => true],
-			"username" => ["type" => "string"],
+			"username" => ["type" => "string", "required" => true],
 			"timer" => ["type" => "datetime"],
 		];
 	}
@@ -49,7 +49,8 @@ class ContentAppreciate extends \Spot\Entity {
 	public static function relations(MapperInterface $mapper, EntityInterface $entity) {
 		return [
 			'Content' => $mapper->belongsTo($entity, 'App\Content', 'content_id'),
-			'Student' => $mapper->belongsTo($entity, 'App\Content', 'username')
+			'Appreciator' => $mapper->belongsTo($entity, 'App\Student', 'username')
+
 		];
 	}
 }

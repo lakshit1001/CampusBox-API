@@ -76,6 +76,8 @@ class Student extends \Spot\Entity {
 		'Follower' => $mapper->hasManyThrough($entity, 'App\Student', 'App\StudentFollow', 'follower_username', 'followed_username'),
 		'AttendingEvents' => $mapper->hasManyThrough($entity, 'App\Event', 'App\EventRsvp', 'event_id', 'username'),
 		'BookmarkedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentBookmarks', 'content_id', 'username'),
+		'AppreciatedContents' => $mapper->hasManyThrough($entity, 'App\Content', 'App\ContentAppreciate', 'content_id', 'username'),
+		'Appreciates' => $mapper->hasMany($entity, 'App\ContentAppreciate', 'username')
 		];
 	}
 }

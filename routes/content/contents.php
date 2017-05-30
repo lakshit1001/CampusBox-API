@@ -5,6 +5,7 @@ use App\ContentItems;
 use App\ContentTags;
 use App\ContentTransformer;
 use App\ContentItemsTransformer;
+use App\ContentAppreciateTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
 use Exception\PreconditionFailedException;
@@ -19,42 +20,42 @@ $app->get("/contentSorted", function ($request, $response, $arguments) {
 	$username= $this->token->decoded->username;
 	$content = $this->spot->mapper("App\Content")
 	->query("SELECT
-		contents.content_id,
-		contents.created_by_username,
-		contents.timer,
-		contents.college_id,
-		contents.title,
-		contents.content_type_id,
-		student_interests.username ,
-		count(content_appreciates.content_id) as likes,
+	        contents.content_id,
+	        contents.created_by_username,
+	        contents.timer,
+	        contents.college_id,
+	        contents.title,
+	        contents.content_type_id,
+	        student_interests.username ,
+	        count(content_appreciates.content_id) as likes,
 
-		CASE WHEN (student_interests.username = '".$username."') 
-		THEN 6 ELSE 0 END AS interestScore,
+	        CASE WHEN (student_interests.username = '".$username."') 
+	        THEN 6 ELSE 0 END AS interestScore,
 
-		CASE WHEN (contents.college_id = ".$user_college_id.") 
-		THEN 3 ELSE 0 END AS interScore,
+	        CASE WHEN (contents.college_id = ".$user_college_id.") 
+	        THEN 3 ELSE 0 END AS interScore,
 
-		CASE WHEN (followers.follower_username = '".$username."') 
-		THEN 0 ELSE 8 END AS followScore,
+	        CASE WHEN (followers.follower_username = '".$username."') 
+	        THEN 0 ELSE 8 END AS followScore,
 
-		CASE WHEN content_appreciates.content_id IS NULL 
-		THEN 0 ELSE LOG(COUNT(content_appreciates.content_id))  END AS appriciateScore
+	        CASE WHEN content_appreciates.content_id IS NULL 
+	        THEN 0 ELSE LOG(COUNT(content_appreciates.content_id))  END AS appriciateScore
 
-		FROM contents
+	        FROM contents
 
-		LEFT JOIN student_interests
-		ON  contents.content_type_id =student_interests.interest_id 
+	        LEFT JOIN student_interests
+	        ON  contents.content_type_id =student_interests.interest_id 
 
-		LEFT JOIN followers
-		ON contents.created_by_username = followers.followed_username
+	        LEFT JOIN followers
+	        ON contents.created_by_username = followers.followed_username
 
-		LEFT JOIN content_appreciates
-		ON contents.content_id = content_appreciates.content_id
+	        LEFT JOIN content_appreciates
+	        ON contents.content_id = content_appreciates.content_id
 
-		GROUP BY contents.content_id
-		ORDER BY interestScore+interScore+followScore DESC,contents.timer 
-		LIMIT 3 OFFSET 0
-		;");
+	        GROUP BY contents.content_id
+	        ORDER BY interestScore+interScore+followScore DESC,contents.timer 
+	        LIMIT 3 OFFSET 0
+	        ;");
 
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")
@@ -142,6 +143,25 @@ $app->get("/contentsImage/{content_item_id}", function ($request, $response, $ar
 	->withHeader("Content-Type", $type)
 	->write(base64_decode($data[1]));
 });
+$app->get("/contentAppreciates/{content_id}", function ($request, $response, $arguments) { 
+
+	$appreciates = $this->spot->mapper("App\ContentAppreciate") 
+	->all() 
+	->where(["content_id"=>$arguments['content_id']]); 
+
+	/* Serialize the response data. */ 
+	$fractal = new Manager(); 
+	$fractal->setSerializer(new DataArraySerializer); 
+	if (isset($_GET['include'])) { 
+		$fractal->parseIncludes($_GET['include']); 
+	} 
+	$resource = new Collection($appreciates, new ContentAppreciateTransformer()); 
+	$data = $fractal->createData($resource)->toArray(); 
+
+	return $response->withStatus(200) 
+	->withHeader("Content-Type", "application/json") 
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)); 
+}); 
 $app->get("/contentsRandom", function ($request, $response, $arguments) {
 
 	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
@@ -245,8 +265,8 @@ $app->get("/content/{id}", function ($request, $response, $arguments) {
 	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 	/* Load existing content using provided id */
 	if (false === $content = $this->spot->mapper("App\Content")->first([
-		"content_id" => $arguments["id"],
-		])) 
+	                                                                   "content_id" => $arguments["id"],
+	                                                                   ])) 
 	{
 		throw new NotFoundException("Content not found.", 404);
 	};
@@ -349,8 +369,8 @@ $app->delete("/content/{id}", function ($request, $response, $arguments) {
 
 	/* Load existing event using provided id */
 	if (false === $content = $this->spot->mapper("App\Content")->first([
-		"content_id" => $arguments["id"],
-		])) {
+	                                                                   "content_id" => $arguments["id"],
+	                                                                   ])) {
 		throw new NotFoundException("Content not found.", 404);};
 
 	$this->spot->mapper("App\Content")->delete($content);
