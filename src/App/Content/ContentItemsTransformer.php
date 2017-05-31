@@ -28,11 +28,9 @@ class ContentItemsTransformer extends Fractal\TransformerAbstract {
 				return [
 					"id" => (integer) $content_items->content_item_id ?: 0,
 					"type" => (string) $content_items->content_item_type ?: 4,
-					"priority" => (string) $content_items->priority ?: 0,
-					"embed" => [
-					"html" => (string) $content_items->embed ?: null,
-					"url" => (string) $content_items->embed_url ?: 0,
-					]
+					"priority" => (integer) $content_items->priority ?: 0,
+					"embedUrl" => (string) $content_items->embed_url ?: null,
+					"sourceUrl" => (string) $content_items->embed ?: null,
 				];
 			}
 		

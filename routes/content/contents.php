@@ -2,9 +2,11 @@
 
 use App\Content;
 use App\ContentItems;
+use App\ContentType;
 use App\ContentTags;
 use App\ContentTransformer;
 use App\ContentItemsTransformer;
+use App\ContentMiniTransformer;
 use App\ContentAppreciateTransformer;
 use Exception\ForbiddenException;
 use Exception\NotFoundException;
@@ -324,6 +326,82 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 	$content['created_by_username'] =  $this->token->decoded->username;
 	$content['college_id'] =  $this->token->decoded->college_id;
 	$content['title'] = $body['title'];
+
+	$content_type = $body['type'];
+	$content['content_type_id'] = $content_type;
+
+	$item = $this->spot->mapper("App\ContentType")
+	->query("SELECT * FROM `content_types` 
+	        WHERE `content_type_id` = ".$content_type)
+	->first();
+
+	$view_type_id = $item->default_view_type;
+	$data["content_type"] = $content_type;
+	$data["before"] = $view_type_id;
+
+	$content['view_type'] = $view_type_id;
+	$newContent = new Content($content);
+	$mapper = $this->spot->mapper("App\Content");
+	$mapper->save($newContent);
+
+	$is_changed = false;
+
+	for ($i=0; $i < count($body['items']); $i++) {
+
+		$media_type = $body['items'][$i]['mediaType'];
+
+		if ((bool)$item->has_multiple_view_types && !$is_changed) {
+			if ($view_type_id == 1 && ($media_type == 'image' || $media_type == 'cover')){
+				$view_type_id = 0;
+				$is_changed = true;
+			} elseif ($view_type_id == 5 && 
+			          ($media_type == 'youtube' || $media_type == 'video' || $media_type == 'vimeo')){
+				$view_type_id = 4;
+				$is_changed = true;
+			}
+		}
+
+		$items['content_id'] = $newContent->content_id;
+		$items['description'] = isset($body['items'][$i]['text'])?$body['items'][$i]['text']:NULL;
+		$items['content_item_type'] = $media_type;
+		$items['priority'] = $i;
+		$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:NULL;
+		$items['embed'] = isset($body['items'][$i]['embed'])?$body['items'][$i]['embed']:NULL;
+		$items['embed_url'] = isset($body['items'][$i]['embedUrl'])?$body['items'][$i]['embedUrl']:NULL;
+		$itemsElement = new ContentItems($items);
+		$this->spot->mapper("App\ContentItems")->save($itemsElement);
+	}
+
+	for ($i=0; $i < count($body['tags']); $i++) {
+		$tags['content_id'] = $data['data']['id'];
+		$tags['name'] = $body['tags'][$i]['name'];
+		$tagsElement = new ContentTags($tags);
+		$this->spot->mapper("App\ContentTags")->save($tagsElement);
+	}
+
+	$done = false;
+
+	if ($is_changed) {
+		$data["after"] = $view_type_id;
+		$newContent->view_type = $view_type_id;
+		$done = $mapper->update($newContent);
+	}
+
+	/* Serialize the response data. */
+	$data["isChanged"] = $is_changed;
+	$data["id"] = $newContent->content_id;
+	$data["message"] = 'Added Successfully';
+	return $response->withStatus(201)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+
+$app->post("/addNew", function ($request, $response, $arguments) {
+	$body = $request->getParsedBody();
+
+	$content['created_by_username'] =  $this->token->decoded->username;
+	$content['college_id'] =  $this->token->decoded->college_id;
+	$content['title'] = $body['title'];
 	$content['content_type_id'] = $body['type'];
 	
 	$newContent = new Content($content);
@@ -358,6 +436,7 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+
 $app->patch("/content/{id}", function ($request, $response, $arguments) {
 
 	// /* Check if token has needed scope. */
