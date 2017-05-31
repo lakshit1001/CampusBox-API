@@ -73,6 +73,7 @@ class Event extends \Spot\Entity {
 			// 'Images' => $mapper->hasMany($entity, 'App\EventImage', 'event_id'),
 			//'Updates' => $mapper->hasMany($entity, 'App\EventUpdates', 'event_id'),
 		'Participants' => $mapper->hasManyThrough($entity, 'App\Student', 'App\EventRsvp', 'username', 'event_id'),
+		'Participations' => $mapper->hasMany($entity, 'App\EventRsvp', 'event_id'),
 			// 'Likes' => $mapper->hasManyThrough($entity, 'App\Student', 'App\EventLikes', 'username', 'event_id'),
 			// 'Bookmarked' => $mapper->hasManyThrough($entity, 'App\Student', 'App\EventBookmarks', 'username', 'event_id'),
 			//'StudentsBookmarked' => $mapper->hasMany($entity, 'App\EventBookmarks', 'event_id'),

@@ -16,7 +16,8 @@ class EventMiniTransformer extends Fractal\TransformerAbstract {
         $participants = null;
         if(isset($this->params['type']) && $this->params['type'] == 'get'){
 
-            $participants = $event->Participants;
+            $participants = $event->Participations;
+            $this->params['yo'] = count($participants);
             for ($i=0; $i < count($participants); $i++) { 
                 if($participants[$i]->username == $this->params['username']){
 
@@ -28,6 +29,7 @@ class EventMiniTransformer extends Fractal\TransformerAbstract {
                     break;
                 }
             }
+
 
             /**
              * Decides if event is an online event or offline
@@ -63,10 +65,7 @@ class EventMiniTransformer extends Fractal\TransformerAbstract {
         "image" =>"http://campusbox.org/dist/api/public/eventsImage/".$event->event_id,
         "college_id" => (integer) $event->college_id ?: 0,
         "audience" => (integer) $event->audience ?: null,
-        "participants" => [
-        "status" => (int) $this->params['state'] ?: 0,
-        "total" =>  count($participants) ?: 0,
-        ],
+        "participation_state" => (int) $this->params['state'] ?: 0,
         "location" => [
         "type" => (bool)$event->loc_type,
         "data" => (string) $this->params['location_data'] ?: null
@@ -75,46 +74,6 @@ class EventMiniTransformer extends Fractal\TransformerAbstract {
         "day" => $this->params['date'] ?: null,
         "month" => $this->params['month'] ?: null
         ],
-
-        // "deails" => [
-        // "venue" => (string) $event->venue ?: null,
-        // "team" => (integer) $event->price ?: 0,
-        // "price" => (integer) $event->price ?: 0,
-        // "description" => (string) $event->description ?: null,
-        // "rules" => (string) $event->description ?: null,
-        // ],
-        // "image" =>(string) $event->image ?: null,
-        // "organiser" => [
-        // "name" => (string) $event->organiser_name ?: null,
-        // "link" =>(string) $event->organiser_link ?: null,
-        // "phone" =>(string) $event->organiser_phone ?: null,
-        // ],
-        // "timings" => [
-        // "from" => [
-        // "date"=>(string) $event->from_date ?: null,
-        // "time" =>(string) $event->from_time ?: null,
-        // "period"=>(integer) $event->from_period ?: null,
-        // ],
-        // "to" => [
-        // "date"=> (string) $event->to_date ?: null,
-        // "time" =>(string) $event->to_time ?: null,
-        // "period"=>(integer) $event->to_period ?: null,
-        // ],
-        // ],
-
-
-        // "created" => [
-        // "by" => [
-        // "name" => (string) $event->Owner['name'] ?: null,
-        // "username" => (integer) $event->Owner['username'] ?: 0,
-        // "image" => (string) $event->Owner['image'] ?: null,
-        // ],
-        // "at" => $event->time_created ?: 0,
-        // ],
-
-        // "links" => [
-        // "self" => "/events/{$event->id}",
-        // ],
         ];
     }
 }
