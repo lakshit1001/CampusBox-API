@@ -227,7 +227,7 @@ $app->get("/eventsImage/{event_id}", function ($request, $response, $arguments) 
 	$type=$new_data[0];
 	$data=explode(",",$new_data[1]);
 
-	return $response->withStatus(304)
+	return $response->withStatus(200)
 	->withHeader("Content-Type", $type)
 	->write(base64_decode($data[1]));
 });
