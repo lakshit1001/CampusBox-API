@@ -129,6 +129,36 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+$app->get("/contentsList", function ($request, $response, $arguments) {
+
+	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
+
+	if(isset($arguments['content_type_id'])){
+		$contents = $this->spot->mapper("App\Content")
+		->all()
+		->where(["content_type_id"=>$arguments['content_type_id']])
+		->order(["timer" => "DESC"]);
+	}else{
+
+		$contents = $this->spot->mapper("App\Content")
+		->all()
+		->limit(6)
+		->order(["timer" => "DESC"]);
+	}
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+	$resource = new Collection($contents, new ContentMiniTransformer([ 'type' => 'get', 'username' => $test]));
+	$data = $fractal->createData($resource)->toArray();
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
 $app->get("/contentsImage/{content_item_id}", function ($request, $response, $arguments) {
 
 	$content = $this->spot->mapper("App\ContentItems")
