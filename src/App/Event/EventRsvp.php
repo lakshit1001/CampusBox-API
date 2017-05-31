@@ -20,6 +20,7 @@ class EventRsvp extends \Spot\Entity {
 			"event_id" => ["type" => "integer", "unsigned" => true],
 			"username" => ["type" => "string", "required" => true],
 			"timer" => ["type" => "datetime"],
+			"state" => ["type" => "boolean"]
 		];
 	}
 

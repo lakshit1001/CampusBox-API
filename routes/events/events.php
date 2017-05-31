@@ -3,7 +3,7 @@
 use App\Event;
 use App\EventTags;
 use App\EventTransformer;
-use App\EventHomeMiniTransformer;
+use App\EventMiniTransformer;
 use App\EventDashboardTransformer;
 use App\EventRsvp;
 use App\EventRsvpTransformer;
@@ -26,22 +26,22 @@ $app->get("/events", function ($request, $response, $arguments) {
 	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 	$limit = isset($_GET['limit']) ? $_GET['limit'] : 2;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
-	
+
 	if(isset($this->token->decoded->username)){
 		$events = $this->spot->mapper("App\Event")
 		->query("SELECT * FROM `events` 
-			WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
-			ORDER BY CASE 
-			WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
-			ELSE audience
-			END
-			LIMIT " . $limit ." OFFSET " . $offset);
+		        WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
+		        ORDER BY CASE 
+		        WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
+		        ELSE audience
+		        END
+		        LIMIT " . $limit ." OFFSET " . $offset);
 	} else{
 		$events = $this->spot->mapper("App\Event")
 		->query("SELECT * FROM `events`
-			LIMIT " . $limit ." OFFSET " . $offset);
+		        LIMIT " . $limit ." OFFSET " . $offset);
 	}
-	
+
 	$offset += $limit;
 
 	/* Serialize the response data. */
@@ -66,19 +66,25 @@ $app->get("/events", function ($request, $response, $arguments) {
 
 $app->get("/minievents", function ($request, $response, $arguments) {
 
-	$test = $this->token->decoded->username;
+	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 	$limit = isset($_GET['limit']) ? $_GET['limit'] : 2;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
-	$events = $this->spot->mapper("App\Event")
-	->query("SELECT * FROM `events` 
-		WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
-		ORDER BY CASE 
-		WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
-		ELSE audience
-		END
-		LIMIT " . $limit ." OFFSET " . $offset);
-	
+	if(isset($this->token->decoded->username)){
+		$events = $this->spot->mapper("App\Event")
+		->query("SELECT * FROM `events` 
+		        WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
+		        ORDER BY CASE 
+		        WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
+		        ELSE audience
+		        END
+		        LIMIT " . $limit ." OFFSET " . $offset);
+	} else{
+		$events = $this->spot->mapper("App\Event")
+		->query("SELECT * FROM `events`
+		        LIMIT " . $limit ." OFFSET " . $offset);
+	}
+
 	$offset += $limit;
 
 	/* Serialize the response data. */
@@ -89,7 +95,7 @@ $app->get("/minievents", function ($request, $response, $arguments) {
 		$fractal->parseIncludes($_GET['include']);
 	}
 
-	$resource = new Collection($events, new EventHomeMiniTransformer(['username' => $test, 'type' => 'get']));
+	$resource = new Collection($events, new EventMiniTransformer(['username' => $test, 'type' => 'get']));
 	$data = $fractal->createData($resource)->toArray();
 	
 	$data['meta']['offset'] = $offset;
@@ -205,7 +211,7 @@ $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 	if (isset($_GET['include'])) {
 		$fractal->parseIncludes($_GET['include']);
 	}
-	$resource = new Collection($events, new EventDashboardTransformer(['username' => $test, 'type' => 'get']));
+	$resource = new Collection($events, new EventTransformer(['username' => $test, 'type' => 'get']));
 	$data = $fractal->createData($resource)->toArray();
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")
@@ -222,7 +228,7 @@ $app->get("/eventsImage/{event_id}", function ($request, $response, $arguments) 
 	$type=$new_data[0];
 	$data=explode(",",$new_data[1]);
 
-	return $response->withStatus(200)
+	return $response->withStatus(304)
 	->withHeader("Content-Type", $type)
 	->write(base64_decode($data[1]));
 });
@@ -400,8 +406,8 @@ $app->patch("/events/{id}", function ($request, $response, $arguments) {
 
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"event_id" => $arguments["id"],
-		])) {
+	                                                               "event_id" => $arguments["id"],
+	                                                               ])) {
 		throw new NotFoundException("Event not found.", 404);
 };
 
@@ -445,8 +451,8 @@ $app->put("/events/{id}", function ($request, $response, $arguments) {
 
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"id" => $arguments["id"],
-		])) {
+	                                                               "id" => $arguments["id"],
+	                                                               ])) {
 		throw new NotFoundException("Event not found.", 404);
 };
 
@@ -489,8 +495,8 @@ $app->delete("/event/{id}", function ($request, $response, $arguments) {
 
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
-		"event_id" => $arguments["id"],
-		])) {
+	                                                               "event_id" => $arguments["id"],
+	                                                               ])) {
 		throw new NotFoundException("Event not found.", 404);
 };
 
