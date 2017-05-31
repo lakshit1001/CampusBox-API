@@ -493,19 +493,33 @@ return $response->withStatus(200)
 
 $app->delete("/event/{id}", function ($request, $response, $arguments) {
 
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
+
+	if (!$token) {
+		throw new ForbiddenException("Token not found", 404);
+	}
+
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
 	                                                               "event_id" => $arguments["id"],
-	                                                               ])) {
+	                                                               ])) 
+	{
 		throw new NotFoundException("Event not found.", 404);
-};
+	};
 
-$this->spot->mapper("App\Event")->delete($event);
+	if ($event->created_by_username != $token->username) {
+		throw new ForbiddenException("Only the owner can delete the event", 404);
+	}
 
-$data["status"] = "ok";
-$data["message"] = "Event deleted";
+	$this->spot->mapper("App\Event")->delete($event);
 
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+	$data["status"] = "ok";
+	$data["message"] = "Event deleted";
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });

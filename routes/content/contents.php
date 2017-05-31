@@ -397,11 +397,24 @@ $app->patch("/content/{id}", function ($request, $response, $arguments) {
 
 $app->delete("/content/{id}", function ($request, $response, $arguments) {
 
-	/* Load existing event using provided id */
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
+
+	if (!$token) {
+		throw new ForbiddenException("Token not found", 404);
+	}
+
+	/* Load existing content using provided id */
 	if (false === $content = $this->spot->mapper("App\Content")->first([
 	                                                                   "content_id" => $arguments["id"],
 	                                                                   ])) {
 		throw new NotFoundException("Content not found.", 404);};
+
+	if ($content->created_by_username != $token->username) {
+		throw new ForbiddenException("Only the owner can delete the content", 404);
+	}
 
 	$this->spot->mapper("App\Content")->delete($content);
 
