@@ -131,18 +131,21 @@ $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 });
 $app->get("/contentsList", function ($request, $response, $arguments) {
 
+	$limit = isset($_GET['limit']) ? $_GET['limit'] : 3;
+	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
 
 	if(isset($arguments['content_type_id'])){
 		$contents = $this->spot->mapper("App\Content")
 		->all()
 		->where(["content_type_id"=>$arguments['content_type_id']])
+		->limit($limit, $offset)
 		->order(["timer" => "DESC"]);
 	}else{
 
 		$contents = $this->spot->mapper("App\Content")
 		->all()
-		->limit(6)
+		->limit($limit, $offset)
 		->order(["timer" => "DESC"]);
 	}
 
@@ -154,6 +157,9 @@ $app->get("/contentsList", function ($request, $response, $arguments) {
 	}
 	$resource = new Collection($contents, new ContentMiniTransformer([ 'type' => 'get', 'username' => $test]));
 	$data = $fractal->createData($resource)->toArray();
+
+	$data['meta']['offset'] = $offset;
+	$data['meta']['limit'] = $limit;
 
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")
