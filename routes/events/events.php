@@ -5,6 +5,7 @@ use App\EventTags;
 use App\EventTransformer;
 use App\EventMiniTransformer;
 use App\EventDashboardTransformer;
+use Slim\Middleware\JwtAuthentication;
 use App\EventRsvp;
 use App\EventRsvpTransformer;
 use App\EventBookmarks;
@@ -23,20 +24,24 @@ use League\Fractal\Serializer\DataArraySerializer;
 
 $app->get("/events", function ($request, $response, $arguments) {
 
-	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
 	$limit = isset($_GET['limit']) ? $_GET['limit'] : 2;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
-	if(isset($this->token->decoded->username)){
+	if($token){
+		$test -> $token->username;
 		$events = $this->spot->mapper("App\Event")
 		->query("SELECT * FROM `events` 
-		        WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
+		        WHERE college_id = " . $token->college_id . " OR audience = 1
 		        ORDER BY CASE 
-		        WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
+		        WHEN college_id = " . $token->college_id . " THEN college_id
 		        ELSE audience
 		        END
 		        LIMIT " . $limit ." OFFSET " . $offset);
-	} else{
+	} else {
 		$events = $this->spot->mapper("App\Event")
 		->query("SELECT * FROM `events`
 		        LIMIT " . $limit ." OFFSET " . $offset);
@@ -66,20 +71,25 @@ $app->get("/events", function ($request, $response, $arguments) {
 
 $app->get("/minievents", function ($request, $response, $arguments) {
 
-	$test = isset($this->token->decoded->username)?$this->token->decoded->username:'0';
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
 	$limit = isset($_GET['limit']) ? $_GET['limit'] : 2;
 	$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 
-	if(isset($this->token->decoded->username)){
+	if ($token) {
+		$test = $token->username;
 		$events = $this->spot->mapper("App\Event")
-		->query("SELECT * FROM `events` 
-		        WHERE college_id = " . $this->token->decoded->college_id . " OR audience = 1
-		        ORDER BY CASE 
-		        WHEN college_id = " . $this->token->decoded->college_id . " THEN college_id
-		        ELSE audience
-		        END
-		        LIMIT " . $limit ." OFFSET " . $offset);
+		->query("SELECT * FROM `events` "
+		        ."WHERE college_id = " . $token->college_id . " OR audience = 1 "
+		        ."ORDER BY CASE "
+		        ."WHEN college_id = " . $token->college_id . " THEN college_id "
+		        ."ELSE audience "
+		        ."END "
+		        ."LIMIT " . $limit ." OFFSET " . $offset);
 	} else{
+		$test = '0';
 		$events = $this->spot->mapper("App\Event")
 		->query("SELECT * FROM `events`
 		        LIMIT " . $limit ." OFFSET " . $offset);
@@ -101,7 +111,6 @@ $app->get("/minievents", function ($request, $response, $arguments) {
 	$data['meta']['offset'] = $offset;
 	$data['meta']['limit'] = $limit;
 
-
 	return $response->withStatus(200)
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
@@ -110,10 +119,17 @@ $app->get("/minievents", function ($request, $response, $arguments) {
 
 $app->get("/eventsTop", function ($request, $response, $arguments) {
 
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
 	$currentCursor = 0;
 	$previousCursor = 0;
 	$limit = 4;
-	$test = $this->token->decoded->username;
+	if ($token) 
+		$test = $token->username;
+	else
+		$test = '0';
 
 	/* Use ETag and date from Event with most recent update. */
 	$first = $this->spot->mapper("App\Event")
@@ -121,15 +137,6 @@ $app->get("/eventsTop", function ($request, $response, $arguments) {
 	->order(["time_created" => "DESC"])
 	->first();
 
-	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
-	// if ($first) {
-	// 	$response = $this->cache->withEtag($response, $first->etag());
-	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
-	// }
-
-	/* If-Modified-Since and If-None-Match request header handling. */
-	/* Heads up! Apache removes previously set Last-Modified header */
-	/* from 304 Not Modified responses. */
 	if ($this->cache->isNotModified($request, $response)) {
 		return $response->withStatus(304);
 	}
@@ -166,26 +173,18 @@ $app->get("/eventsTop", function ($request, $response, $arguments) {
 
 $app->get("/eventsDashboard", function ($request, $response, $arguments) {
 
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
 	$currentCursor = 0;
 	$previousCursor = 0;
 	$limit = 2;
-	$test = $this->token->decoded->username;
+	if ($token) 
+		$test = $token->username;
+	else
+		$test = '0';
 
-	/* Use ETag and date from Event with most recent update. */
-	// $first = $this->spot->mapper("App\Event")
-	// ->all()
-	// ->order(["time_created" => "DESC"])
-	// ->first();
-
-	/* Add Last-Modified and ETag headers to response when atleast on event exists. */
-	// if ($first) {
-	// 	$response = $this->cache->withEtag($response, $first->etag());
-	// 	$response = $this->cache->withLastModified($response, $first->timestamp());
-	// }
-
-	/* If-Modified-Since and If-None-Match request header handling. */
-	/* Heads up! Apache removes previously set Last-Modified header */
-	/* from 304 Not Modified responses. */
 	if ($this->cache->isNotModified($request, $response)) {
 		return $response->withStatus(304);
 	}
@@ -236,10 +235,17 @@ $app->get("/eventsImage/{event_id}", function ($request, $response, $arguments) 
 
 $app->get("/event/{event_id}", function ($request, $response, $arguments) {
 
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
 	$currentCursor = 3;
 	$previousCursor = 2;
 	$limit = 20;
-	$test = $this->token->decoded->username;
+	if ($token) 
+		$test = $token->username;
+	else
+		$test = '0';
 
 	/* Use ETag and date from Event with most recent update. */
 	$first = $this->spot->mapper("App\Event")
@@ -282,10 +288,18 @@ $app->get("/event/{event_id}", function ($request, $response, $arguments) {
 $app->post("/eventsFilter", function ($request, $response, $arguments) {
 	$body = $request->getParsedBody();
 
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
+
 	$currentCursor = 3;
 	$previousCursor = 2;
 	$limit = 20;
-	$test = $this->token->decoded->username;
+	if ($token) 
+		$test = $token->username;
+	else
+		$test = '0';
 
 	/* Use ETag and date from Event with most recent update. */
 	$first = $this->spot->mapper("App\Event")
@@ -493,19 +507,33 @@ return $response->withStatus(200)
 
 $app->delete("/event/{id}", function ($request, $response, $arguments) {
 
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
+
+	if (!$token) {
+		throw new ForbiddenException("Token not found", 404);
+	}
+
 	/* Load existing event using provided id */
 	if (false === $event = $this->spot->mapper("App\Event")->first([
 	                                                               "event_id" => $arguments["id"],
-	                                                               ])) {
+	                                                               ])) 
+	{
 		throw new NotFoundException("Event not found.", 404);
-};
+	};
 
-$this->spot->mapper("App\Event")->delete($event);
+	if ($event->created_by_username != $token->username) {
+		throw new ForbiddenException("Only the owner can delete the event", 404);
+	}
 
-$data["status"] = "ok";
-$data["message"] = "Event deleted";
+	$this->spot->mapper("App\Event")->delete($event);
 
-return $response->withStatus(200)
-->withHeader("Content-Type", "application/json")
-->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+	$data["status"] = "ok";
+	$data["message"] = "Event deleted";
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });

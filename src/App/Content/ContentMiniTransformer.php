@@ -12,8 +12,16 @@ class ContentMiniTransformer extends Fractal\TransformerAbstract {
         $this->params['value'] = false;
     }
 
+    protected $defaultIncludes = [
+    'items'
+    ];
+
     public function transform(Content $content) {
 
+        $appreciates = null;
+        $bookmarks = null;
+        $this->params['appreciateValue'] = 0;
+        $this->params['bookmarkValue'] = 0;
         if(isset($this->params['type']) && $this->params['type'] == 'get'){
             $appreciates = $content->Appreciated;
             for ($i=0; $i < count($appreciates); $i++) { 
@@ -29,61 +37,39 @@ class ContentMiniTransformer extends Fractal\TransformerAbstract {
                     break;
                 }
             }
-        } else {
-            $appreciates = null;
-            $bookmarks = null;
-            $this->params['appreciateValue'] = 0;
-            $this->params['bookmarkValue'] = 0;
         }
-        
-        return [
-            "id" => (integer) $content->content_id ?: 0,
-            "title" => (string) $content->title ?: null,
-            "content" => [
-                "type" => $content->time_created ?: 0,
-                "embed" => (string) $content->Owner['name'] ?: null,
-                "images" => [
-                        "alt" => (string) $content->Tag['name'] ?: null,
-                        "link" => (integer) $content->Tag['tag_id'] ?: 0,
-                    ],                
-                 ],
-            "created" => [
-                "by" => [
-                    "name" => (string) $content->Owner['name'] ?: null,
-                    "link" => (string) $content->Owner['username'] ?: 0,
-                    "image" => (string) $content->Owner['image'] ?: null,
-                    ],
-                "at" => $content->timer ?: 0,
-                 ],
-            "Actions" => [
-                "Appriciate" => [
-                    "status" => (bool) $this->params['appreciateValue'] ?: false,
-                    "total" => (integer) count($content->Appreciates) ?: 0,
-                    ],
-                "Bookmarked" => [
-                    "status" => (bool) $this->params['bookmarkValue'] ?: false,
-                    "total" =>  count($content->Bookmarks) ?: 0,
-                    ],
-                ],
-            "details" => [
-                "software" => [
-                        "name" => (string) $content->Tag['name'] ?: null,
-                        "link" => (integer) $content->Tag['tag_id'] ?: 0,
-                    ],
-                "euquipment" => [
-                        "name" => (string) $content->Tag['name'] ?: null,
-                        "link" => (integer) $content->Tag['tag_id'] ?: 0,
-                         ]
-                 ],
 
-            "tags" => [
-                    "name" => (string) $content->Tag['name'] ?: null,
-                    "link" => (integer) $content->Tag['tag_id'] ?: 0,
-                ],
-                "total" => (integer) $content->created_by_username ?: 0,
-            "links" => [
-                "self" => "/contents/{$content->id}",
-            ],
+        $type = $content->Type['default_view_type'];
+
+        $this->params['view_type'] = $type;
+
+        return [
+        "id" => (integer) $content->content_id ?: 0,
+        "title" => (string) $content->title ?: null,
+        "view_type" => (integer) $this->params['view_type'],
+        "content_type" => $content->content_type_id ?: 0,              
+        "created_at" => $content->timer ?: 0,
+        "owner" => [
+        "username" => (string) $content->Owner['username'] ?: null,
+        "name" => (string) $content->Owner['name'] ?: null,
+        "about" => (string) $content->Owner['about'] ?: null,
+        "photo" => (string) $content->Owner['image'] ?: null,
+        ],
+        "actions" => [
+        "appreciate" => [
+        "status" => (bool) $this->params['appreciateValue'] ?: false,
+        "total" => (integer) count($appreciates) ?: 0,
+        ],
+        "bookmarks" => [
+        "status" => (bool) $this->params['bookmarkValue'] ?: false,
+        "total" =>  count($bookmarks) ?: 0,
+        ],
+        ],
         ];
+    }
+    public function includeitems(Content $content) {
+        $items = $content->Items;
+
+        return $this->collection($items, new ContentItemsTransformer);
     }
 }

@@ -23,7 +23,9 @@
 
 
         "content_type_id" => ["type" => "integer" , "unsigned" => true, "primary" => true, "autoincrement" => true],
-        "name" => ["type" => "string"]
+        "name" => ["type" => "string"],
+        "default_view_type" => ["type" => "integer","required" => true],
+        "has_multiple_view_types" => ["type" => "boolean"]
         ];
     }
 
@@ -56,7 +58,7 @@
     public static function relations(Mapper $mapper, Entity $entity)
     {
         return [
-            'Type' => $mapper->hasMany($entity, 'App\Content', 'content_type_id')
+            'Contents' => $mapper->hasMany($entity, 'App\Content', 'content_type_id')
         ];
     }
 }
