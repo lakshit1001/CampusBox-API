@@ -1,17 +1,17 @@
 License
-The following license governs the use of OMNeT++ in academic and educational environments. Commercial use requires a commercial license from SimulCraft Inc, www.omnest.com.
+The following license governs the use of CampusBox in academic and educational environments. Commercial use requires a commercial license from Campusbox.org or Exun.tech.
 ACADEMIC PUBLIC LICENSE
 
-Copyright (C) 2003, 2010 Andras Varga
+Copyright (C) 2017, 2017 Laskhit Anand
 
 
 Preamble
 
-This license contains the terms and conditions of using OMNeT++ in noncommercial settings: at academic institutions for teaching and research use, and at non-profit research organizations. You will find that this license provides noncommercial users of OMNeT++ with rights that are similar to the well-known GNU General Public License, yet it retains the possibility for OMNeT++ authors to financially support the development by selling commercial licenses. In fact, if you intend to use OMNeT++ in a "for-profit" environment, where research is conducted to develop or enhance a product, is used in a commercial service offering, or when a commercial company uses OMNeT++ to participate in a research project (for example government-funded or EU-funded research projects), then you need to obtain a commercial license for OMNeT++. In that case, please contact the Author to inquire about commercial licenses.
+This license contains the terms and conditions of using CampusBox in noncommercial settings: at academic institutions for teaching and research use, and at non-profit research organizations. You will find that this license provides noncommercial users of CampusBox with rights that are similar to the well-known GNU General Public License, yet it retains the possibility for CampusBox authors to financially support the development by selling commercial licenses. In fact, if you intend to use CampusBox in a "for-profit" environment, where research is conducted to develop or enhance a product, is used in a commercial service offering, or when a commercial company uses CampusBox to participate in a research project (for example government-funded or EU-funded research projects), then you need to obtain a commercial license for CampusBox. In that case, please contact the Author to inquire about commercial licenses.
 
 What are the rights given to noncommercial users? Similarly to GPL, you have the right to use the software, to distribute copies, to receive source code, to change the software and distribute your modifications or the modified software. Also similarly to the GPL, if you distribute verbatim or modified copies of this software, they must be distributed under this license.
 
-By modeling the GPL, this license guarantees that you're safe when using OMNeT++ in your work, for teaching or research. This license guarantees that OMNeT++ will remain available free of charge for nonprofit use. You can modify OMNeT++ to your purposes, and you can also share your modifications. Even in the unlikely case of the authors abandoning OMNeT++ entirely, this license permits anyone to continue developing it from the last release, and to create further releases under this license.
+By modeling the GPL, this license guarantees that you're safe when using CampusBox in your work, for teaching or research. This license guarantees that CampusBox will remain available free of charge for nonprofit use. You can modify CampusBox to your purposes, and you can also share your modifications. Even in the unlikely case of the authors abandoning CampusBox entirely, this license permits anyone to continue developing it from the last release, and to create further releases under this license.
 
 We believe that the combination of noncommercial open-source and commercial licensing will be beneficial for the whole user community, because income from commercial licenses will enable faster development and a higher level of software quality, while further enjoying the informal, open communication and collaboration channels of open source development.
 
@@ -23,7 +23,7 @@ TERMS AND CONDITIONS FOR USE, COPYING, DISTRIBUTION AND MODIFICATION
 
 0. Definitions
 
-"Program" means a copy of OMNeT++, which is said to be distributed under this Academic Public License.
+"Program" means a copy of CampusBox, which is said to be distributed under this Academic Public License.
 
 "Work based on the Program" means either the Program or any derivative work under copyright law: that is to say, a work containing the Program or a portion of it, either verbatim or with modifications and/or translated into another language. (Hereinafter, translation is included without limitation in the term "modification".)
 
