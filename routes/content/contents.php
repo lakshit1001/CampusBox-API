@@ -482,7 +482,7 @@ $app->post("/addContent", function ($request, $response, $arguments) {
 	}
 
 	for ($i=0; $i < count($body['tags']); $i++) {
-		$tags['content_id'] = $data['data']['id'];
+		$tags['content_id'] = $data['data']['content_id'];
 		$tags['name'] = $body['tags'][$i]['name'];
 		$tagsElement = new ContentTags($tags);
 		$this->spot->mapper("App\ContentTags")->save($tagsElement);
@@ -523,7 +523,7 @@ $app->post("/addNew", function ($request, $response, $arguments) {
 			//adding interests 
 
 	for ($i=0; $i < count($body['items']); $i++) {
-		$items['content_id'] = $data['data']['id'];
+		$items['content_id'] = $data['data']['content_id'];
 		$items['description'] = isset($body['items'][$i]['text'])?$body['items'][$i]['text']:"";
 		$items['content_item_type'] = $body['items'][$i]['mediaType'];
 		$items['image'] = isset($body['items'][$i]['image'])?$body['items'][$i]['image']:"";
@@ -532,7 +532,7 @@ $app->post("/addNew", function ($request, $response, $arguments) {
 		$this->spot->mapper("App\ContentItems")->save($itemsElement);
 	}
 	for ($i=0; $i < count($body['tags']); $i++) {
-		$tags['content_id'] = $data['data']['id'];
+		$tags['content_id'] = $data['data']['content_id'];
 		$tags['name'] = $body['tags'][$i]['name'];
 		$tagsElement = new ContentTags($tags);
 		$this->spot->mapper("App\ContentTags")->save($tagsElement);
