@@ -118,6 +118,54 @@ $app->get("/contents[/{content_type_id}]", function ($request, $response, $argum
 	->withHeader("Content-Type", "application/json")
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
+$app->post("/contents", function ($request, $response, $arguments) {
+	$body = $request->getParsedBody();
+
+	$limit = $body['limit'];
+	$offset = $body['offset'];
+	$filters = $body['filters'];
+
+	$token = $request->getHeader('authorization');
+	$token = substr($token[0], strpos($token[0], " ") + 1); 
+	$JWT = $this->get('JwtAuthentication');
+	$token = $JWT->decodeToken($JWT->fetchToken($request));
+
+	if ($token) 
+		$test = $token->username;
+	else
+		$test = '0';
+
+	if(count($filters)){
+		$contents = $this->spot->mapper("App\Content")
+		->all()
+		->where(["content_type_id"=>$filters])
+		->limit($limit, $offset)
+		->order(["timer" => "DESC"]);
+	}else{
+
+		$contents = $this->spot->mapper("App\Content")
+		->all()
+		->limit($limit, $offset)
+		->order(["timer" => "DESC"]);
+	}
+	$offset += $limit;
+
+	/* Serialize the response data. */
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	if (isset($_GET['include'])) {
+		$fractal->parseIncludes($_GET['include']);
+	}
+	$resource = new Collection($contents, new ContentTransformer([ 'type' => 'get', 'username' => $test]));
+	$data = $fractal->createData($resource)->toArray();
+	
+	$data['meta']['offset'] = $offset;
+	$data['meta']['limit'] = $limit;
+
+	return $response->withStatus(200)
+	->withHeader("Content-Type", "application/json")
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
 $app->get("/contentsDashboard", function ($request, $response, $arguments) {
 
 	$token = $request->getHeader('authorization');
@@ -318,35 +366,38 @@ $app->get("/contentsTop[/{content_type_id}]", function ($request, $response, $ar
 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
 
-// $app->post("/contents", function ($request, $response, $arguments) {
+/*
 
-// 	/* Check if token has needed scope. */
-// 	if (true === $this->token->hasScope(["content.all", "content.create"])) {
-// 		throw new ForbiddenException("Token not allowed to create contents.", 403);
-// 	}
+ $app->post("/contents", function ($request, $response, $arguments) {
 
-// 	$body = $request->getParsedBody();
+	
+	if (true === $this->token->hasScope(["content.all", "content.create"])) {
+		throw new ForbiddenException("Token not allowed to create contents.", 403);
+	}
 
-// 	$content = new Content($body);
-// 	$this->spot->mapper("App\Content")->save($content);
+	$body = $request->getParsedBody();
 
-// 	/* Add Last-Modified and ETag headers to response. */
-// 	$response = $this->cache->withEtag($response, $content->etag());
-// 	$response = $this->cache->withLastModified($response, $content->timestamp());
+	$content = new Content($body);
+	$this->spot->mapper("App\Content")->save($content);
 
-// 	/* Serialize the response data. */
-// 	$fractal = new Manager();
-// 	$fractal->setSerializer(new DataArraySerializer);
-// 	$resource = new Item($content, new ContentTransformer);
-// 	$data = $fractal->createData($resource)->toArray();
-// 	$data["status"] = "ok";
-// 	$data["message"] = "New content created";
+	
+	$response = $this->cache->withEtag($response, $content->etag());
+	$response = $this->cache->withLastModified($response, $content->timestamp());
 
-// 	return $response->withStatus(201)
-// 	->withHeader("Content-Type", "application/json")
-// 	->withHeader("Location", $data["data"]["links"]["self"])
-// 	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-// });
+	
+	$fractal = new Manager();
+	$fractal->setSerializer(new DataArraySerializer);
+	$resource = new Item($content, new ContentTransformer);
+	$data = $fractal->createData($resource)->toArray();
+	$data["status"] = "ok";
+	$data["message"] = "New content created";
+
+	return $response->withStatus(201)
+	->withHeader("Content-Type", "application/json")
+	->withHeader("Location", $data["data"]["links"]["self"])
+	->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+});
+*/
 
 $app->get("/content/{id}", function ($request, $response, $arguments) {
 

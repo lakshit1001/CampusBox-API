@@ -19,7 +19,16 @@
 
  $app->get("/notifications", function ($request, $response, $arguments) {
 
-    $username =$this->token->decoded->username;
+    $token = $request->getHeader('authorization');
+    $token = substr($token[0], strpos($token[0], " ") + 1); 
+    $JWT = $this->get('JwtAuthentication');
+    $token = $JWT->decodeToken($JWT->fetchToken($request));
+
+    if (!$token) {
+        throw new ForbiddenException("Token not found", 404);
+    }
+
+    $username =$token->username;
 
     $follows = $this->spot->mapper("App\StudentFollow")
         ->query("
@@ -77,5 +86,5 @@
 
     return $response->withStatus(200)
     ->withHeader("Content-Type", "application/json")
-    ->write(json_encode($follows, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    ->write(json_encode($notification, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 });
